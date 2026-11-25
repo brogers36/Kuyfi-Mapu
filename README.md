@@ -12,7 +12,7 @@ Milestone 1 (engine): forked from the Kewün Newen engine. New in battle:
 - **Kimün**: the -ke- reading of an enemy's habit (…key vs …ken vs …keymi).
 - **Kolokolo** test boss (placeholder art), reachable from the master copy: «Kuyfi · Pukem · Kolokolo».
 
-The Game 1 world is still in place underneath while the Pukem region is built.
+**Pukem vertical slice:** a new game now opens with the trip through the fog into kuyfi time. Liwen finds you at the kuyfi lof and joins (-yu), the wise kuku teaches the -ke- reading, and the Kolokolo waits in the empty ruka. The maps are Game 1's lof and sea road reused as placeholders (snow, cold palette, new people, exits closed) until Pukem's own maps are drawn.
 
 ## Build
 

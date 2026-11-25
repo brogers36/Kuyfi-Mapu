@@ -4,6 +4,7 @@
    jump to any map, heal, skip battles.
    ============================================================ */
 const MCHK=[
+  {m:'Kuyfi · Pukem · lof',es:'Llegada al lof de los antiguos (Liwen te encuentra)',en:'Arrival at the ancestors\' lof (Liwen finds you)',lvl:4,at:['k_lof',1,9],set:['intro','pentu']},
   {m:'Kuyfi · Pukem · Kolokolo',es:'Prueba: Liwen, «Iñchiw» (-yu) y «Kimün» (-ke-) contra el Kolokolo',en:'Test: Liwen, «Iñchiw» (-yu) and «Kimün» (-ke-) against the Kolokolo',lvl:6,at:['lof',17,9],set:['intro','pentu','liwen','kimke'],fight:['kolokolo']},
   {m:'Lafkenche · inicio',es:'Desde el principio, sin la escena inicial',en:'From the start, skipping the opening scene',lvl:1,at:['rupu',1,6],set:[]},
   {m:'Lafkenche · lof',es:'Con el pentukuwün ya hecho',en:'With the pentukuwün already done',lvl:3,at:['lof',17,9],set:['intro','pentu']},
