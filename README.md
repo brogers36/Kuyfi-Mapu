@@ -12,7 +12,9 @@ Milestone 1 (engine): forked from the Kewün Newen engine. New in battle:
 - **Kimün**: the -ke- reading of an enemy's habit (…key vs …ken vs …keymi).
 - **Kolokolo** test boss (placeholder art), reachable from the master copy: «Kuyfi · Pukem · Kolokolo».
 
-**Pukem vertical slice:** a new game now opens with the trip through the fog into kuyfi time. Liwen finds you at the kuyfi lof and joins (-yu), the wise kuku teaches the -ke- reading, and the Kolokolo waits in the empty ruka. The maps are Game 1's lof and sea road reused as placeholders (snow, cold palette, new people, exits closed) until Pukem's own maps are drawn.
+**Intro film:** `www/intro.mp4` (34 s) plays at the start of a new game, skippable; it is composed from in-engine shots by `tools/film/kuyfi/` scripts.
+
+**Pukem, the first world:** its own snowy maps (`tools/kuyfi_maps.py` → `src/kuyrows.js`): the fog road, the Pukem lof (Liwen's, the kimche kuku's and the empty ruka), Pire mawida (snow forest, a konew door), Pukem menoko (frozen wetland, the -ke- stone) and Winkul (the hill, a kütral). Under the empty ruka, the Kolokolo's burrow: three floors (seasons brazier and stone puzzles, keys, two minibosses, the -yu- stone) and the den. The burrow floors reuse Game 1's tested puzzle layouts for now.
 
 ## Build
 

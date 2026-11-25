@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--autoplay-policy=no-user-gesture-required']});const p=await b.newPage();
+await p.goto('file:///home/claude/Kuyfi-Mapu/www/index.html');await p.waitForTimeout(1200);
+const b64=await p.evaluate(async()=>{AU.muted=false;auInit();if(typeof stopAmb==='function')stopAmb();
+  const dest=AU.c.createMediaStreamDestination();AU.m.connect(dest);await AU.c.resume();
+  const rec=new MediaRecorder(dest.stream,{mimeType:'audio/webm;codecs=opus',audioBitsPerSecond:160000});const ch=[];rec.ondataavailable=e=>ch.push(e.data);
+  const done=new Promise(r=>rec.onstop=r);rec.start(250);
+  const at=(t,f)=>setTimeout(f,t*1000);
+  AU.name=null;playSong('epew');at(13.5,()=>{AU.name=null;playSong('pewLof')});at(20.5,()=>{AU.name=null;playSong('pewBattle')});at(27.5,()=>{AU.name=null;playSong('epew')});
+  at(34.6,()=>rec.stop());await done;const blob=new Blob(ch,{type:'audio/webm'});const buf=new Uint8Array(await blob.arrayBuffer());let s='';for(let i=0;i<buf.length;i+=32768)s+=String.fromCharCode.apply(null,buf.subarray(i,i+32768));return btoa(s)});
+fs.writeFileSync('music.webm',Buffer.from(b64,'base64'));await b.close()})();

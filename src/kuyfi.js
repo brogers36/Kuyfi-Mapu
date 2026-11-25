@@ -30,7 +30,7 @@ ET.kolokolo={name:'Kolokolo',hp:120,atk:9,xp:120,gold:[60,60],boss:true,bs:72,hi
 if(typeof SPR2!=='undefined'&&SPR2.dewu){SPR2.kolokolo=SPR2.dewu;if(SPR2['dewu@b'])SPR2['kolokolo@b']=SPR2['dewu@b']}
 
 function kyStart(){if(!B)return;B.back=0;B.warned=0;
-  if(S.flags&&S.flags.liwen){const mx=Math.max(8,Math.round(maxHP()*.8));B.pt={name:'Liwen',look:'gatherer',max:mx,hp:mx,guard:0,hit:0}}else B.pt=null}
+  if(S.flags&&S.flags.liwen){const mx=Math.max(8,Math.round(maxHP()*.8));B.pt={name:'Liwen',look:'lof_ulcha',max:mx,hp:mx,guard:0,hit:0}}else B.pt=null}
 function kyMenuOpts(en){const o=[];
   if(B.pt)o.push({m:'Iñchiw',g:en?'Speak together with '+B.pt.name+' (-yu)':'Hablar junto con '+B.pt.name+' (-yu)',v:'kyyu',dis:B.pt.hp<=0});
   if(S.flags&&S.flags.kimke)o.push({m:'Kimün',g:en?'Read what an enemy always does (-ke-)':'Leer lo que siempre hace un wekufü (-ke-)',v:'kyke'});

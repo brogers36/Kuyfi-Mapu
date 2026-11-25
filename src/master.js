@@ -4,8 +4,9 @@
    jump to any map, heal, skip battles.
    ============================================================ */
 const MCHK=[
-  {m:'Kuyfi · Pukem · lof',es:'Llegada al lof de los antiguos (Liwen te encuentra)',en:'Arrival at the ancestors\' lof (Liwen finds you)',lvl:4,at:['k_lof',1,9],set:['intro','pentu']},
-  {m:'Kuyfi · Pukem · Kolokolo',es:'Prueba: Liwen, «Iñchiw» (-yu) y «Kimün» (-ke-) contra el Kolokolo',en:'Test: Liwen, «Iñchiw» (-yu) and «Kimün» (-ke-) against the Kolokolo',lvl:6,at:['lof',17,9],set:['intro','pentu','liwen','kimke'],fight:['kolokolo']},
+  {m:'Kuyfi · Pukem · lof',es:'Llegada al lof de los antiguos (Liwen te encuentra)',en:'Arrival at the ancestors\' lof (Liwen finds you)',lvl:4,at:['k_lof',1,8],set:['intro','pentu']},
+  {m:'Kuyfi · Pukem · madriguera',es:'Entrada de la madriguera del Kolokolo, con Liwen y -ke-',en:'Entrance of the Kolokolo\'s burrow, with Liwen and -ke-',lvl:6,at:['kd1',1,6],set:['intro','pentu','liwen','kimke','kyarr']},
+  {m:'Kuyfi · Pukem · Kolokolo',es:'Prueba: Liwen, «Iñchiw» (-yu) y «Kimün» (-ke-) contra el Kolokolo',en:'Test: Liwen, «Iñchiw» (-yu) and «Kimün» (-ke-) against the Kolokolo',lvl:8,at:['kd_den',8,9],set:['intro','pentu','liwen','kimke','kyarr'],fight:['kolokolo']},
   {m:'Lafkenche · inicio',es:'Desde el principio, sin la escena inicial',en:'From the start, skipping the opening scene',lvl:1,at:['rupu',1,6],set:[]},
   {m:'Lafkenche · lof',es:'Con el pentukuwün ya hecho',en:'With the pentukuwün already done',lvl:3,at:['lof',17,9],set:['intro','pentu']},
   {m:'Lafkenche · cueva',es:'Entrada de la cueva del trelke-wekufü',en:"Entrance of the trelke-wekufü's cave",lvl:4,at:['inaltu',21,5],set:['intro','pentu']},
@@ -61,7 +62,7 @@ const MCHK=[
 {const yw=['intro','pentu','lafcave','lafdone','naglof','nagcave','nagdone','pewlof','pewcave','pewdone','willof','wilcave','wildone','puellof','puelcave','pueldone','ngoylands','finalwon','sbosses','kalkudone','epuwon','chq','chdone','stgocall','stgofive','swall','yewenwon'];
  MCHK.push({m:'Upewtuwün mapu · secreto',es:'Todos los secretos hechos: tu sombra se va por una grieta en el camino del mar',en:'Every secret done: your shadow walks off through a crack on the sea road',lvl:32,at:['rupu',2,6],set:yw},
    {m:'Upewtuwün mapu · jefe secreto (tu sombra)',es:'Camino y lof restaurados: tu sombra espera en la ruka de tu kuku',en:'Road and lof restored: your shadow waits in your kuku\'s ruka',lvl:32,at:['y_ruka',6,7],set:yw.concat(['ngoyrest'])})}
-const MSET={liwen:s=>{s.flags.liwen=1},kimke:s=>{s.flags.kimke=1},
+const MSET={kyarr:s=>{s.flags.ky_arrive=1;s.flags.ky_open=1},liwen:s=>{s.flags.liwen=1},kimke:s=>{s.flags.kimke=1},
   yewenwon:s=>{Object.assign(s.flags,{yewen_won:1,stgo_done:1,stgo_seen:1})},
   ngoyrest:s=>{Object.assign(s.flags,{llaw_seen:1,'yfull:y_rupu':1,'yfull:y_lof':1,'ng_in:y_rupu':1,'ng_in:y_lof':1});for(const k of ['4,4','13,5','20,4','27,4'])s.flags['yw:y_rupu:'+k]=1;for(const k of ['yteach','ycook','yweave','ylonko','ymom'])s.flags['yw:y_lof:'+k]=1},
   intro:s=>{s.flags.intro=1;s.roots.push('küpa')},
