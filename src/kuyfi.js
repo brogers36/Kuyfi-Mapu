@@ -105,3 +105,9 @@ function kyDrawPartner(c){const pt=B&&B.pt;if(!pt)return;
   c.drawImage(cvs,0,0,hw,hh,x,Math.round(base-hh),hw,hh);c.restore();
   if(!window.FILM){const bw=26,bx=x+Math.round(hw/2)-13,by=base+3;R(c,bx-1,by-1,bw+2,4,'#181018');R(c,bx,by,bw,2,'#1a3a24');R(c,bx,by,Math.round(bw*pt.hp/pt.max),2,'#60d080');
     if(pt.guard>0)R(c,bx,by+3,bw,1,'#ffe080');}}
+
+/* the past is drawn like an old photograph: warm, a little faded, darker at the edges */
+function kyEraTint(c){if(!M||M.era!=='past')return;
+  c.save();c.globalCompositeOperation='color';c.fillStyle='rgba(168,128,82,.30)';c.fillRect(0,0,LW,LH);
+  c.globalCompositeOperation='source-over';c.fillStyle='rgba(255,236,200,.05)';c.fillRect(0,0,LW,LH);
+  const g=c.createRadialGradient(LW/2,LH/2,LH*.35,LW/2,LH/2,LH*.85);g.addColorStop(0,'rgba(40,22,8,0)');g.addColorStop(1,'rgba(40,22,8,.38)');c.fillStyle=g;c.fillRect(0,0,LW,LH);c.restore()}

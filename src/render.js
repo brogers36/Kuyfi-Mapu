@@ -791,7 +791,7 @@ function renderBattle(){
   if(!(PBGI[B.area.replace('fog:','')]&&paintedBG(B.area.replace('fog:','')))){if(!FG[B.area])FG[B.area]=buildFG(B.area);c.drawImage(FG[B.area],0,0)}
   c.restore();
   for(const p of B.parts){p.t--;p.x+=p.vx;p.y+=p.vy;p.vy+=.06;R(c,p.x,p.y,p.t>15?2:1,p.t>15?2:1,p.col)}B.parts=B.parts.filter(p=>p.t>0);
-  if(!B.en.some(e=>/^ngoyman/.test(e.t)&&!e.dead)&&!/^(waria|feria|blocks)/.test(B.area))dayTint(c);   // the city backdrops already carry their hour
+  if(!B.en.some(e=>/^ngoyman/.test(e.t)&&!e.dead)&&!/^(waria|feria|blocks)/.test(B.area))dayTint(c);if(typeof kyEraTint==='function')kyEraTint(c);   // the city backdrops already carry their hour
   else if(/@night$/.test(B.area)){c.fillStyle='rgba(14,18,48,.16)';c.fillRect(0,0,LW,LH)}   // ...but the fighters still stand in the dark
   if(B.wipe>0&&B.snap){B.wipe--;
     const k=1-(B.wipe/22),rr=k*k*Math.max(LW,LH)*0.85;
@@ -975,6 +975,7 @@ function loopBody(ts){
   else if(mode==='cut')renderCut();
   else if(mode==='title'){paintLand(lx,frame,false);if(typeof titleKimche==='function')titleKimche(lx,frame)}
   if(mode==='map'&&M){dayTint(lx);if(M.urban&&typeof urbanNight==='function')urbanNight(lx,CAM.x,CAM.y)}
+  if(mode==='map'&&M&&typeof kyEraTint==='function')kyEraTint(lx);
   if(fade>0&&mode==='map'){lx.fillStyle='rgba(0,0,0,'+(fade/16)+')';lx.fillRect(0,0,LW,LH);fade=Math.max(0,fade-steps)}
   present();
   for(const f of OV)f();

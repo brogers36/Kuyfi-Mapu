@@ -76,18 +76,46 @@ g.rect(10,2,10,2,'.');g.put(15,3,'.');g.put(16,3,'.')   # a gap in the ridge, up
 g.scatter('"',10,41)
 M['k_winkul']=g.rows()
 
-# ---- the Kolokolo's burrow: Game 1's tested puzzle floors, then the den
-M['kd1']=G1['d1'];M['kd2']=G1['d2'];M['kd3']=G1['d3']
+# ---- the Kolokolo's burrow: three new floors and the den
+def dg(w,h):
+    g=Grid(w,h,'%');return g
+# floor 1: braziers in season order open the stone door; a key opens a side closet
+g=dg(22,11)
+g.rect(1,1,6,9,'_');g.hline(5,0,9,'_')                    # entry room + corridor (enter from the west, row 5)
+g.rect(10,1,17,9,'_')                                     # brazier hall
+g.rect(19,1,20,9,'_');g.put(18,5,'E')                     # behind the stone door: the stairs
+g.rect(8,8,8,9,'_');g.put(8,7,'L');g.put(8,6,'_')         # locked closet under the corridor
+g.put(1,1,'F');g.put(3,8,'k');g.put(8,9,'C');g.put(20,1,'C');g.put(20,9,'S')
+g.put(11,2,'J');g.put(14,2,'J');g.put(17,2,'J');g.put(13,8,'I')
+M['kd1']=g.rows()
+# floor 2: push the two stone blocks onto the plates to lift the gate; the -yu- stone opens the last door
+g=dg(22,11)
+g.rect(1,1,9,9,'_');g.hline(5,0,1,'_')                    # block room (enter from the west, row 5)
+g.put(3,3,'B');g.put(7,3,'B');g.put(3,7,'O');g.put(7,7,'O')
+g.put(10,5,'G');g.rect(11,1,17,9,'_')                     # the gate, then the guard room
+g.put(13,2,'C');g.put(16,8,'K')
+g.put(14,5,'H');g.put(18,5,'E');g.rect(19,1,20,9,'_');g.put(20,9,'S');g.put(19,1,'C')
+g.rect(15,9,17,9,'%');g.put(16,9,'C');g.put(16,8,'K')   # a riddle door guards a nook
+M['kd2']=g.rows()
+# floor 3: touch the season stones in order; the last guards wait at the bottom
+g=dg(22,9)
+g.rect(1,1,20,7,'_');g.hline(4,0,1,'_')
+g.vline(7,1,5,'%');g.vline(14,3,7,'%')                    # two partitions make a winding hall
+g.put(3,2,'N');g.put(10,6,'N');g.put(17,2,'N')
+g.rect(18,5,20,7,'_');g.put(18,4,'E');g.rect(18,4,18,4,'E');g.put(19,4,'%');g.put(20,4,'%')
+g.put(20,7,'S');g.put(1,7,'F');g.put(11,1,'C')
+M['kd3']=g.rows()
 den=[list(r) for r in G1['ngen']]
 for y,r in enumerate(den):
     for x,c in enumerate(r):
         if c=='~':den[y][x]='%'
         elif c=='.':den[y][x]='_'
+        elif c=='A':den[y][x]='_'
 M['kd_den']=[''.join(r) for r in den]
-M['k_rupu']=G1['rupu'];M['k_ruka1']=G1['l_ruka1'];M['k_ruka3']=G1['l_trawun']
+M['k_ruka1']=G1['l_ruka1'];M['k_ruka3']=G1['l_trawun']
 r2=[list(r) for r in G1['l_ruka2']]
 r2[3][7]='S'   # a hole in the floor: down into the Kolokolo's burrow
 M['k_ruka2']=[''.join(r) for r in r2]
 open(OUT,'w',encoding='utf-8').write('const KYROWS='+json.dumps(M,ensure_ascii=False)+';\n')
-for k in ['k_lof','k_mawida','k_menoko','k_winkul','k_ruka2']:
+for k in ['kd1','kd2','kd3']:
     print(k);[print('%2d'%i,r) for i,r in enumerate(M[k])]

@@ -2,8 +2,8 @@ const {chromium}=require('playwright');const fs=require('fs');
 const SC=(process.argv[2]?null:0)||[
  {name:'a_night',n:180,setup:`S.wtime=0.8*43200;loadMap('lof',17,7,true);ents=ents.filter(e=>e.kind==='npc'&&/weaver|cook/.test(e.look));SCN=[];ents.push({id:'kk',kind:'npc',look:'kuku',fem:1,x:19,y:7,fx:19,fy:7,dir:'left',fixed:1,seated:0,wait:9999,cd:9999,pi:0,bt:0,ox:19,oy:7,talk:()=>0});P.dir='right';`},
  {name:'b_fog',n:180,setup:`loadMap('k_rupu',2,6,true);ents=[];P.dir='right';`,each:`held.right=(window.__i<92)?1:0;`},
- {name:'c_lof',n:210,setup:`S.wtime=0;S.wx={pukem:{k:'pire',u:9e15}};S.flags.ky_arrive=1;loadMap('k_lof',2,9,true);P.dir='right';`,each:`held.right=(window.__i<120)?1:0;`},
- {name:'d_battle',n:210,setup:`S.wtime=0;S.flags.liwen=1;loadMap('k_lof',10,9,true);startBattle(['kolokolo'],{boss:1});B.en[0].hidden=0;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';active=null;`,
+ {name:'c_lof',n:210,setup:`S.wtime=0;S.wx={pukem:{k:'pire',u:9e15}};S.flags.ky_arrive=1;loadMap('k_lof',3,8,true);P.dir='right';`,each:`held.right=(window.__i<120)?1:0;`},
+ {name:'d_battle',n:210,setup:`S.wtime=0;S.flags.liwen=1;loadMap('k_lof',10,8,true);startBattle(['kolokolo'],{boss:1});B.en[0].hidden=0;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';active=null;`,
    each:`document.getElementById('dlg').style.display='none';const m=document.getElementById('menu');if(m)m.style.display='none';if(window.__i===70){B.flash=12;B.heroA=16;sfx&&0;spark(LW-40,110,'#ffe890',24);spark(LW-80,110,'#aef2c0',24)}if(window.__i===120){B.en[0].hit=14;pop(70,60,'-18','#ffffff')}`}];
 (async()=>{const b=await chromium.launch({executablePath:'/usr/bin/google-chrome'});
 for(const sh of SC){if(process.argv[2]&&!process.argv[2].split(',').includes(sh.name))continue;const p=await b.newPage({viewport:{width:1280,height:720}});const errs=[];p.on('pageerror',e=>errs.push(e.message));

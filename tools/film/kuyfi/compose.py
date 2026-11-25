@@ -13,6 +13,9 @@ def ld(scene,i):
 def kb(im,t,z0=1.0,z1=1.08,cx=.5,cy=.5):
     z=z0+(z1-z0)*t;w,h=im.size;cw,ch=w/z,h/z;x0=(w-cw)*cx;y0=(h-ch)*cy
     return im.crop((int(x0),int(y0),int(x0+cw),int(y0+ch))).resize((W,H),Image.LANCZOS)
+def sepia(im):
+    g=ImageEnhance.Color(im).enhance(.55);w=Image.new('RGB',im.size,(170,128,84));g=Image.blend(g,w,.18)
+    return ImageEnhance.Contrast(g).enhance(1.04)
 def ease(x):x=max(0.,min(1.,x));return x*x*(3-2*x)
 def text_block(img,lines,alpha,y=600):
     if alpha<=0:return img
@@ -20,7 +23,7 @@ def text_block(img,lines,alpha,y=600):
     # soft band behind the subtitles
     band=Image.new('RGBA',img.size,(0,0,0,0));bd=ImageDraw.Draw(band)
     hsum=sum(f.size+10 for _,f,_ in lines);top=y-hsum//2-14
-    bd.rectangle([0,top,W,top+hsum+28],fill=(0,0,0,int(175*alpha)));band=band.filter(ImageFilter.GaussianBlur(14))
+    bd.rectangle([0,top,W,top+hsum+28],fill=(0,0,0,int(215*alpha)));band=band.filter(ImageFilter.GaussianBlur(14))
     yy=top+14
     for txt,f,col in lines:
         tw=d.textlength(txt,font=f);d.text(((W-tw)/2+2,yy+2),txt,font=f,fill=(0,0,0,int(180*alpha)));d.text(((W-tw)/2,yy),txt,font=f,fill=col+(int(255*alpha),));yy+=f.size+10
@@ -55,7 +58,7 @@ def b(i,n):
 seg(120,b)
 def c(i,n):
     t=i/n;img=kb(ld('c_lof',i),t,1.0,1.12,.3,.45)
-    if t<.5:lines=[('Al otro lado de la niebla: el tiempo de los antiguos.',F_E,CREAM),('Pukem, el invierno.',F_E,CREAM),('Beyond the fog: the time of the ancestors. Pukem, winter.',F_N,SOFT)];al=ease(t/.12)*ease((.5-t)/.08)
+    if t<.5:lines=[('Al otro lado de la niebla: la juventud de tus abuelos.',F_E,CREAM),('Pukem, el invierno.',F_E,CREAM),('Beyond the fog: your grandparents\' youth. Pukem, winter.',F_N,SOFT)];al=ease(t/.12)*ease((.5-t)/.08)
     else:lines=[('Liwen: «Mari mari! Iney pingeymi?»',F_M,GOLD),('¡Hola! ¿Cómo te llamas? · Hello! What is your name?',F_N,SOFT)];al=ease((t-.52)/.08)*ease((1-t)/.1)
     img=text_block(img,lines,al)
     return fade(img,1-ease(t/.1),(255,255,255))
