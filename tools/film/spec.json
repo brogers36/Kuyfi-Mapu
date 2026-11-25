@@ -1,0 +1,149 @@
+[
+{
+"name": "b_trelke",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='millaray';S.name=HEROES['millaray'].name;startBattle(['trelke'],{boss:1});B.area='lagoon';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_witranalwe",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='ayelen';S.name=HEROES['ayelen'].name;startBattle(['witranalwe'],{boss:1});B.area='forest';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_cherrufe",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='llanka';S.name=HEROES['llanka'].name;startBattle(['cherrufe'],{boss:1});B.area='crater';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_kaleuche",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='kallfurungi';S.name=HEROES['kallfurungi'].name;startBattle(['kaleuche'],{boss:1});B.area='fjord';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_walichu",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='millaray';S.name=HEROES['millaray'].name;startBattle(['walichu'],{boss:1});B.area='pampa';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_chadikura",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='ayelen';S.name=HEROES['ayelen'].name;startBattle(['chadikura'],{boss:1});B.area='pampa';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_chinifilu",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='llanka';S.name=HEROES['llanka'].name;startBattle(['chinifilu'],{boss:1});B.area='coast';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_piwuchen",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='kallfurungi';S.name=HEROES['kallfurungi'].name;startBattle(['piwuchen'],{boss:1});B.area='field';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_wallipen",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='millaray';S.name=HEROES['millaray'].name;startBattle(['wallipen'],{boss:1});B.area='mount';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_trawko",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='ayelen';S.name=HEROES['ayelen'].name;startBattle(['trawko'],{boss:1});B.area='rainforest';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_epunamun",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='llanka';S.name=HEROES['llanka'].name;startBattle(['epunamun'],{boss:1});B.area='fjord';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_kalku",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='kallfurungi';S.name=HEROES['kallfurungi'].name;startBattle(['kalku'],{boss:1});B.area='fog:pampa';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "b_llufu5",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S.hero='millaray';S.name=HEROES['millaray'].name;startBattle(['llufu5'],{boss:1});B.area='deep';B.wx=null;B.wipe=0;B.intro=0;B.snap=null;document.getElementById('dlg').style.display='none';document.getElementById('menu')&&(document.getElementById('menu').style.display='none')",
+"warm": 20,
+"n": 52
+},
+{
+"name": "c_e0",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('millaray');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;S.flags.epu_won=1;startEndCut();ECUT.i=0;ECUT.t=0;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=0;if(ECUT)ECUT.i=0",
+"warm": 0,
+"n": 194
+},
+{
+"name": "c_i1",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('millaray');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;startCut();CUT.i=1;CUT.t=60;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=1;if(ECUT)ECUT.i=1",
+"warm": 0,
+"n": 98
+},
+{
+"name": "c_i2",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('kallfurungi');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;startCut();CUT.i=2;CUT.t=40;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=2;if(ECUT)ECUT.i=2",
+"warm": 0,
+"n": 52
+},
+{
+"name": "c_i3",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('millaray');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;startCut();CUT.i=3;CUT.t=60;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=3;if(ECUT)ECUT.i=3",
+"warm": 0,
+"n": 50
+},
+{
+"name": "c_e1",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('millaray');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;S.flags.epu_won=1;startEndCut();ECUT.i=1;ECUT.t=30;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=1;if(ECUT)ECUT.i=1",
+"warm": 0,
+"n": 200
+},
+{
+"name": "c_e2",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('millaray');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;S.flags.epu_won=1;startEndCut();ECUT.i=2;ECUT.t=30;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=2;if(ECUT)ECUT.i=2",
+"warm": 0,
+"n": 98
+},
+{
+"name": "c_e3",
+"pre": "(()=>{window.FILM=1;const i=MCHK.findIndex(c=>/Yewen/.test(c.m));mStart(MCHK[i])})()",
+"setup": "active=null;S=newState('ayelen');S.flags.epu_won=1;document.getElementById('title').style.display='none';CUT=null;ECUT=null;S.flags.epu_won=1;startEndCut();ECUT.i=3;ECUT.t=0;CUTKEY=null;CUTFADE=0;document.getElementById('dlg').style.display='none'",
+"each": "document.getElementById('dlg').style.display='none';if(CUT)CUT.i=3;if(ECUT)ECUT.i=3",
+"warm": 0,
+"n": 292
+}
+]

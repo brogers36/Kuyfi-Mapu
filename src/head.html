@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noai, noimageai">
+<!--PWA--><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0d0b10">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>{reg.update().catch(()=>{});document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})}).catch(()=>{})})}
+window.KEWUN_BUILD='KEWUN_BUILD_ID';
+(function(){
+  let shown=0;
+  const go=v=>{try{sessionStorage.setItem('kv:'+v,'1')}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v))};
+  const chk=()=>{fetch('version.txt',{cache:'no-store'}).then(r=>r.ok?r.text():'').then(v=>{
+    v=(v||'').trim();
+    if(!v||v.length>40||v===window.KEWUN_BUILD)return;
+    let done=0;try{done=sessionStorage.getItem('kv:'+v)}catch(e){}
+    if(!done&&typeof mode!=='undefined'&&mode==='title')return go(v);
+    if(shown)return;shown=1;
+    const b=document.createElement('div');
+    b.style.cssText='position:fixed;top:6px;left:50%;transform:translateX(-50%);z-index:99;background:#18186af2;border:2px solid #e8d49a;color:#f4ecd8;border-radius:6px;padding:6px 12px;font:12px ui-monospace,Menlo,monospace;cursor:pointer;box-shadow:0 2px 10px #000';
+    b.textContent='⟳ Nueva versión · toca aquí / New version · tap here';
+    b.onclick=()=>go(v);
+    document.body.appendChild(b);
+  }).catch(()=>{})};
+  addEventListener('load',()=>setTimeout(chk,1200));
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(chk,400)});
+})();
+addEventListener('load',()=>{const iOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);const inst=navigator.standalone||matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches;const h=document.getElementById('ioshint');if(h&&iOS&&!inst)h.style.display='block'})</script><!--/PWA-->
+<title>Kuyfi Mapu · Prototipo</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+#wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px}
+#screen{position:relative;--s:3;--lw:256;width:calc(var(--lw)*1px*var(--s));height:calc(224px*var(--s));box-shadow:0 0 0 3px #2b2433,0 8px 30px #000;overflow:hidden}
+#cv{width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;background:#000}
+#ui{position:absolute;inset:0;font-size:calc(6.2px*var(--s));pointer-events:none}
+#ui>*{pointer-events:auto}
+.box{position:absolute;left:3%;right:3%;bottom:3%;background:linear-gradient(180deg,#25205cf4 0%,#1a1648f4 55%,#110e30f6 100%);border:3px solid #e2c27a;border-radius:5px;padding:.95em 1em .8em;box-shadow:inset 0 0 0 2px #3a2c18,inset 0 0 0 4px #8a6a30,inset 0 .6em 1.2em #ffffff0d,0 .35em 0 #000a,0 0 0 2px #000;image-rendering:pixelated}.box::before,.box::after{content:'';position:absolute;left:4px;right:4px;height:calc(6px*var(--s)/2);background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='6' shape-rendering='crispEdges'><rect width='16' height='6' fill='%23201028'/><path d='M0 4h2v-1h2v-1h2v-1h2v1h2v1h2v1h2v1h2v1H0z' fill='%23b8282a'/><path d='M2 4h2v-1h2v-1h4v1h2v1h2v1H2z' fill='%23f0e6d0'/><path d='M6 3h4v1H6z' fill='%23b8282a'/></svg>") repeat-x;background-size:auto 100%;image-rendering:pixelated;opacity:.9;pointer-events:none}.box::before{top:4px}.box::after{bottom:4px;transform:scaleY(-1)}#dlg .por{display:none;float:left;width:4.4em;height:4em;margin:.15em .8em .2em 0;border:2px solid #e8ecf8;border-radius:3px;box-shadow:0 0 0 2px #000,inset 0 0 0 1px #9aa2c8;image-rendering:pixelated}#dlg.hasp .por{display:block}#dlg .txt{overflow:hidden}
+#dlg{display:none;cursor:pointer;min-height:26%;overflow:visible}
+#dlg .who{position:absolute;left:1em;top:-1.25em;color:#ffe48a;font-weight:bold;background:linear-gradient(180deg,#5a6a9e,#2a3468);border:2px solid #e8ecf8;border-radius:3px;padding:.1em .7em;box-shadow:0 0 0 2px #000;text-shadow:0 1px 0 #000;letter-spacing:.03em}
+#dlg .m{font-size:1.18em;font-weight:bold;color:#fff;margin-bottom:.25em;text-shadow:0 1px 0 #000,0 0 .4em #6a60c080}
+#dlg .g{color:#dce6ff;font-style:italic;line-height:1.35;font-size:1.14em}
+#dlg .more{position:absolute;right:.6em;bottom:.3em;color:#e8d49a;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:0}}
+#menu,#dlg{z-index:20}#menu{display:none;max-height:50%;overflow:hidden;flex-direction:column}#menu::before,#menu::after{z-index:3}#menu .p{flex:0 1 auto;overflow-y:auto;min-height:1.6em}#menu .list{flex:1 1 auto;min-height:3.4em;overflow-y:auto;padding:2px 2px 4px}
+#menu .p{margin-bottom:.45em;position:relative}
+.hid{display:none!important}
+.rv{position:absolute;right:6px;top:4px;z-index:4;width:1.9em;height:1.9em;border-radius:50%;border:2px solid #ffe8a0;background:#2a1a3a;color:#ffe8a0;font:bold 1em ui-monospace,monospace;cursor:pointer;padding:0}
+#menu .p .rv{top:0;right:0}
+#report{display:none;position:fixed;inset:0;z-index:40;background:rgba(8,6,20,.82);align-items:center;justify-content:center}
+#report .rb{background:#f8f2e4;color:#1a1020;max-width:min(92vw,720px);max-height:88vh;display:flex;flex-direction:column;border:4px solid #3a2a50;border-radius:6px}
+#report pre{margin:0;padding:14px;overflow:auto;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
+#report .rr{display:flex;gap:8px;padding:10px;border-top:2px solid #3a2a50;justify-content:flex-end}
+#report button{font:bold 14px ui-monospace,monospace;padding:8px 12px;background:#3a2a50;color:#ffe8a0;border:0;border-radius:4px;cursor:pointer}
+#menu .p .m{font-weight:bold;font-size:1.1em;color:#fff}
+#menu .p .g{color:#d4f0e2;font-style:italic;font-size:1.1em}
+#menu .list{display:grid;grid-template-columns:1fr 1fr;gap:.35em}
+#menu .list.one{grid-template-columns:1fr}
+.opt{font:inherit;color:#f4ecd8;background:linear-gradient(180deg,#2a2672,#1c1a52);border:2px solid #4a4690;border-radius:3px;padding:.35em .5em .35em 1.3em;text-align:left;cursor:pointer;display:flex;flex-direction:column;position:relative;box-shadow:inset 0 1px 0 #ffffff14}
+.opt .om{font-weight:bold;color:#fff}
+.opt .og{font-size:1em;color:#d4f0e2}
+.opt.sel{border-color:#ffe48a;background:linear-gradient(180deg,#4a40a0,#2e2a78);box-shadow:inset 0 1px 0 #ffffff26,0 0 .45em #f8e07066}
+.opt:disabled{opacity:.4;cursor:default}
+#banner{position:absolute;left:50%;top:22%;transform:translateX(-50%);background:linear-gradient(180deg,#25205cf2,#110e30f4);border:3px solid #e2c27a;box-shadow:inset 0 0 0 2px #3a2c18,inset 0 0 0 4px #8a6a30,0 0 0 2px #000,0 .3em 0 #000a;padding:.4em 1.2em;border-radius:3px;text-align:center;display:none;pointer-events:none}
+#banner b{display:block;font-size:1.3em;color:#ffe9b0;text-shadow:0 2px 0 #000,0 0 .5em #e2c27a66}
+#banner span{color:#d4f0e2;font-style:italic;font-size:1.1em}
+#title{position:absolute;inset:0;background:linear-gradient(#0d0b1022,#0d0b10bb 85%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55em;text-align:center;padding:1em}
+#title h1{margin:0;font-size:2.5em;color:#ffe9b0;text-shadow:0 3px 0 #7a3a1a,0 0 14px #000,0 0 3px #000;letter-spacing:.04em}
+#title .sub{color:#cfe6ff;font-size:1.05em;text-shadow:0 0 4px #000}
+#title .row{display:flex;gap:.6em;flex-wrap:wrap;justify-content:center;align-items:center;text-shadow:0 0 4px #000}
+#title.inst .help:not(#ioshint):not(#andhint){display:none}
+#title a.ib{font:inherit;padding:.4em .9em;border-radius:4px;border:2px solid #e8d49a;background:#6a3a1a;color:#fff;text-decoration:none}
+#title button{font:inherit;padding:.4em .9em;border-radius:4px;border:2px solid #e8d49a;background:#2a2238;color:#fff;cursor:pointer}
+.hero{display:flex;flex-direction:column;align-items:center;gap:.2em;padding:.4em .5em!important;border-color:#4a3d5c!important;min-width:6.4em}
+.hero span{font-size:.92em}
+.hero.on{border-color:#ffcf6a!important;background:#3d3050!important}
+.hero canvas{width:calc(32px*var(--s)/1.5);height:calc(48px*var(--s)/1.5);image-rendering:pixelated}
+#title .help{font-size:.75em;color:#d8d0e4;max-width:36em;line-height:1.4;background:#0d0b10aa;padding:.4em .6em;border-radius:4px}
+#title .copy{font-size:.7em;color:#cfc6dc;position:absolute;bottom:.5em;left:1.5em;right:1.5em;text-align:center;line-height:1.35;text-shadow:0 0 3px #000}
+#skip{position:absolute;right:.6em;top:.6em;font:inherit;font-size:.85em;padding:.25em .7em;border-radius:4px;border:2px solid #e8d49a;background:#2a2238cc;color:#fff;cursor:pointer;display:none}
+#mbtn{position:absolute;left:.6em;top:.6em;font:inherit;font-size:1em;padding:.15em .5em;border-radius:4px;border:2px solid #4a3d5c;background:#2a223880;color:#f4ecd8cc;cursor:pointer;display:none}
+@media (hover:none),(pointer:coarse){#mbtn{display:block}}
+#fsbtn{position:absolute;right:.6em;top:.6em;z-index:9;font:inherit;font-size:1em;padding:.15em .5em;border-radius:4px;border:2px solid #4a3d5c;background:#2a223880;color:#f4ecd8cc;cursor:pointer;display:none}
+#pad{display:flex;gap:28px;align-items:center;justify-content:center}
+#dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:3px}
+#dpad button,#ab button{font:bold 16px ui-monospace,monospace;color:#f4ecd8;background:#2a2238;border:2px solid #4a3d5c;border-radius:8px;touch-action:none}
+#dpad button:active,#ab button:active{background:#4a3d5c}
+#ab{display:flex;gap:10px;align-items:center}
+#ab button{width:58px;height:58px;border-radius:50%}
+#ab .sm{width:46px;height:34px;border-radius:8px;font-size:11px}
+@media (hover:hover) and (pointer:fine){#pad{opacity:.55}.help .tc{display:none}}
+@media (hover:none),(pointer:coarse){#pad{display:none}.help .kb{display:none}}
+#menu{touch-action:pan-y}
+#ui.cutm #dlg{background:transparent!important;border:0!important;box-shadow:none!important;left:6%;right:6%;bottom:1.2%;min-height:0;padding:.2em .4em}#ui.cutm #dlg::before,#ui.cutm #dlg::after{display:none}#ui.cutm #dlg .g{color:#e8e4f4;text-shadow:0 1px 0 #000}#ui.cutm #dlg .who{top:-1.4em}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="screen">
+    <canvas id="cv" width="512" height="448"></canvas>
+    <div id="ui">
+      <div id="banner"><b></b><span></span></div>
+      <div id="dlg" class="box"><canvas class="por" width="44" height="40"></canvas><div class="who"></div><div class="txt"><div class="m"></div><div class="g"></div></div><div class="more">▼</div></div>
+      <div id="menu" class="box"><div class="p"></div><div class="list"></div></div>
+      <button id="skip">Saltar ▶▶</button>
+      <button id="mbtn">☰</button>
+      <button id="fsbtn" title="Pantalla completa / Fullscreen (F)">⛶</button>
+      <div id="title">
+        <h1>Kuyfi Mapu</h1>
+        <div class="sub">Prototipo · Lafkenche, Nagche, Pewenche y Williche</div>
+        <div class="row">
+          <button class="hero on" id="hM"><canvas width="32" height="48"></canvas><span>Millaray</span></button>
+          <button class="hero" id="hA"><canvas width="32" height="48"></canvas><span>Ayelen</span></button>
+          <button class="hero" id="hL"><canvas width="32" height="48"></canvas><span>Llanka</span></button>
+          <button class="hero" id="hK"><canvas width="32" height="48"></canvas><span>Kallfürüngi</span></button>
+        </div>
+        <div class="row">
+          <button id="bNew">Llitun · Nuevo juego</button>
+          <button id="bCont" style="display:none">Continuar · Continue</button>
+        </div>
+        <div class="row"><button id="bLang">Glosa: Español</button><button id="bMus">♪ Música: sí</button></div>
+        <div class="row" id="instRow" style="display:none"><span style="font-size:.85em;color:#e8d49a">📲 Instalar · Install:</span><button id="bAnd">Android</button><button id="bIOS">iPhone / iPad</button></div>
+        <div class="help" id="andhint" style="display:none;border:2px solid #e8d49a"><div class="row" style="margin-bottom:.4em"><a id="bAPK" class="ib" href="https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk" download>⬇ APK</a><button id="bPWA">App web · Web app</button></div><span id="andtxt">APK: ábrelo y acepta instalar · se actualiza sola.<br>APK: open it and allow the install · it updates itself.</span></div>
+        <div class="help" id="ioshint" style="display:none;border:2px solid #e8d49a">📲 Instala el juego en tu iPhone: toca <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>. Se abre a pantalla completa y funciona sin internet.<br>Install on iPhone: tap <b>Share</b>, then <b>"Add to Home Screen"</b>. It opens fullscreen and works offline.</div>
+<div class="help"><span class="kb">Flechas / WASD: moverse · Z, Enter o Espacio: hablar / aceptar (A) · X o Esc: volver / menú (B) · M: menú · N: música.</span><span class="tc">Un toque: hablar / avanzar · mantén el dedo y arrastra: caminar (suéltalo para parar) · desliza: recorrer el menú · dos dedos: volver · mantener pulsado o ☰: menú.<br>Tap: talk / advance · hold and drag: walk (lift to stop) · swipe: scroll a menu · two fingers: back · long press or ☰: menu.</span></div>
+        <div class="copy" id="copy">© 2026 Brandon M. A. Rogers · Todos los derechos reservados. Prohibido usar este sitio para entrenar inteligencia artificial.</div>
+      </div>
+    </div>
+  </div>
+  <div id="pad">
+    <div id="dpad">
+      <span></span><button data-d="up">▲</button><span></span>
+      <button data-d="left">◀</button><span></span><button data-d="right">▶</button>
+      <span></span><button data-d="down">▼</button><span></span>
+    </div>
+    <div id="ab">
+      <button class="sm" id="pN">♪</button>
+      <button class="sm" id="pM">MENÚ</button>
+      <button id="pB">B</button>
+      <button id="pA">A</button>
+    </div>
+  </div>
+</div>
+<script>
+/* Kuyfi Mapu (Kewün Newen II) · © 2026 Brandon M. A. Rogers. Todos los derechos reservados. All rights reserved.
+   Prohibido usar este sitio o su contenido para entrenar inteligencia artificial. No use of this site or its content to train artificial intelligence. */
+'use strict';

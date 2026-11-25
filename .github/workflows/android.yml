@@ -1,0 +1,82 @@
+# Builds the Android APK with Capacitor and publishes it to the rolling
+# "android" release, so the download link never changes:
+#   https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk
+#
+# Signing: android-signing/kewun.keystore is committed to this public repo so
+# every build carries the same signature and installed copies update in place.
+# That means the key is public; it is fine for free sideloaded distribution,
+# but if this app ever goes to Google Play, generate a NEW private key there
+# (Play App Signing) rather than reusing this one.
+name: Android APK
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'www/**'
+      - 'assets/**'
+      - 'android-signing/**'
+      - 'capacitor.config.json'
+      - 'package.json'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install Capacitor
+        run: npm install
+
+      - name: Create Android project
+        run: |
+          npx cap add android
+          npx capacitor-assets generate --android
+
+      - name: Configure version and orientation
+        run: |
+          sed -i "s/versionCode 1/versionCode ${{ github.run_number }}/" android/app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.0.${{ github.run_number }}\"/" android/app/build.gradle
+          sed -i '0,/<activity/s//<activity android:screenOrientation="sensorLandscape"/' android/app/src/main/AndroidManifest.xml
+
+      - name: Build APK
+        run: |
+          npx cap sync android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Sign APK
+        run: |
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          "$BT/zipalign" -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
+          "$BT/apksigner" sign --ks android-signing/kewun.keystore \
+            --ks-key-alias kewun --ks-pass pass:kewun-newen --key-pass pass:kewun-newen \
+            --out KuyfiMapu.apk aligned.apk
+          "$BT/apksigner" verify KuyfiMapu.apk
+
+      - name: Publish to the rolling release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          printf '%s\n\n%s\n\n%s\n' \
+            "APK de Kewün Newen (compilación automática del último código)." \
+            "**Instalar en Android:** descarga \`KuyfiMapu.apk\`, ábrelo y acepta instalar desde esta fuente. Las actualizaciones se instalan encima sin perder las partidas guardadas." \
+            "En iPhone no se puede instalar un APK: abre https://brogers36.github.io/Kuyfi-Mapu/ en Safari y usa Compartir → Añadir a pantalla de inicio." > notes.md
+          if gh release view android --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release edit android --repo "$GITHUB_REPOSITORY" --title "Kewün Newen · Android" --notes-file notes.md
+          else
+            gh release create android --repo "$GITHUB_REPOSITORY" --title "Kewün Newen · Android" --notes-file notes.md
+          fi
+          gh release upload android KuyfiMapu.apk --repo "$GITHUB_REPOSITORY" --clobber
