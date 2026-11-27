@@ -4,7 +4,7 @@
 """
 import os,sys,subprocess,time
 ROOT=os.path.dirname(os.path.abspath(__file__))
-ORDER=['core1','audio','ui','state','desglose','spr','spr2','paintbg','retro','urban','polish','maprows','maps','mapstate','weather','maplogic','cutlogic','scripts','pause','learn','waria','battle','kuyfi','ngoyun','kompa','arena','atlas','render','defeat','cutart','gemanim','gemini','kuyrows','kuyworld','defseq','boot']
+ORDER=['core1','audio','ui','state','desglose','spr','spr2','paintbg','retro','urban','polish','maprows','maps','mapstate','weather','maplogic','cutlogic','scripts','pause','learn','waria','battle','kuyfi','ngoyun','kompa','arena','atlas','render','defeat','cutart','gemanim','gemini','kuyrows','kuyworld','kuytime','defseq','boot']
 MASTER='--master' in sys.argv
 src=lambda f:open(os.path.join(ROOT,'src',f),encoding='utf-8').read()
 try:BUILD=subprocess.run(['git','rev-parse','--short','HEAD'],cwd=ROOT,capture_output=True,text=True).stdout.strip() or time.strftime('%Y%m%d%H%M%S')

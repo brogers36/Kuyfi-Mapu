@@ -16,6 +16,10 @@ Milestone 1 (engine): forked from the Kewün Newen engine. New in battle:
 
 **Pukem, the first world:** its own snowy maps (`tools/kuyfi_maps.py` → `src/kuyrows.js`): the fog road, the Pukem lof (Liwen's, the kimche kuku's and the empty ruka), Pire mawida (snow forest, a konew door), Pukem menoko (frozen wetland, the -ke- stone) and Winkul (the hill, a kütral). Under the empty ruka, the Kolokolo's burrow: three new floors (seasons braziers, stone blocks and plates, season stones, a key, a konew, two minibosses, the -yu- stone) and the den. The past is drawn with its own old-photograph look; the opening is the only scene set in Game 1's lof.
 
+**The jump into the past** (`src/kuytime.js`): fog rolls over the present-day lof, the voice pulls the letters of the kuku's song away, a whiteout, a fall through rings of light and flying words that turn from the cold blue of now to the warm sepia of the past, then snow. Skippable.
+
+**Pukem extras:** Liwen looks the same on the map as in battle; side quests (the child's snowball game with -yu, the weaver's stolen wool, the lonko's gift); a secret wekufü on the hill after the Kolokolo (Fütra Anchimalleñ).
+
 ## Build
 
     python3 build.py           # player version -> www/index.html

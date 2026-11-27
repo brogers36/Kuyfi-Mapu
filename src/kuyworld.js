@@ -23,11 +23,11 @@ STONES.yu={intro:[L('Kura','Kiñe wirintungechi kura pi: «Epu che ñi dungun.»
 function kyMap(id,def){def.region=def.region||'pukem';def.rows=KYROWS[id];def.w=def.rows[0].length;def.h=def.rows.length;MAPS[id]=def}
 const KYOUT={floor:'.',bg:'mount',pal:'pewenche',wxk:'pukem',trees:'pewen',era:'past'};
 RFLAG.pukem='ky_pukem_done';
-kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof de los antiguos, en pukem (invierno)',en:'The ancestors\' lof, in pukem (winter)'},song:'pewLof',
+kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof del pasado, en pukem (invierno)',en:'The lof of the past, in pukem (winter)'},song:'pewLof',
   doors:{'3,3':{to:'k_ruka1',x:6,y:7},'9,3':{to:'k_ruka3',x:6,y:7},'27,11':{to:'k_ruka2',x:6,y:7}},
   edges:{left:{need:99,reqMsg:[N('Hacia el oeste solo hay niebla. Por ahí llegaste; por ahí no se vuelve.','To the west there is only fog. That is how you came; that is not the way back.')]},up:{to:'k_mawida',x:16,y:13,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella antes de ir al monte.','Liwen calls to you from her ruka. Better talk to her before going into the forest.')]},right:{to:'k_menoko',x:1,y:6,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella primero.','Liwen calls to you from her ruka. Better talk to her first.')]}},
   ents:[
-   {id:'ky_liwen',kind:'npc',look:'gatherer',fem:1,x:4,y:5,dir:'down',fixed:1,req:'ky_arrive',talk:()=>kyLiwenTalk(),bub:['Amuyu!','Mari mari!']},
+   {id:'ky_liwen',kind:'npc',look:'liwen',fem:1,x:4,y:5,dir:'down',fixed:1,req:'ky_arrive',talk:()=>kyLiwenTalk(),bub:['Amuyu!','Mari mari!']},
    {id:'ky_kimche',kind:'npc',look:'kuku',fem:1,x:13,y:5,dir:'right',fixed:1,req:'ky_arrive',talk:()=>kyKimcheTalk(),bub:['Küpange...','Pukem mew...']},
    {id:'ky_weaver',kind:'npc',look:'weaver',fem:1,x:6,y:4,dir:'up',act:'weave',fixed:1,talk:()=>kyWeaverTalk(),bub:['Ngürekalen.']},
    {id:'ky_cook',kind:'npc',look:'cook',fem:1,x:21,y:10,act:'cook',fixed:1,talk:()=>kyCookTalk(),bub:['Iyael!']},
@@ -88,8 +88,8 @@ function kyOpening(){
     N('Tu cheche abre la chillka. Hay páginas en blanco. «Venciste al olvido», te dice, «pero las palabras que se perdieron antes no vuelven peleando. Esas hay que ir a buscarlas a donde todavía viven.»','Your cheche opens the chillka. Some pages are blank. "You defeated the forgetting," he tells you, "but the words lost before it fell do not come back by fighting. Those have to be sought where they still live."'),
     N('Entonces, desde la niebla del borde del lof, una voz repite tus propias palabras... mal. «Amutu-mu... küpa-chi... -yu... -mu...» Las terminaciones cambiadas, los pedazos sueltos.','Then, from the fog at the edge of the lof, a voice repeats your own words... wrong. "Amutu-mu... küpa-chi... -yu... -mu..." The endings swapped, the pieces loose.'),
     N('No es un eco: es una voz que se las lleva. A tu kuku se le escapan las palabras a mitad de la canción.','It is not an echo: it is a voice that carries them off. The words slip from your kuku halfway through her song.'),
-    Object.assign(N('La niebla se cierra sobre el kütral. Todo se vuelve blanco.','The fog closes over the kütral. Everything turns white.'),{fx:()=>sfx('cast')})],
-    ()=>{S.wtime=0;loadMap('k_lof',2,8,true);P.dir='right'});
+    N('La niebla se cierra sobre el kütral...','The fog closes over the kütral...')],
+    ()=>kyTimeTravel(()=>{S.wtime=0;loadMap('k_lof',2,8,true);P.dir='down'}));
   S.flags.ky_open=1;persist()}
 /* the intro film plays once at the start of a new game (skippable), then the opening */
 function kyPlayFilm(src,done){
@@ -108,7 +108,7 @@ startCut=function(){kyPlayFilm('intro.mp4',kyOpening)};
 
 /* arriving at the kuyfi lof for the first time: Liwen */
 {const _lm=loadMap;loadMap=function(id){const r=_lm.apply(this,arguments);
-  if(id==='k_lof'&&!S.flags.ky_arrive)setTimeout(()=>{if(!active)kyArrival()},700);return r}}
+  if(id==='k_lof'&&!S.flags.ky_arrive){const wait=()=>{if(document.getElementById('kytt')||active)return setTimeout(wait,200);kyArrival()};setTimeout(wait,700)}return r}}
 function kyArrival(){const n=nm();
   say([N('Despiertas en la nieve, junto a un lof que no conoces. No hay cercos ni caminos anchos; las ruka son más viejas. Una muchacha que cuida el fuego se acerca... tarareando la misma canción que tu kuku.','You wake in the snow beside a lof you do not know. There are no fences, no wide roads; the ruka are older. A girl tending a fire comes over... humming the same song as your kuku.'),
     L('Liwen','Mari mari! Iney pingeymi?','¡Hola! ¿Cómo te llamas?','Hello! What is your name?'),
@@ -150,3 +150,39 @@ function kyKoloWon(){sfx('lvl');S.flags.ky_pukem_done=1;persist();
       L('Kimche papay','Pukem mew, pire küpakey. Welu pewün ka küpakey.','En invierno suele venir la nieve. Pero la primavera también suele llegar.','In winter the snow usually comes. But spring usually comes too.'),
       N('La papay sabia mira hacia el este, donde la nieve empieza a ceder.','The wise papay looks east, where the snow is starting to give way.'),
       N('(Fin de Pukem. Pewün, la primavera, se está construyendo.)','(End of Pukem. Pewün, spring, is being built.)')]),500)})}
+
+/* ---------- Liwen looks the same on the map as in battle: the heroine the player did not choose, re-dyed teal ---------- */
+{const _kyCS=ctCharSprite;ctCharSprite=function(look,dir,fr){if(look!=='liwen')return _kyCS.apply(this,arguments);
+  const base=heroLook()==='ayelen'?'millaray':'ayelen',key='KYL'+base+dir+fr+(arguments[3]?'s':'');if(CCACHE[key])return CCACHE[key];
+  const a=[...arguments];a[0]=base;return CCACHE[key]=kyDye(_kyCS.apply(this,a))}}
+
+/* ---------- side quests of the Pukem lof ---------- */
+function kyChildTalk(){
+  if(S.flags.ky_q_child)return say([L('Pichi che','Awkantuyu!','¡Juguemos, tú y yo!','Let\'s play, you and I!'),N('El niño se ríe y te tira otra bola de nieve.','The child laughs and throws another snowball at you.')]);
+  const opts=kyShuf(['awkantuyu','awkantumu','awkantunge']).map(o=>({m:o,v:o}));
+  say([L('Pichi che','Awkantu...?','¿Jugamos...?','Shall we play...?'),N('El niño te mira con una bola de nieve en la mano. ¿Cómo le dices «juguemos, tú y yo»?','The child looks at you, a snowball in hand. How do you say "let\'s play, you and I"?')],()=>
+    choose({m:'awkantu___',es:'Juguemos, tú y yo:',en:'Let\'s play, you and I:'},opts,v=>{
+      if(v!=='awkantuyu'){sfx('bad');return say([N(v==='awkantumu'?'-mu les habla a otros dos. El niño mira a su alrededor buscando a quién le hablas.':'-nge es una orden a otro. El niño se cruza de brazos: «¿Y tú no juegas?»',v==='awkantumu'?'-mu speaks to two others. The child looks around for whoever you are talking to.':'-nge is an order to someone else. The child crosses his arms: "And you don\'t play?"')])}
+      S.flags.ky_q_child=1;S.gold+=20;persist();sfx('lvl');
+      say([L(nm(),'Awkantuyu!','¡Juguemos, tú y yo!','Let\'s play, you and I!'),
+        N('Se tiran nieve hasta quedar sin aliento. Al final el niño te da algo que encontró en la nieve: epu mari (20) ngülliw.','You throw snow at each other until you are out of breath. At the end the child gives you something he found in the snow: epu mari (20) ngülliw.')])},true))}
+function kyWeaverTalk(){
+  if(S.flags.ky_kolo&&!S.flags.ky_q_wool){S.flags.ky_q_wool=1;persist();
+    return gainPiwke([N('Liwen le trae a la tejedora la lana que el Kolokolo se había robado.','Liwen brings the weaver the wool the Kolokolo had stolen.'),
+      L('Ngürekafe','Chaltu may!','¡Gracias!','Thank you!'),
+      N('Esa misma noche teje un trarilonko y te lo pone en la frente. Te sientes más fuerte.','That same night she weaves a trarilonko and ties it around your forehead. You feel stronger.')])}
+  if(!S.flags.ky_kolo)return say([L('Ngürekafe','Ngürekalen... welu ñamüy tañi ufisa kal.','Estoy tejiendo... pero se me perdió la lana.','I am weaving... but my wool is lost.'),N('«Algo se la lleva de noche», dice, y mira hacia la ruka vacía.','"Something takes it at night," she says, and glances at the empty ruka.')]);
+  say([L('Ngürekafe','Ngürekalen.','Estoy tejiendo.','I am weaving.'),N('Teje junto al fuego; en invierno se teje mucho.','She weaves by the fire; in winter there is much weaving.')])}
+function kyLonkoTalk(){
+  if(S.flags.ky_pukem_done&&!S.flags.ky_q_lonko){S.flags.ky_q_lonko=1;S.items.lawen=(S.items.lawen||0)+2;persist();sfx('lvl');
+    return say([L('Lonko','Mari mari, '+nm()+'.','Hola, '+nm()+'.','Hello, '+nm()+'.'),N('Ahora el lonko te saluda por tu nombre. Te regala dos lawen «para el camino que viene».','Now the lonko greets you by name. He gives you two lawen "for the road ahead".')])}
+  say([L('Lonko','Mari mari.','Hola.','Hello.'),N(S.flags.ky_pukem_done?'El lonko asiente: ya eres parte del lof.':'El lonko te saluda serio. Todavía no sabe qué hacer contigo.',S.flags.ky_pukem_done?'The lonko nods: you are part of the lof now.':'The lonko greets you gravely. He does not yet know what to make of you.')])}
+
+/* ---------- Pukem's secret wekufü: a great Anchimalleñ on the hill, after the Kolokolo ---------- */
+ET.anchi_b={name:'Fütra Anchimalleñ',hp:170,atk:13,xp:150,gold:[80,80],boss:true,bs:72,secret:1,fly:1,spres:1};
+if(typeof SPR2!=='undefined'&&SPR2.anchi){SPR2.anchi_b=SPR2.anchi;if(SPR2['anchi@b'])SPR2['anchi_b@b']=SPR2['anchi@b']}
+if(typeof GEMD!=='undefined'&&GEMD.en&&GEMD.en.anchi)GEMD.en.anchi_b=GEMD.en.anchi;
+MAPS.k_winkul.sbt={t:['12,2','13,2','12,3'],boss:'anchi_b',flag:'ky_sb1',req:'ky_pukem_done'};
+{const _sbw=sbossWake;sbossWake=function(sb){if(sb.boss!=='anchi_b')return _sbw.apply(this,arguments);
+  say([N('En lo alto de la loma, entre las piedras, una lucecita salta de roca en roca... y de pronto son cien. Se juntan en una sola llama que se ríe con voz de niño: ¡un Fütra Anchimalleñ!','At the top of the hill, among the stones, a little light hops from rock to rock... and suddenly there are a hundred. They gather into a single flame that laughs with a child\'s voice: a great Anchimalleñ!'),
+       L('Liwen','Kintuyu! Nagpay!','¡Busquémoslo, tú y yo! ¡Ya baja!','Let\'s look for it, you and I! It is coming down!')],()=>startBattle(['anchi_b'],{boss:1,sflag:sb.flag}))}}

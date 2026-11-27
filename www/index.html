@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>{reg.update().catch(()=>{});document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})}).catch(()=>{})})}
-window.KEWUN_BUILD='1ca2492-202611271148';
+window.KEWUN_BUILD='4b37c62-202611271155';
 (function(){
   let shown=0;
   const go=v=>{try{sessionStorage.setItem('kv:'+v,'1')}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v))};
@@ -9694,11 +9694,11 @@ STONES.yu={intro:[L('Kura','Kiñe wirintungechi kura pi: «Epu che ñi dungun.»
 function kyMap(id,def){def.region=def.region||'pukem';def.rows=KYROWS[id];def.w=def.rows[0].length;def.h=def.rows.length;MAPS[id]=def}
 const KYOUT={floor:'.',bg:'mount',pal:'pewenche',wxk:'pukem',trees:'pewen',era:'past'};
 RFLAG.pukem='ky_pukem_done';
-kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof de los antiguos, en pukem (invierno)',en:'The ancestors\' lof, in pukem (winter)'},song:'pewLof',
+kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof del pasado, en pukem (invierno)',en:'The lof of the past, in pukem (winter)'},song:'pewLof',
   doors:{'3,3':{to:'k_ruka1',x:6,y:7},'9,3':{to:'k_ruka3',x:6,y:7},'27,11':{to:'k_ruka2',x:6,y:7}},
   edges:{left:{need:99,reqMsg:[N('Hacia el oeste solo hay niebla. Por ahí llegaste; por ahí no se vuelve.','To the west there is only fog. That is how you came; that is not the way back.')]},up:{to:'k_mawida',x:16,y:13,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella antes de ir al monte.','Liwen calls to you from her ruka. Better talk to her before going into the forest.')]},right:{to:'k_menoko',x:1,y:6,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella primero.','Liwen calls to you from her ruka. Better talk to her first.')]}},
   ents:[
-   {id:'ky_liwen',kind:'npc',look:'gatherer',fem:1,x:4,y:5,dir:'down',fixed:1,req:'ky_arrive',talk:()=>kyLiwenTalk(),bub:['Amuyu!','Mari mari!']},
+   {id:'ky_liwen',kind:'npc',look:'liwen',fem:1,x:4,y:5,dir:'down',fixed:1,req:'ky_arrive',talk:()=>kyLiwenTalk(),bub:['Amuyu!','Mari mari!']},
    {id:'ky_kimche',kind:'npc',look:'kuku',fem:1,x:13,y:5,dir:'right',fixed:1,req:'ky_arrive',talk:()=>kyKimcheTalk(),bub:['Küpange...','Pukem mew...']},
    {id:'ky_weaver',kind:'npc',look:'weaver',fem:1,x:6,y:4,dir:'up',act:'weave',fixed:1,talk:()=>kyWeaverTalk(),bub:['Ngürekalen.']},
    {id:'ky_cook',kind:'npc',look:'cook',fem:1,x:21,y:10,act:'cook',fixed:1,talk:()=>kyCookTalk(),bub:['Iyael!']},
@@ -9759,8 +9759,8 @@ function kyOpening(){
     N('Tu cheche abre la chillka. Hay páginas en blanco. «Venciste al olvido», te dice, «pero las palabras que se perdieron antes no vuelven peleando. Esas hay que ir a buscarlas a donde todavía viven.»','Your cheche opens the chillka. Some pages are blank. "You defeated the forgetting," he tells you, "but the words lost before it fell do not come back by fighting. Those have to be sought where they still live."'),
     N('Entonces, desde la niebla del borde del lof, una voz repite tus propias palabras... mal. «Amutu-mu... küpa-chi... -yu... -mu...» Las terminaciones cambiadas, los pedazos sueltos.','Then, from the fog at the edge of the lof, a voice repeats your own words... wrong. "Amutu-mu... küpa-chi... -yu... -mu..." The endings swapped, the pieces loose.'),
     N('No es un eco: es una voz que se las lleva. A tu kuku se le escapan las palabras a mitad de la canción.','It is not an echo: it is a voice that carries them off. The words slip from your kuku halfway through her song.'),
-    Object.assign(N('La niebla se cierra sobre el kütral. Todo se vuelve blanco.','The fog closes over the kütral. Everything turns white.'),{fx:()=>sfx('cast')})],
-    ()=>{S.wtime=0;loadMap('k_lof',2,8,true);P.dir='right'});
+    N('La niebla se cierra sobre el kütral...','The fog closes over the kütral...')],
+    ()=>kyTimeTravel(()=>{S.wtime=0;loadMap('k_lof',2,8,true);P.dir='down'}));
   S.flags.ky_open=1;persist()}
 /* the intro film plays once at the start of a new game (skippable), then the opening */
 function kyPlayFilm(src,done){
@@ -9779,7 +9779,7 @@ startCut=function(){kyPlayFilm('intro.mp4',kyOpening)};
 
 /* arriving at the kuyfi lof for the first time: Liwen */
 {const _lm=loadMap;loadMap=function(id){const r=_lm.apply(this,arguments);
-  if(id==='k_lof'&&!S.flags.ky_arrive)setTimeout(()=>{if(!active)kyArrival()},700);return r}}
+  if(id==='k_lof'&&!S.flags.ky_arrive){const wait=()=>{if(document.getElementById('kytt')||active)return setTimeout(wait,200);kyArrival()};setTimeout(wait,700)}return r}}
 function kyArrival(){const n=nm();
   say([N('Despiertas en la nieve, junto a un lof que no conoces. No hay cercos ni caminos anchos; las ruka son más viejas. Una muchacha que cuida el fuego se acerca... tarareando la misma canción que tu kuku.','You wake in the snow beside a lof you do not know. There are no fences, no wide roads; the ruka are older. A girl tending a fire comes over... humming the same song as your kuku.'),
     L('Liwen','Mari mari! Iney pingeymi?','¡Hola! ¿Cómo te llamas?','Hello! What is your name?'),
@@ -9821,6 +9821,120 @@ function kyKoloWon(){sfx('lvl');S.flags.ky_pukem_done=1;persist();
       L('Kimche papay','Pukem mew, pire küpakey. Welu pewün ka küpakey.','En invierno suele venir la nieve. Pero la primavera también suele llegar.','In winter the snow usually comes. But spring usually comes too.'),
       N('La papay sabia mira hacia el este, donde la nieve empieza a ceder.','The wise papay looks east, where the snow is starting to give way.'),
       N('(Fin de Pukem. Pewün, la primavera, se está construyendo.)','(End of Pukem. Pewün, spring, is being built.)')]),500)})}
+
+/* ---------- Liwen looks the same on the map as in battle: the heroine the player did not choose, re-dyed teal ---------- */
+{const _kyCS=ctCharSprite;ctCharSprite=function(look,dir,fr){if(look!=='liwen')return _kyCS.apply(this,arguments);
+  const base=heroLook()==='ayelen'?'millaray':'ayelen',key='KYL'+base+dir+fr+(arguments[3]?'s':'');if(CCACHE[key])return CCACHE[key];
+  const a=[...arguments];a[0]=base;return CCACHE[key]=kyDye(_kyCS.apply(this,a))}}
+
+/* ---------- side quests of the Pukem lof ---------- */
+function kyChildTalk(){
+  if(S.flags.ky_q_child)return say([L('Pichi che','Awkantuyu!','¡Juguemos, tú y yo!','Let\'s play, you and I!'),N('El niño se ríe y te tira otra bola de nieve.','The child laughs and throws another snowball at you.')]);
+  const opts=kyShuf(['awkantuyu','awkantumu','awkantunge']).map(o=>({m:o,v:o}));
+  say([L('Pichi che','Awkantu...?','¿Jugamos...?','Shall we play...?'),N('El niño te mira con una bola de nieve en la mano. ¿Cómo le dices «juguemos, tú y yo»?','The child looks at you, a snowball in hand. How do you say "let\'s play, you and I"?')],()=>
+    choose({m:'awkantu___',es:'Juguemos, tú y yo:',en:'Let\'s play, you and I:'},opts,v=>{
+      if(v!=='awkantuyu'){sfx('bad');return say([N(v==='awkantumu'?'-mu les habla a otros dos. El niño mira a su alrededor buscando a quién le hablas.':'-nge es una orden a otro. El niño se cruza de brazos: «¿Y tú no juegas?»',v==='awkantumu'?'-mu speaks to two others. The child looks around for whoever you are talking to.':'-nge is an order to someone else. The child crosses his arms: "And you don\'t play?"')])}
+      S.flags.ky_q_child=1;S.gold+=20;persist();sfx('lvl');
+      say([L(nm(),'Awkantuyu!','¡Juguemos, tú y yo!','Let\'s play, you and I!'),
+        N('Se tiran nieve hasta quedar sin aliento. Al final el niño te da algo que encontró en la nieve: epu mari (20) ngülliw.','You throw snow at each other until you are out of breath. At the end the child gives you something he found in the snow: epu mari (20) ngülliw.')])},true))}
+function kyWeaverTalk(){
+  if(S.flags.ky_kolo&&!S.flags.ky_q_wool){S.flags.ky_q_wool=1;persist();
+    return gainPiwke([N('Liwen le trae a la tejedora la lana que el Kolokolo se había robado.','Liwen brings the weaver the wool the Kolokolo had stolen.'),
+      L('Ngürekafe','Chaltu may!','¡Gracias!','Thank you!'),
+      N('Esa misma noche teje un trarilonko y te lo pone en la frente. Te sientes más fuerte.','That same night she weaves a trarilonko and ties it around your forehead. You feel stronger.')])}
+  if(!S.flags.ky_kolo)return say([L('Ngürekafe','Ngürekalen... welu ñamüy tañi ufisa kal.','Estoy tejiendo... pero se me perdió la lana.','I am weaving... but my wool is lost.'),N('«Algo se la lleva de noche», dice, y mira hacia la ruka vacía.','"Something takes it at night," she says, and glances at the empty ruka.')]);
+  say([L('Ngürekafe','Ngürekalen.','Estoy tejiendo.','I am weaving.'),N('Teje junto al fuego; en invierno se teje mucho.','She weaves by the fire; in winter there is much weaving.')])}
+function kyLonkoTalk(){
+  if(S.flags.ky_pukem_done&&!S.flags.ky_q_lonko){S.flags.ky_q_lonko=1;S.items.lawen=(S.items.lawen||0)+2;persist();sfx('lvl');
+    return say([L('Lonko','Mari mari, '+nm()+'.','Hola, '+nm()+'.','Hello, '+nm()+'.'),N('Ahora el lonko te saluda por tu nombre. Te regala dos lawen «para el camino que viene».','Now the lonko greets you by name. He gives you two lawen "for the road ahead".')])}
+  say([L('Lonko','Mari mari.','Hola.','Hello.'),N(S.flags.ky_pukem_done?'El lonko asiente: ya eres parte del lof.':'El lonko te saluda serio. Todavía no sabe qué hacer contigo.',S.flags.ky_pukem_done?'The lonko nods: you are part of the lof now.':'The lonko greets you gravely. He does not yet know what to make of you.')])}
+
+/* ---------- Pukem's secret wekufü: a great Anchimalleñ on the hill, after the Kolokolo ---------- */
+ET.anchi_b={name:'Fütra Anchimalleñ',hp:170,atk:13,xp:150,gold:[80,80],boss:true,bs:72,secret:1,fly:1,spres:1};
+if(typeof SPR2!=='undefined'&&SPR2.anchi){SPR2.anchi_b=SPR2.anchi;if(SPR2['anchi@b'])SPR2['anchi_b@b']=SPR2['anchi@b']}
+if(typeof GEMD!=='undefined'&&GEMD.en&&GEMD.en.anchi)GEMD.en.anchi_b=GEMD.en.anchi;
+MAPS.k_winkul.sbt={t:['12,2','13,2','12,3'],boss:'anchi_b',flag:'ky_sb1',req:'ky_pukem_done'};
+{const _sbw=sbossWake;sbossWake=function(sb){if(sb.boss!=='anchi_b')return _sbw.apply(this,arguments);
+  say([N('En lo alto de la loma, entre las piedras, una lucecita salta de roca en roca... y de pronto son cien. Se juntan en una sola llama que se ríe con voz de niño: ¡un Fütra Anchimalleñ!','At the top of the hill, among the stones, a little light hops from rock to rock... and suddenly there are a hundred. They gather into a single flame that laughs with a child\'s voice: a great Anchimalleñ!'),
+       L('Liwen','Kintuyu! Nagpay!','¡Busquémoslo, tú y yo! ¡Ya baja!','Let\'s look for it, you and I! It is coming down!')],()=>startBattle(['anchi_b'],{boss:1,sflag:sb.flag}))}}
+
+/* ============================================================
+   KUYFI MAPU: the time-travel sequence
+   Drawn on its own pixel canvas laid over the game (same 256-wide resolution), skippable.
+   1. the present-day lof at night: fog rolls in and the voice pulls the letters of the kuku's song toward it
+   2. whiteout
+   3. the fall through time: rings of light rushing past, the chillka's words flying by, the colours
+      turning from the cold blue of now to the warm sepia of the past; the hero tumbles in the middle
+   4. snow, and the warm light of the past fades in
+   ============================================================ */
+function kyTimeTravel(done){
+  const cvG=document.getElementById('cv'),rc=cvG.getBoundingClientRect();
+  const ov=document.createElement('canvas');ov.width=LW;ov.height=LH;ov.id='kytt';
+  ov.style.cssText='position:fixed;left:'+rc.left+'px;top:'+rc.top+'px;width:'+rc.width+'px;height:'+rc.height+'px;image-rendering:pixelated;z-index:9000;pointer-events:auto';
+  document.body.appendChild(ov);const c=ov.getContext('2d');c.imageSmoothingEnabled=false;
+  const en=(S&&S.gloss==='en')||LANG==='en';
+  const sk=document.createElement('button');sk.textContent=en?'Skip ▶':'Saltar ▶';
+  sk.style.cssText='position:fixed;right:14px;bottom:14px;z-index:9001;padding:8px 14px;font:600 14px sans-serif;color:#f3ead2;background:rgba(0,0,0,.55);border:1px solid rgba(243,234,210,.5);border-radius:6px;opacity:.7';
+  document.body.appendChild(sk);
+  let t=0,fin=false,loaded=false;const FPS=60;
+  const P1=6*FPS,P2=P1+1.2*FPS,P3=P2+8.5*FPS,P4=P3+2.6*FPS;
+  const end=()=>{if(fin)return;fin=true;ov.remove();sk.remove();if(!loaded){loaded=true;done()}};
+  sk.onclick=e=>{e.stopPropagation();end()};
+  /* the kuku's place on screen, for the letters */
+  const kk=(typeof ents!=='undefined'&&ents.find(e=>e.id==='ky_kuku0'))||{fx:19,fy:7};
+  const kx=Math.round(kk.fx*T-CAM.x+8),ky=Math.round(kk.fy*T-CAM.y);
+  const SONG='ül ülkantun kimün mapu kütral ruka pewma'.split(' ');   // letters that drift away (just letters, not the song itself)
+  const letters=[];
+  const WORDS=['pukem','pewün','walüng','rimü','kütral','ruka','chillka','kuku','cheche','lof','mapu','kewün','nemül','dungun','ül','pire','mawün','antü','küyen','wünelfe','ngen','kimün'];
+  const fly=[];for(let i=0;i<26;i++)fly.push({w:WORDS[i%WORDS.length],a:Math.random()*Math.PI*2,z:Math.random(),sp:.004+Math.random()*.004});
+  const flakes=[];for(let i=0;i<90;i++)flakes.push({x:Math.random()*LW,y:Math.random()*LH,v:.2+Math.random()*.5,d:Math.random()*6});
+  const fog=[];for(let i=0;i<34;i++)fog.push({x:-60-Math.random()*200,y:Math.random()*LH,r:20+Math.random()*36,v:.35+Math.random()*.5});
+  const heroCv=(()=>{try{return ctCharSprite(heroLook(),'down',0)}catch(e){return null}})();
+  const lerp=(a,b,k)=>a+(b-a)*k,mix=(a,b,k)=>'rgb('+a.map((v,i)=>Math.round(lerp(v,b[i],k))).join(',')+')';
+  if(typeof sfx==='function')sfx('cast');
+  function frame(){if(fin)return;t++;
+    c.clearRect(0,0,LW,LH);
+    if(t<P1){ /* 1. fog and letters over the live game */
+      const k=t/P1;
+      for(const f of fog){f.x+=f.v;const g=c.createRadialGradient(f.x,f.y,2,f.x,f.y,f.r);g.addColorStop(0,'rgba(220,228,240,'+(.30*Math.min(1,k*2))+')');g.addColorStop(1,'rgba(220,228,240,0)');c.fillStyle=g;c.fillRect(f.x-f.r,f.y-f.r,f.r*2,f.r*2)}
+      if(t%9===0&&t<P1-60){const w=SONG[(t/9|0)%SONG.length];for(const ch of w)letters.push({ch,x:kx+Math.random()*10-5,y:ky-6+Math.random()*6,vx:-.2-Math.random()*.6,vy:-.3-Math.random()*.4,a:1})}
+      c.font='bold 9px monospace';c.textBaseline='middle';
+      for(const L of letters){L.vx-=.035;L.vy+=.006;L.x+=L.vx;L.y+=L.vy;L.a-=.004;if(L.a<=0)continue;
+        c.fillStyle='rgba(20,10,30,'+L.a*.7+')';c.fillText(L.ch,L.x+1,L.y+1);c.fillStyle='rgba(255,232,170,'+L.a+')';c.fillText(L.ch,L.x,L.y)}
+      if(t===Math.round(P1*.45)&&typeof sfx==='function')sfx('bad');
+      if(k>.75){c.fillStyle='rgba(255,255,255,'+((k-.75)/.25)*.85+')';c.fillRect(0,0,LW,LH)}
+    }else if(t<P2){ /* 2. whiteout */
+      c.fillStyle='#fff';c.fillRect(0,0,LW,LH);
+      if(t===P1+2&&typeof sfx==='function')sfx('cast');
+    }else if(t<P3){ /* 3. the fall through time */
+      const k=(t-P2)/(P3-P2);
+      const bg0=[12,18,52],bg1=[58,34,16];c.fillStyle=mix(bg0,bg1,k);c.fillRect(0,0,LW,LH);
+      const cx=LW/2+Math.sin(t*.02)*10,cy=LH/2+Math.cos(t*.017)*7;
+      /* rings rushing outward */
+      for(let i=0;i<14;i++){const ph=((t*.012+i/14)%1),r=4+ph*ph*260;c.strokeStyle=k<.5?'rgba(120,190,255,'+(.55*(1-ph))+')':'rgba(255,214,140,'+(.55*(1-ph))+')';
+        c.lineWidth=1+ph*3;c.beginPath();for(let a=0;a<=Math.PI*2+.01;a+=Math.PI/3){const x=cx+Math.cos(a+i*.4)*r,y=cy+Math.sin(a+i*.4)*r*.8;a?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}
+      /* streaks */
+      for(let i=0;i<60;i++){const a=i*2.39996,ph=((t*.02+i*.137)%1),r0=10+ph*ph*220,r1=r0+6+ph*20;c.strokeStyle=k<.5?'rgba(190,230,255,'+(.5*ph)+')':'rgba(255,236,190,'+(.5*ph)+')';c.lineWidth=1;
+        c.beginPath();c.moveTo(cx+Math.cos(a)*r0,cy+Math.sin(a)*r0);c.lineTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);c.stroke()}
+      /* the chillka's words flying by */
+      c.textAlign='center';c.textBaseline='middle';
+      for(const f of fly){f.z+=f.sp;if(f.z>1){f.z=0;f.a=Math.random()*Math.PI*2}const r=10+f.z*f.z*200,x=cx+Math.cos(f.a)*r,y=cy+Math.sin(f.a)*r*.8,sz=Math.round(5+f.z*12);
+        c.font='bold '+sz+'px monospace';c.fillStyle=k<.5?'rgba(220,240,255,'+(f.z*.9)+')':'rgba(255,240,200,'+(f.z*.9)+')';c.fillText(f.w,x,y)}
+      c.textAlign='start';
+      /* the hero, tumbling */
+      if(heroCv){c.save();c.translate(cx,cy);c.rotate(Math.sin(t*.05)*.5+t*.01);const s=2*(1+.15*Math.sin(t*.08));c.scale(s,s);c.drawImage(heroCv,-heroCv.width/2,-heroCv.height/2);c.restore()}
+      /* the year turning: the seasons, oldest last */
+      const lab=k<.25?'':k<.5?'…':k<.75?'kuyfi…':'kuyfi mew';if(lab){c.font='bold 10px monospace';c.fillStyle='rgba(255,236,190,.85)';c.textAlign='center';c.fillText(lab,LW/2,LH-18);c.textAlign='start'}
+      if(t%50===0&&typeof sfx==='function')sfx('move');
+      if(k>.88){c.fillStyle='rgba(255,250,240,'+((k-.88)/.12)+')';c.fillRect(0,0,LW,LH)}
+    }else if(t<P4){ /* 4. snow, and the past fades in */
+      if(!loaded){loaded=true;done()}
+      const k=(t-P3)/(P4-P3);
+      c.fillStyle='rgba(255,250,240,'+(1-k)+')';c.fillRect(0,0,LW,LH);
+      for(const f of flakes){f.y+=f.v;f.x+=Math.sin((t+f.d*40)*.03)*.3;if(f.y>LH)f.y=-2;c.fillStyle='rgba(255,255,255,'+(.8*(1-k*.6))+')';c.fillRect(Math.round(f.x),Math.round(f.y),1,1)}
+    }else return end();
+    requestAnimationFrame(frame)}
+  requestAnimationFrame(frame)}
 
 /* ============================================================
    DEFEAT SEQUENCES FROM GEMINI'S PAINTED FRAMES (wekufü bosses)
