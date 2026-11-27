@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'||location.hostname==='127.0.0.1')){addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>{reg.update().catch(()=>{});document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update().catch(()=>{})})}).catch(()=>{})})}
-window.KEWUN_BUILD='364d096-202611271247';
+window.KEWUN_BUILD='e34925a-202611271447';
 (function(){
   let shown=0;
   const go=v=>{try{sessionStorage.setItem('kv:'+v,'1')}catch(e){}location.replace(location.pathname+'?v='+encodeURIComponent(v))};
@@ -9910,6 +9910,14 @@ MAPS.k_winkul.sbt={t:['12,2','13,2','12,3'],boss:'anchi_b',flag:'ky_sb1',req:'ky
 {const _sbw=sbossWake;sbossWake=function(sb){if(sb.boss!=='anchi_b')return _sbw.apply(this,arguments);
   say([N('En lo alto de la loma, entre las piedras, una lucecita salta de roca en roca... y de pronto son cien. Se juntan en una sola llama que se ríe con voz de niño: ¡un Fütra Anchimalleñ!','At the top of the hill, among the stones, a little light hops from rock to rock... and suddenly there are a hundred. They gather into a single flame that laughs with a child\'s voice: a great Anchimalleñ!'),
        L('Liwen','Kintuyu! Nagpay!','¡Busquémoslo, tú y yo! ¡Ya baja!','Let\'s look for it, you and I! It is coming down!')],()=>startBattle(['anchi_b'],{boss:1,sflag:sb.flag}))}}
+
+/* Ngoyman am's art was drawn facing right, the other wekufü facing left; the game mirrors every wekufü to face the party,
+   so this one ended up looking away. Turn its pictures around once, when the art has loaded. */
+const KY_FACE_R=['ngoyam'];
+{const _gf=gemFlush;gemFlush=function(){
+  const mir=im=>{if(!im||im._kym)return im;const[cv,c]=mk(im.width,im.height);c.imageSmoothingEnabled=false;c.translate(im.width,0);c.scale(-1,1);c.drawImage(im,0,0);cv._kym=1;return cv};
+  for(const t of KY_FACE_R)for(const tb of ['en','mp','mm','idl','rz','ch']){const T=GEMI[tb];if(!T||!T[t])continue;T[t]=Array.isArray(T[t])?T[t].map(mir):mir(T[t])}
+  return _gf.apply(this,arguments)}}
 
 /* ============================================================
    KUYFI MAPU: the time-travel sequence
