@@ -25,7 +25,7 @@ const KYOUT={floor:'.',bg:'mount',pal:'pewenche',wxk:'pukem',trees:'pewen',era:'
 RFLAG.pukem='ky_pukem_done';
 kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof del pasado, en pukem (invierno)',en:'The lof of the past, in pukem (winter)'},song:'pewLof',
   doors:{'3,3':{to:'k_ruka1',x:6,y:7},'9,3':{to:'k_ruka3',x:6,y:7},'27,11':{to:'k_ruka2',x:6,y:7}},
-  edges:{left:{need:99,reqMsg:[N('Hacia el oeste solo hay niebla. Por ahí llegaste; por ahí no se vuelve.','To the west there is only fog. That is how you came; that is not the way back.')]},up:{to:'k_mawida',x:16,y:13,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella antes de ir al monte.','Liwen calls to you from her ruka. Better talk to her before going into the forest.')]},right:{to:'k_menoko',x:1,y:6,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella primero.','Liwen calls to you from her ruka. Better talk to her first.')]}},
+  edges:{left:{req:'_never',reqMsg:[N('Hacia el oeste solo hay niebla. Por ahí llegaste; por ahí no se vuelve.','To the west there is only fog. That is how you came; that is not the way back.')]},up:{to:'k_mawida',x:16,y:13,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella antes de ir al monte.','Liwen calls to you from her ruka. Better talk to her before going into the forest.')]},right:{to:'k_menoko',x:1,y:6,req:'liwen',reqMsg:[N('Liwen te llama desde su ruka. Mejor habla con ella primero.','Liwen calls to you from her ruka. Better talk to her first.')]}},
   ents:[
    {id:'ky_liwen',kind:'npc',look:'liwen',fem:1,x:4,y:5,dir:'down',fixed:1,req:'ky_arrive',talk:()=>kyLiwenTalk(),bub:['Amuyu!','Mari mari!']},
    {id:'ky_kimche',kind:'npc',look:'kuku',fem:1,x:13,y:5,dir:'right',fixed:1,req:'ky_arrive',talk:()=>kyKimcheTalk(),bub:['Küpange...','Pukem mew...']},
@@ -35,9 +35,11 @@ kyMap('k_lof',Object.assign({},KYOUT,{name:'Pukem lof',g:{es:'El lof del pasado,
    {id:'ky_kona',kind:'npc',look:'kona',x:8,y:9,path:[[8,9],[13,9]],pause:120,talk:()=>kyKonaTalk(),bub:['Wütreley!']},
    {id:'ky_child',kind:'npc',look:'child',x:18,y:12,path:[[18,12],[23,12]],pause:90,talk:()=>kyChildTalk(),bub:['Pire!','Awkantuyu!']}]}));
 kyMap('k_mawida',Object.assign({},KYOUT,{name:'Pire mawida',g:{es:'El monte nevado',en:'The snowy forest'},song:'pew',
-  edges:{down:{to:'k_lof',x:16,y:1},right:{to:'k_winkul',x:1,y:7}},chests:{'4,6':'lawen1','28,2':'piwke'},konew:{'28,4':KYK1},
-  ents:[{kind:'enemy',x:7,y:6,party:['pire']},{kind:'enemy',x:19,y:5,party:['laftrache','pire']},{kind:'enemy',x:12,y:8,party:['chonchon','chonchon']},
-    {kind:'enemy',x:24,y:8,party:['pire','pire']},{kind:'enemy',x:6,y:13,party:['anchi','laftrache']}]}));
+  
+  edges:{down:{to:'k_lof',x:16,y:1,req:'ky_meet',reqMsg:[N('Alguien sigue cantando entre los árboles, al oeste. Y gritó pidiendo ayuda.','Someone is still singing among the trees, to the west. And cried out for help.')]},right:{to:'k_winkul',x:1,y:7,req:'ky_meet',reqMsg:[N('Alguien sigue cantando entre los árboles, al oeste. Y gritó pidiendo ayuda.','Someone is still singing among the trees, to the west. And cried out for help.')]}},chests:{'4,6':'lawen1','28,2':'piwke'},konew:{'28,4':KYK1},
+  ents:[{id:'ky_liwen_m',kind:'npc',look:'liwen',fem:1,x:8,y:7,dir:'right',fixed:1,flag:'ky_meet',talk:()=>kyLiwenMeet(),bub:['♪ ...','Kellumuchi!']},
+    {kind:'enemy',x:19,y:5,party:['laftrache','pire'],req:'ky_meet'},{kind:'enemy',x:12,y:8,party:['chonchon','chonchon'],req:'ky_meet'},
+    {kind:'enemy',x:24,y:8,party:['pire','pire'],req:'ky_meet'},{kind:'enemy',x:6,y:13,party:['anchi','laftrache'],req:'ky_meet'}]}));
 kyMap('k_menoko',Object.assign({},KYOUT,{name:'Pukem menoko',g:{es:'El humedal helado',en:'The frozen wetland'},song:'pew',
   edges:{left:{to:'k_lof',x:32,y:8},up:{to:'k_winkul',x:26,y:13}},chests:{'16,2':'rune'},stones:{'12,5':'ke'},
   ents:[{kind:'enemy',x:9,y:5,party:['chonchon']},{kind:'enemy',x:20,y:8,party:['pire','anchi']},{kind:'enemy',x:29,y:4,party:['pire','pire','pire']},{kind:'enemy',x:5,y:7,party:['laftrache','laftrache']}]}));
@@ -73,24 +75,88 @@ kyMap('kd_den',Object.assign({},KYD,{name:'Kolokolo ñi ruka',g:{es:'La cueva de
          L('Liwen','Kolokolo! Kintuyu!','¡El Kolokolo! ¡Busquémoslo, tú y yo!','The Kolokolo! Let\'s look for it, you and I!')],
     post:()=>kyKoloWon()}]}));
 
-/* ---------- the opening: the present-day lof (Game 1's, seen this once), your kuku and cheche, the voice ---------- */
+/* ---------- the present: Game 1's places, seen in the present day, as the start of the story ---------- */
+const KPR=(id,ov)=>{const d=Object.assign({},MAPS[id],{region:'kpres',sbt:null,dive:null,tablets:null,konew:null,digs:null,chests:{},stones:{},signs:{},scenes:[]},ov);d.rows=MAPS[id].rows.slice();d.w=d.rows[0].length;d.h=d.rows.length;return d};
+SONGSET.kpres=SONGSET.lafkenche||SONGSET.pewenche;
+MAPS.kp_rupu=KPR('rupu',{name:'Lafken rüpü',g:{es:'El camino del mar, hoy',en:'The sea road, today'},
+  edges:{right:{to:'kp_lof',x:1,y:9},left:{to:'kp_ngoyman',x:16,y:6,req:'kp_sent',reqMsg:[N('Al oeste, la niebla vuelve a juntarse donde estaba Ngoyman mapu. Tu kuku te está llamando desde el lof (al este).','To the west, the fog is gathering again where Ngoyman mapu was. Your kuku is calling you from the lof (to the east).')]}},
+  ents:[{kind:'enemy',x:11,y:4,party:['laftrache']},{kind:'enemy',x:20,y:7,party:['laftrache']}]});
+MAPS.kp_lof=KPR('lof',{name:'Lof',g:{es:'El lof, hoy',en:'The lof, today'},doors:{},
+  edges:{left:{to:'kp_rupu',x:28,y:6},right:{req:'_never',reqMsg:[N('Tu kuku te pidió ir hacia el oeste, a Ngoyman mapu.','Your kuku asked you to go west, to Ngoyman mapu.')]},up:{req:'_never',reqMsg:[N('Tu kuku te pidió ir hacia el oeste, a Ngoyman mapu.','Your kuku asked you to go west, to Ngoyman mapu.')]}},
+  ents:[{id:'kp_kuku',kind:'npc',look:'kuku',fem:1,x:18,y:7,dir:'left',fixed:1,talk:()=>kpKukuTalk(),bub:['Küpange!','♪ ...']},
+    {id:'kp_weaver',kind:'npc',look:'weaver',fem:1,x:6,y:3,dir:'up',act:'weave',fixed:1,talk:()=>say([L('Ngürekafe','Mari mari!','¡Hola!','Hello!'),N('«Tu kuku te anda buscando», te dice sin dejar de tejer.','"Your kuku is looking for you," she says without stopping her weaving.')]),bub:['Mari mari!']},
+    {id:'kp_cook',kind:'npc',look:'cook',fem:1,x:24,y:8,act:'cook',fixed:1,talk:()=>say([L('Papay','Iyael!','¡Comida!','Food!')]),bub:['Iyael!']},
+    {id:'kp_kids',kind:'npc',look:'child',x:14,y:12,path:[[14,12],[20,12]],pause:90,talk:()=>say([L('Pichi che','Mari mari!','¡Hola!','Hello!')]),bub:['Awkantuaiñ!']}]});
+MAPS.kp_ngoyman=KPR('ngoyman',{name:'Ngoyman mapu',g:{es:'La tierra del olvido, hoy: la niebla vuelve',en:'The land of forgetting, today: the fog is back'},
+  edges:{right:{to:'kp_rupu',x:1,y:6},left:{to:'kp_glafken',x:30,y:7}},
+  signs:{'8,5':[L('','Kiñe wirintungechi kura pi: «Faw müley Ti Fütra Ngoymatulfe ñi wülngiñ».','La piedra tallada del umbral sigue aquí, pero alguien rayó encima, con letras torcidas: «...mu ...chi ...yu...».','The carved stone of the threshold is still here, but someone has scratched over it in crooked letters: «...mu ...chi ...yu...».')]},
+  ents:[{kind:'enemy',x:12,y:3,party:['ngoyam']},{kind:'enemy',x:5,y:9,party:['ngoyam','ngoyam']}]});
+MAPS.kp_glafken=KPR('g_lafken',{name:'Ngoyman lafken',g:{es:'La costa robada, en ruinas',en:'The stolen coast, in ruins'},
+  edges:{right:{to:'kp_ngoyman',x:1,y:6},left:{to:'kp_wulngin',x:16,y:7}},
+  signs:{'24,3':[N('Entre las piedras hay una hoja arrancada de una chillka. Las palabras se borran mientras la miras: «...küpa... -yu... kuyfi...»','Among the stones lies a page torn from a chillka. The words fade as you look at it: «...küpa... -yu... kuyfi...»')]},
+  ents:[{kind:'enemy',x:16,y:3,party:['ngoyam','nidol']},{kind:'enemy',x:24,y:8,party:['piwichen','ngoyam']},{kind:'enemy',x:8,y:8,party:['ngoyam','ngoyam','piwichen']}]});
+MAPS.kp_glafken.rows=MAPS.kp_glafken.rows.map(r=>r.replace(/K/g,'I'));
+MAPS.kp_wulngin=KPR('g_wulngin',{name:'Ngoyman ñi wülngiñ',g:{es:'La puerta del gran olvido, rota',en:'The gate of the great forgetting, broken'},
+  edges:{right:{to:'kp_glafken',x:1,y:7}},stairs:{to:'kp_heart',x:8,y:9},
+  signs:{'8,5':[N('La puerta de niebla sólida ya no existe: queda un arco quebrado. Desde abajo sube un zumbido, como muchas voces hablando a la vez.','The door of solid fog is gone: only a broken arch is left. From below rises a hum, like many voices talking at once.')]},ents:[]});
+MAPS.kp_heart=KPR('g_ngoyman',{name:'Ti Fütra Ngoymatulfe ñi ruka',g:{es:'Donde peleaste con el gran olvido: en ruinas',en:'Where you fought the great forgetting: in ruins'},ruin:1,
+  stairs:{to:'kp_wulngin',x:8,y:3},ents:[]});
+{const r=MAPS.kp_heart.rows.map(x=>x.split(''));
+  for(const [x,y] of [[4,3],[12,2],[5,8],[13,9],[10,4],[4,6],[14,5],[7,10],[11,7]])if(r[y][x]==='_')r[y][x]='#';
+  r[5][8]='@';MAPS.kp_heart.rows=r.map(x=>x.join(''))}
+/* the ruin is drawn grey and cold */
+{const _et=kyEraTint;kyEraTint=function(c){if(M&&M.ruin){c.save();c.globalCompositeOperation='saturation';c.fillStyle='rgba(128,128,128,.55)';c.fillRect(0,0,LW,LH);c.globalCompositeOperation='source-over';c.fillStyle='rgba(20,24,40,.18)';c.fillRect(0,0,LW,LH);c.restore();return}return _et(c)}}
+
+{const _lm=loadMap;loadMap=function(id){const r=_lm.apply(this,arguments);
+  if(id==='kp_heart'&&!S.flags.kp_heart){const w=()=>{if(active)return setTimeout(w,200);kpHeartEnter()};setTimeout(w,400)}return r}}
 function kyOpening(){
-  $('title').style.display='none';mode='map';S.wtime=Math.round(.8*43200);
-  loadMap('lof',17,7,true);P.dir='right';
-  ents=ents.filter(e=>e.kind!=='enemy');
-  ents.push({id:'ky_kuku0',kind:'npc',look:'kuku',fem:1,x:19,y:7,fx:19,fy:7,ox:19,oy:7,dir:'left',fixed:1,wait:9999,cd:9999,pi:0,bt:0,talk:()=>0});
-  ents.push({id:'ky_cheche0',kind:'npc',look:'elder',x:18,y:6,fx:18,fy:6,ox:18,oy:6,dir:'down',fixed:1,wait:9999,cd:9999,pi:0,bt:0,talk:()=>0});
-  playSong('epew');const n=nm();
-  say([N('Pasó un tiempo desde que cayó Ti Fütra Ngoyman. En el lof se vuelve a oír mapudungun.','Some time has passed since Ti Fütra Ngoyman fell. Mapudungun is heard in the lof again.'),
-    L('Kuku','Mari mari, '+n+'.','Hola, '+n+'.','Hello, '+n+'.'),
-    L('Cheche','Mari mari, '+n+'.','Hola, '+n+'.','Hello, '+n+'.'),
-    N('Tu kuku y tu cheche están junto al kütral. La kuku tararea una canción vieja, una que nunca le terminas de entender.','Your kuku and your cheche sit by the kütral. Your kuku hums an old song, one whose words you never quite catch.'),
-    N('Tu cheche abre la chillka. Hay páginas en blanco. «Venciste al olvido», te dice, «pero las palabras que se perdieron antes no vuelven peleando. Esas hay que ir a buscarlas a donde todavía viven.»','Your cheche opens the chillka. Some pages are blank. "You defeated the forgetting," he tells you, "but the words lost before it fell do not come back by fighting. Those have to be sought where they still live."'),
-    N('Entonces, desde la niebla del borde del lof, una voz repite tus propias palabras... mal. «Amutu-mu... küpa-chi... -yu... -mu...» Las terminaciones cambiadas, los pedazos sueltos.','Then, from the fog at the edge of the lof, a voice repeats your own words... wrong. "Amutu-mu... küpa-chi... -yu... -mu..." The endings swapped, the pieces loose.'),
-    N('No es un eco: es una voz que se las lleva. A tu kuku se le escapan las palabras a mitad de la canción.','It is not an echo: it is a voice that carries them off. The words slip from your kuku halfway through her song.'),
-    N('La niebla se cierra sobre el kütral...','The fog closes over the kütral...')],
-    ()=>kyTimeTravel(()=>{S.wtime=0;loadMap('k_lof',2,8,true);P.dir='down'}));
+  $('title').style.display='none';mode='map';S.wtime=Math.round(.15*43200);
+  loadMap('kp_rupu',26,6,true);P.dir='left';playSong('coast');const n=nm();
+  say([N('Pasó un tiempo desde que cayó Ti Fütra Ngoyman. Caminas solo por el camino del mar.','Some time has passed since Ti Fütra Ngoyman fell. You walk alone along the sea road.'),
+    L('Kuku','Küpange, '+n+'!','¡Ven, '+n+'!','Come here, '+n+'!'),
+    N('Es la voz de tu kuku, desde el lof (al este).','It is your kuku\'s voice, from the lof (to the east).')]);
   S.flags.ky_open=1;persist()}
+function kpKukuTalk(){const n=nm();
+  if(S.flags.kp_sent)return say([L('Kuku','Amunge Ngoyman mapu mew.','Ve a Ngoyman mapu.','Go to Ngoyman mapu.'),N('Tu kuku apunta al oeste, más allá del camino del mar.','Your kuku points west, beyond the sea road.')]);
+  S.flags.kp_sent=1;persist();
+  say([L('Kuku','Mari mari, '+n+'.','Hola, '+n+'.','Hello, '+n+'.'),
+    N('Tu kuku está junto al kütral. Tararea una canción vieja, pero a mitad del verso se detiene: se le fue la palabra.','Your kuku sits by the kütral. She hums an old song, but halfway through the verse she stops: the word has slipped away.'),
+    N('«Desde hace días se me van las palabras», te dice. «Y anoche la niebla volvió a juntarse allá donde estaba Ngoyman mapu.»','"For days now the words have been slipping away from me," she tells you. "And last night the fog gathered again over there, where Ngoyman mapu was."'),
+    L('Kuku','Amunge Ngoyman mapu mew. Kintunge chem rupay.','Ve a Ngoyman mapu. Busca qué pasó.','Go to Ngoyman mapu. Find out what happened.'),
+    N('Ngoyman mapu está al oeste, pasando el camino del mar.','Ngoyman mapu lies to the west, past the sea road.')])}
+/* entering the ruined heart: the voice */
+function kpHeartEnter(){if(S.flags.kp_heart)return;S.flags.kp_heart=1;persist();
+  say([N('La sala donde peleaste con el gran olvido está en ruinas: piedras caídas, la niebla gris y quieta. Pero en el centro algo gira.','The hall where you fought the great forgetting lies in ruins: fallen stones, the fog grey and still. But in the middle something is turning.'),
+    N('Una voz repite tus propias palabras... mal. «Amutu-mu... küpa-chi... -yu... -mu...» Las terminaciones cambiadas, los pedazos sueltos. No es un eco: se las está llevando.','A voice repeats your own words... wrong. "Amutu-mu... küpa-chi... -yu... -mu..." The endings swapped, the pieces loose. It is not an echo: it is carrying them away.')])}
+{const _pm=portalMenu;portalMenu=function(){if(CUR!=='kp_heart')return _pm.apply(this,arguments);
+  say([N('Te acercas al remolino. Las palabras que pasan volando tienen la voz de tu kuku.','You step up to the whirl. The words flying past have your kuku\'s voice.'),
+    N('El remolino te jala hacia adentro.','The whirl pulls you in.')],
+    ()=>kyTimeTravel(()=>{S.wtime=0;loadMap('k_mawida',16,12,true);P.dir='up';setTimeout(kyArrival,600)}))}}
+
+/* the past: you wake in the snow forest and hear the song */
+function kyArrival(){if(S.flags.ky_woke)return;S.flags.ky_woke=1;persist();
+  const go=()=>{if(document.getElementById('kytt')||active)return setTimeout(go,200);
+    say([N('Despiertas en la nieve, en un monte que no conoces. Hace frío: es pukem, el invierno.','You wake in the snow, in a forest you do not know. It is cold: it is pukem, winter.'),
+      N('Entre los árboles alguien canta... la misma canción que tu kuku. Y alguien grita.','Somewhere among the trees someone is singing... the same song as your kuku. And someone cries out.')])};go()}
+function kyLiwenMeet(){const n=nm();
+  say([L('Liwen','Kellumuchi!','¡Ayúdame!','Help me!'),
+    N('Una muchacha con un atado de leña está rodeada de dos pire wekufü. Toma una rama y se pone a tu lado.','A girl with a bundle of firewood is surrounded by two pire wekufü. She grabs a branch and stands beside you.'),
+    Object.assign(N('En esta pelea no estás solo: aparece «Iñchiw». Elige un verbo y ponle -yu: «tú y yo».','In this fight you are not alone: «Iñchiw» appears. Choose a verb and add -yu: "you and I".'),{fx:()=>{S.flags.liwen=1;persist()}})],
+    ()=>startBattle(['pire','pire'],{ent:{post:()=>kyAfterMeet()}}))}
+function kyAfterMeet(){const n=nm();S.flags.ky_meet=1;persist();
+  say([L('Liwen','Chaltu may! Iney pingeymi?','¡Gracias! ¿Cómo te llamas?','Thank you! What is your name?'),
+    L(n,'Iñche '+n+' pingen.','Me llamo '+n+'.','My name is '+n+'.'),
+    L('Liwen','Iñche Liwen pingen.','Yo me llamo Liwen.','My name is Liwen.'),
+    N('Recoge su leña y vuelve a tararear. Es la canción de tu kuku, entera, con todas sus palabras.','She picks up her firewood and starts humming again. It is your kuku\'s song, whole, with all its words.'),
+    N('Liwen. Nunca supiste cómo se llamaba tu kuku de joven.','Liwen. You never knew what your kuku was called when she was young.'),
+    N('Amu-yu: «vamos, los dos». En Kewün Newen aprendiste a darles órdenes a los wekufü (-nge, -mu, -mün). Aquí aprenderás a hablar CON otros: -yu es «tú y yo».','Amu-yu: "let\'s go, the two of us". In Kewün Newen you learned to give orders to the wekufü (-nge, -mu, -mün). Here you will learn to speak WITH others: -yu is "you and I".'),
+    Object.assign(L('','Liwen kellueyu!','Liwen se une a ti.','Liwen joins you.'),{fx:()=>sfx('lvl')}),
+    L('Liwen','Amuyu, tañi lof mew!','¡Vamos, tú y yo, a mi lof!','Let\'s go, you and I, to my lof!')],
+    ()=>{loadMap('k_lof',16,2,true);P.dir='down';setTimeout(kyElders,500)})}
+function kyElders(){
+  say([N('En el lof, los mayores se acercan, te escuchan y conversan entre ellos. Hablas raro, les dicen sus ojos.','In the lof the elders come close, listen to you and talk among themselves. You speak strangely, their eyes say.'),
+    N('Al final la más vieja, la kimche papay, decide: quien habla tan poco tiene que quedarse un año entero, y escuchar.','In the end the oldest, the kimche papay, decides: someone who speaks so little must stay a whole year, and listen.')],
+    ()=>{S.flags.ky_arrive=1;persist();loadMap('k_lof',P.x,P.y,true)})}
 /* the intro film plays once at the start of a new game (skippable), then the opening */
 function kyPlayFilm(src,done){
   let fin=false;const end=()=>{if(fin)return;fin=true;try{v.pause()}catch(e){}ov.remove();mode='map';done()};
@@ -106,26 +172,10 @@ function kyPlayFilm(src,done){
   const pr=v.play();if(pr&&pr.catch)pr.catch(()=>{v.muted=true;v.play().catch(end)})}
 startCut=function(){kyPlayFilm('intro.mp4',kyOpening)};
 
-/* arriving at the kuyfi lof for the first time: Liwen */
-{const _lm=loadMap;loadMap=function(id){const r=_lm.apply(this,arguments);
-  if(id==='k_lof'&&!S.flags.ky_arrive){const wait=()=>{if(document.getElementById('kytt')||active)return setTimeout(wait,200);kyArrival()};setTimeout(wait,700)}return r}}
-function kyArrival(){const n=nm();
-  say([N('Despiertas en la nieve, junto a un lof que no conoces. No hay cercos ni caminos anchos; las ruka son más viejas. Una muchacha que cuida el fuego se acerca... tarareando la misma canción que tu kuku.','You wake in the snow beside a lof you do not know. There are no fences, no wide roads; the ruka are older. A girl tending a fire comes over... humming the same song as your kuku.'),
-    L('Liwen','Mari mari! Iney pingeymi?','¡Hola! ¿Cómo te llamas?','Hello! What is your name?'),
-    L(n,'Iñche '+n+' pingen.','Me llamo '+n+'.','My name is '+n+'.'),
-    L('Liwen','Iñche Liwen pingen.','Yo me llamo Liwen.','My name is Liwen.'),
-    N('Hablas raro, te dicen sus ojos. Los mayores del lof se acercan, te escuchan y conversan entre ellos. Al final la más vieja decide: quien habla tan poco tiene que quedarse un año entero, y escuchar.','You speak strangely, her eyes tell you. The elders of the lof come close, listen to you, and talk among themselves. In the end the oldest decides: someone who speaks so little must stay a whole year, and listen.'),
-    N('Liwen. Nunca supiste cómo se llamaba tu kuku de joven.','Liwen. You never knew what your kuku was called when she was young.')],
-    ()=>{S.flags.ky_arrive=1;persist();loadMap('k_lof',P.x,P.y,true)})}
-
 /* ---------- the people of the kuyfi lof ---------- */
 function kyLiwenTalk(){const n=nm(),en=S.gloss==='en';
-  if(!S.flags.liwen){S.flags.liwen=1;persist();sfx('lvl');
-    return say([L('Liwen','Kellueyu.','Te ayudo.','I will help you.'),
-      L('Liwen','Amuyu!','¡Vamos, tú y yo!','Let\'s go, you and I!'),
-      N('Amu-yu: «vamos, los dos». En Kewün Newen aprendiste a darles órdenes a los wekufü (-nge, -mu, -mün). Aquí aprenderás a hablar CON otros: -yu es «tú y yo».','Amu-yu: "let\'s go, the two of us". In Kewün Newen you learned to give orders to the wekufü (-nge, -mu, -mün). Here you will learn to speak WITH others: -yu is "you and I".'),
-      Object.assign(L('','Liwen kellueyu!','Liwen se une a ti. En las peleas aparece «Iñchiw»: eligen juntos un verbo y le ponen -yu.','Liwen joins you. In battle «Iñchiw» appears: you choose a verb together and add -yu.'),{fx:()=>sfx('lvl')}),
-      L('Liwen','Kimche kuku mew amuyu.','Vamos donde la papay sabia.','Let\'s go to the wise papay.')])}
+  if(!S.flags.ky_lw1){S.flags.ky_lw1=1;S.flags.liwen=1;persist();
+    return say([L('Liwen','Kimche papay mew amuyu.','Vamos donde la papay sabia.','Let\'s go to the wise papay.')])}
   if(!S.flags.ky_kolo)return say([L('Liwen','Kolokolo... pun mew küpakey.','El Kolokolo... viene de noche.','The Kolokolo... it comes at night.'),N('Liwen mira hacia la ruka vacía, abajo a la izquierda.','Liwen glances at the empty ruka, down on the left.')]);
   say([L('Liwen','Chaltu may, '+n+'!','¡Gracias, '+n+'!','Thank you, '+n+'!')])}
 function kyKimcheTalk(){
