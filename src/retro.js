@@ -74,7 +74,19 @@ function charSprite(look,dir,fr,tn,ey,hr){
 function ctShade(hex,t){const [r,g,b]=hexRGB(hex);const f=v=>Math.max(0,Math.min(255,Math.round(t<0?v*(1+t):v+(255-v)*t)));return 'rgb('+f(r)+','+f(g)+','+f(b)+')'}
 function ctCharSprite(look,dir,fr,seated,tn,ey,hr){
   const key='S3'+look+dir+fr+(seated?'z':'')+':'+tn+ey+hr;if(CCACHE[key])return CCACHE[key];
-  return CCACHE[key]=repaintSmall(ctCharSpriteRaw(look,dir,fr,seated,tn,ey,hr),{amp:.85})}
+  const raw=ctCharSpriteRaw(look,dir,fr,seated,tn,ey,hr);
+  return CCACHE[key]=cleanFace(repaintSmall(raw,{amp:.85}),raw)}
+/* the painted texture blurs small faces: keep the clothes and hair painted, but put back the crisp hand-drawn
+   face (each head row, from the first to the last skin pixel) from the raw sprite */
+function cleanFace(rep,raw){
+  const w=raw.width,h=raw.height,rc=raw.getContext?raw:null;if(!rc)return rep;
+  const rd=raw.getContext('2d').getImageData(0,0,w,h).data,c=rep.getContext('2d'),img=c.getImageData(0,0,w,h),d=img.data;
+  for(let y=0;y<Math.min(18,h);y++){let x0=-1,x1=-1;
+    for(let x=0;x<w;x++){const i=(y*w+x)*4,R=rd[i],G=rd[i+1],B=rd[i+2];if(rd[i+3]>40&&R>130&&R>G&&G>B&&R-B>40){if(x0<0)x0=x;x1=x}}
+    if(x0<0)continue;for(let x=x0;x<=x1;x++){const i=(y*w+x)*4;d[i]=rd[i];d[i+1]=rd[i+1];d[i+2]=rd[i+2];d[i+3]=rd[i+3]}}
+  for(let y=0;y<Math.min(22,h);y++)for(let x=0;x<w;x++){const i=(y*w+x)*4,R=rd[i],G=rd[i+1],B=rd[i+2];   // silver and white (tupu, trapelakucha, collar) stay crisp too
+    if(rd[i+3]>40&&Math.min(R,G,B)>165&&Math.max(R,G,B)-Math.min(R,G,B)<40){d[i]=R;d[i+1]=G;d[i+2]=B;d[i+3]=rd[i+3]}}
+  c.putImageData(img,0,0);return rep}
 function ctCharSpriteRaw(look,dir,fr,seated,tn,ey,hr){
   const key='ct'+look+dir+fr+(seated?'z':'')+':'+(tn==null?'-':tn)+(ey==null?'-':ey)+(hr==null?'-':hr);if(CCACHE[key])return CCACHE[key];
   if(dir==='left')return CCACHE[key]=mirror(ctCharSpriteRaw(look,'right',fr,seated,tn,ey,hr));
@@ -176,6 +188,17 @@ function drawPortal(c,x,y){
   for(let k=0;k<8;k++){const a=t/14+k*.785;R(c,Math.round(x+Math.cos(a)*13),Math.round(y-6+Math.sin(a)*15),2,2,k%2?'#e8d0ff':'#9ad0ff')}
   if(t%50<4)ell(c,x,y-6,15,18,'rgba(255,255,255,.18)');
 }
+/* a talking stone, a little bigger than a tile: a mossy boulder with a carved face whose eyes glow (blink=1 closes them) */
+const _TS={};function talkStone(blink){const key=blink?1:0;if(_TS[key])return _TS[key];const [cv,c]=mk(24,24);
+  ell(c,12,21,10,3,'rgba(0,0,0,.3)');ell(c,12,13,10.5,9.5,'#2c2c38');ell(c,12,13,9.5,8.5,'#6e6e80');ell(c,11,12,8,7,'#8a8a9c');ell(c,9,9,4,3,'#a8a8ba');
+  R(c,4,17,5,2,'#3e8a3a');R(c,15,5,4,2,'#3e8a3a');R(c,16,4,2,1,'#5cb04e');R(c,5,16,2,1,'#5cb04e');
+  if(blink){R(c,7,11,3,1,'#2a2a3a');R(c,14,11,3,1,'#2a2a3a')}else{R(c,7,10,3,3,'#1a1a2a');R(c,14,10,3,3,'#1a1a2a');R(c,8,11,1,1,'#9fe8ff');R(c,15,11,1,1,'#9fe8ff');R(c,7,10,1,1,'#d8f6ff');R(c,14,10,1,1,'#d8f6ff')}
+  R(c,7,8,3,1,'#4a4a5a');R(c,14,8,3,1,'#4a4a5a');R(c,9,16,6,1,'#2a2a3a');R(c,10,17,4,1,'#3a3a4a');
+  return _TS[key]=cv}
+/* a person drawn large in a cutscene, filling the box x,y,w,h */
+function cutPerson(c,look,dir,x,y,w,h){c.drawImage(ctCharSprite(look,dir,0),x,y,w,h)}
+/* where a ngen's eyes and mouth sit, measured up from its feet at size 1 (the eye beams at the end of a battle start there) */
+function ngenFace(v){return {cx:0,ex:3,ey:80,my:71}}
 function drawNgen(c,x,y,s,t,v){
   const name=v==='mawida'?'ngen_mawida':v==='pewen'?'ngen_pewen':v==='kuruf'?'ngen_kuruf':v==='lelfun'?'ngen_lelfun':'ngen_lafken',au={ngen_lafken:'160,220,255',ngen_mawida:'200,240,140',ngen_pewen:'255,220,140',ngen_kuruf:'200,250,255',ngen_lelfun:'255,236,150'}[name];
   const k0=Math.max(1,Math.round(s)),fr=Math.floor(t/20)%2,hb=typeof SPR2!=='undefined'&&SPR2[name+'@b'];
@@ -308,6 +331,9 @@ function enemyCanvasRaw(t,size,fr){
   const pad=3,s=size/16,[cvs,c]=mk(size+pad*2,size+pad*2);
   const E=(cx,cy,rx,ry,col)=>ell(c,pad+cx*s,pad+cy*s,rx*s,ry*s,col);
   const Q=(x,y,w,h,col)=>R(c,pad+x*s,pad+y*s,Math.max(1,w*s),Math.max(1,h*s),col);
+  // a glowing eye with some anatomy: dark socket, two-tone iris, slit pupil, catchlight
+  const EYE=(cx,cy,r,dark,lit)=>{E(cx,cy+.05*r,r*1.3,r*1.1,'#140606');E(cx,cy,r,r*.86,dark);E(cx+.12*r,cy+.18*r,r*.62,r*.5,lit);
+    Q(cx-.1*r,cy-.6*r,Math.max(.36/s,.24*r),1.2*r,'#1a0204');Q(cx-.62*r,cy-.55*r,Math.max(.36/s,.3*r),Math.max(.36/s,.3*r),'#fff4ea')};
   if(t==='laftrache'||t==='nidol'){const bob=fr?.3:0,big=t==='nidol';
     E(5.5,15,1.8,.8,'#24332a');E(10.5,15,1.8,.8,'#24332a');
     E(8,11.6+bob,4.4,3.6,big?'#2c4a5a':'#3e5a4c');Q(4.4,12.6+bob,7.2,.7,'#6a4a2a');Q(7.6,12.5+bob,.9,.9,'#d8b040');
@@ -316,7 +342,7 @@ function enemyCanvasRaw(t,size,fr){
     E(8,2.8+bob,4.6,1.9,'#244034');for(let i=0;i<5;i++)Q(4+i*1.7,3.2+bob,.6,1.4+(i%2),'#2e5040');
     if(big){for(let i=0;i<5;i++)E(4.5+i*1.75,1.6+bob-(i%2)*.6,.9,1.2,'#3a8a6a');Q(13,7+bob,1.2,7,'#6a4424');E(13.6,6.6+bob,1.5,1.3,'#8a8a96')}
     E(8,9.4+bob,3.6,2.7,'#eef0f2');E(8,11.2+bob,2.3,2.1,'#d4dae0');
-    Q(5.6,5.8+bob,1.5,1.2,'#ff3a2a');Q(9,5.8+bob,1.5,1.2,'#ff3a2a');Q(5.9,5.8+bob,.6,.5,'#ffe0d0');Q(9.3,5.8+bob,.6,.5,'#ffe0d0')}
+    EYE(6.35,6.4+bob,.95,'#9a1212','#ff6a3a');EYE(9.75,6.4+bob,.95,'#9a1212','#ff6a3a')}
   else if(t==='chonchon'){const wy=fr?-2.6:1.4,w1='#6e4430',w2='#9a6a48',w3='#3e2216';
     for(const sd of [-1,1]){const cx=8+sd*5.2;E(cx,6.5+wy,3.7,2.2,w1);E(cx+sd*.8,7.6+wy,3.1,1.4,w2);E(cx+sd*2.2,6+wy,1.4,1.6,w3);for(let k=0;k<3;k++)Q(cx-.6+sd*(k*1.1),5.2+wy,.4,2.2,w3)}
     E(8,8.2,3.8,4.1,'#d8bf9c');E(8,5,3.8,1.9,'#1e1418');Q(4.4,5,1,3.4,'#1e1418');Q(10.6,5,1,3.4,'#1e1418');
@@ -329,12 +355,12 @@ function enemyCanvasRaw(t,size,fr){
     for(const sd of [-1,1]){const cx=8+sd*5.4;E(cx,5+wy,3.6,2.4,'#5a2a5a');E(cx+sd*1.4,6.2+wy,2.4,1.2,'#8a4a8a');for(let k=0;k<3;k++)Q(cx-.4+sd*k,3.8+wy,.4,2.6,'#3a1a3a')}
     E(8,12,4.6,2.2,'#2a7a6a');E(10.5,10.4,2.6,1.6,'#3a9a80');E(6,13.4,3,1.2,'#3a9a80');E(8,8.4,2.4,3,'#3a9a80');
     for(let i=0;i<6;i++)Q(5+i*1.2,11.2+(i%2)*.6,.5,.5,'#a8e0c0');
-    E(8,5.4,2.6,2.2,'#4ab090');Q(6.6,4.6,.9,.9,'#ff4040');Q(8.6,4.6,.9,.9,'#ff4040');Q(7.4,6.6,1.2,.5,'#200');Q(7.6,7,.3,.8,'#f0f0f0');Q(8.2,7,.3,.8,'#f0f0f0')}
+    E(8,5.4,2.6,2.2,'#4ab090');EYE(7.05,5.05,.7,'#a01818','#ff7050');EYE(9.05,5.05,.7,'#a01818','#ff7050');Q(7.4,6.6,1.2,.5,'#200');Q(7.6,7,.3,.8,'#f0f0f0');Q(8.2,7,.3,.8,'#f0f0f0')}
   else if(t==='kolokolo'||t==='fkolokolo'){const big=t==='fkolokolo',bob=fr?.3:0;
     for(let i=0;i<8;i++)E(2.2+i*.5,13.2-Math.sin(i*.7+(fr?1:0))*1.2,.8,.8,'#6a5a4a');
     E(9,11+bob,4.2,3.2,big?'#5a4a5a':'#7a6a5a');E(9,12.4+bob,3,1.6,'#a89888');
     E(11.5,7.2+bob,3.2,2.8,big?'#6a5a6a':'#8a7a6a');E(10.4,4.6+bob,1.3,1.8,'#c09090');E(13,4.6+bob,1.3,1.8,'#c09090');E(10.4,4.8+bob,.6,1,'#704050');E(13,4.8+bob,.6,1,'#704050');
-    Q(10.6,6.6+bob,1,1,'#ff3030');Q(12.6,6.6+bob,1,1,'#ff3030');E(14.6,8+bob,.8,.6,'#402828');Q(13.4,9+bob,.4,.8,'#f0f0f0');Q(14,9+bob,.4,.8,'#f0f0f0');
+    EYE(11.1,7.1+bob,.7,'#a01818','#ff5a3a');EYE(13.1,7.1+bob,.7,'#a01818','#ff5a3a');E(14.6,8+bob,.8,.6,'#402828');Q(13.4,9+bob,.4,.8,'#f0f0f0');Q(14,9+bob,.4,.8,'#f0f0f0');
     for(let i=0;i<4;i++)Q(6+i*1.4,14+bob,.5,1,'#4a3a2a');if(big){for(let i=0;i<5;i++)Q(6+i*1.2,8.2+bob,.6,1.2,'#3a2a3a')}}
   else if(t==='nguruvilu'){const wv=fr?.4:0;
     E(4,13,3.6,1.6,'#2a6a5a');E(8,12+wv,3.4,1.8,'#3a8a6a');E(11.5,10-wv,2.4,2.4,'#3a8a6a');E(12,7,2,2.6,'#3a8a6a');for(let i=0;i<6;i++)Q(3+i*1.6,12.2+(i%2)*.5,.6,.6,'#9ad8b0');

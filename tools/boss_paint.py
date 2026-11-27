@@ -13,6 +13,31 @@ from yewen_paint import Canvas, taper, hx
 from waria_paint import R, setsize, blob, finish, arcs, cr, smooth_poly, glow, ribbed, facet, tooth3, rivets, plate_lines, texture, occlude, speculars
 
 def ramp(*cs): return [hx(c) for c in cs]
+
+# Rounder light for these bosses (Nov 2026 polish): waria_paint's banded shader cut broad parts with a straight
+# light/dark line along their middle ridge; here the height field is blurred in proportion to the part's size,
+# so broad parts read as rounded masses lit from the upper left. Santiago's wardens keep the banded shader.
+from scipy.ndimage import distance_transform_edt as _edt3, gaussian_filter as _gf3
+def _shade_round(s, m, ramp, bulge=1.0, lift=0.0, flat=0.0, name=''):
+    if not m.any(): return
+    d = _edt3(m); Rr = max(2.0, d.max())
+    h = (np.clip(d / Rr, 0, 1) ** .55) * Rr * bulge
+    h = _gf3(h, max(1.1, Rr * .3)); h[~m] = 0
+    gy, gx = np.gradient(h)
+    n = np.dstack([-gx, -gy, np.ones_like(h) * .75]); n /= np.linalg.norm(n, axis=2, keepdims=True)
+    lum = (n @ yp.LIGHT - 0.15) / 0.85
+    ys, xs = np.nonzero(m); cy, cx = ys.mean(), xs.mean(); sy, sx = max(4, ys.std()), max(4, xs.std())
+    yy, xx = np.mgrid[0:yp.H, 0:yp.W]
+    lum = lum - np.hypot((xx - (cx - .6 * sx)) / sx, (yy - (cy - .6 * sy)) / sy) * .09 + .08   # light falls off from the lit corner in curves
+    lum = (lum - .45) * 1.55 + .45 + lift - yy / yp.H * .05                                     # strong contrast: deep shadows, bright lights
+    lum = lum * (1 - flat) + flat * .55
+    k = len(ramp); t = np.clip(lum, 0, .999) * (k - 1)
+    bay = yp.BAYER[yy % 4, xx % 4]
+    idx = np.clip(np.floor(t + (bay - .5) * .35).astype(int), 0, k - 1)
+    rim = (d <= 2.2) & (idx <= 1) & ((gx > .05) | (gy > .05))                                   # reflected light on the shadow-side rim
+    idx[rim] = np.minimum(k - 1, idx[rim] + 2)
+    s.rgb[m] = np.array(ramp)[idx][m]; s.a[m] = True; s.part[m] = name
+yp.Canvas.shade = _shade_round
 def taper(c, pts, *a, **k):
     """yewen_paint.taper stamps six discs per segment: densify long straight segments so shafts stay solid"""
     P = [pts[0]]

@@ -5,7 +5,8 @@ const AU={c:null,m:null,mus:null,sfx:null,noise:null,muted:false,song:null,name:
 try{AU.muted=localStorage.getItem(MUTE_KEY)==='1'}catch(e){}
 function auInit(){
   try{
-    if(!AU.c){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;AU.c=new AC();
+    if(!AU.c){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{AU.c=new AC({latencyHint:'balanced'})}catch(e){AU.c=new AC()}   /* bigger audio buffer: the dense kultrun boss songs stop stuttering on phones */
+      
       AU.m=AU.c.createGain();AU.m.connect(AU.c.destination);
       AU.mus=AU.c.createGain();AU.mus.gain.value=.2;AU.mus.connect(AU.m);
       AU.dist=AU.c.createWaveShaper();{const n=1024,cv=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=Math.tanh(x*6)*.8}AU.dist.curve=cv}
@@ -37,7 +38,7 @@ function mkDist2(c){
   pS.connect(wS);wS.connect(hp);AU.dist2s=pS;
   const d1=c.createWaveShaper();{const n=1024,cv=new Float32Array(n);for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=Math.tanh(x*4.2)*.8}d1.curve=cv}
   const d1g=c.createGain();d1g.gain.value=.6;d1.connect(d1g);d1g.connect(AU.mus);AU.dists=d1}
-function toggleMute(){AU.muted=!AU.muted;try{localStorage.setItem(MUTE_KEY,AU.muted?'1':'0')}catch(e){}auInit();if(AU.m)AU.m.gain.value=AU.muted?0:1;$('bMus').textContent=AU.muted?'♪ Música: no':'♪ Música: sí';$('pN').textContent=AU.muted?'♪×':'♪'}
+function toggleMute(){AU.muted=!AU.muted;try{localStorage.setItem(MUTE_KEY,AU.muted?'1':'0')}catch(e){}auInit();if(AU.m)AU.m.gain.value=AU.muted?0:1;if(typeof musLabel==='function')musLabel()}
 const NOTE={C:0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11};
 function nf(s){const m=/^([A-G][#b]?)(\d)$/.exec(s);if(!m)return 0;return 440*Math.pow(2,(NOTE[m[1]]+(+m[2]+1)*12-69)/12)}
 function parseTrack(str){const toks=str.replace(/\|/g,' ').trim().split(/\s+/);const at={};let cur=null;
@@ -482,20 +483,20 @@ const KULTRUN_SONGS=['boss','nagBoss','pewBoss','wilBoss','puelBoss','deepBoss',
     const R=i=>roots[Math.floor(i/6)%beats];
     const nb=nn=>nn.replace(/\d/,''),r2=i=>{const r=R(i);return /\d/.test(r)&&+r.slice(-1)>=3?oct(r,-1):r};
     if(!hadGtr){const G=[0,1,2,4,5];   // a metal gallop, palm-muted: da-da-da . da-da, on a power chord (root, fifth, octave)
-      mk({w:'sawtooth',v:.095,dist:2,det:9},i=>G.includes(i%6)?{n:r2(i),len:1}:null);
-      mk({w:'sawtooth',v:.065,dist:2,det:-7},i=>G.includes(i%6)?{n:FIF[nb(r2(i))]+(+r2(i).slice(-1)),len:1}:null);
+      mk({w:'sawtooth',v:.095,dist:2},i=>G.includes(i%6)?{n:r2(i),len:1}:null);
+      mk({w:'sawtooth',v:.065,dist:2},i=>G.includes(i%6)?{n:FIF[nb(r2(i))]+(+r2(i).slice(-1)),len:1}:null);
       mk({w:'sawtooth',v:.045,dist:2,det:4},i=>i%6===0?{n:oct(r2(i),1),len:3}:null)}
     for(const c of so.ch)if(!c.d&&c.dist===1&&c.w==='square'){c.dist=2;c.v*=.8}            // the lead through the same heavy amp
     mk({d:1,v:.28},i=>i%6===1||i%6===2?{n:'k',len:1}:null);                             // double kick in the gaps, so the kultrun keeps its long-short
     mk({d:1,v:.5},i=>i%24===0?{n:'c',len:1}:null);                                     // a crash on every bar
-    const AR=[0,7,12,7,12,19];      // a running arpeggio on every subdivision: root, fifth, octave
-    mk({w:'square',v:.026,dist:1},i=>{const r=R(i),m=/^([A-G][#b]?)(\d)$/.exec(r);if(!m)return null;const f=nf(m[1]+(+m[2]+2))*Math.pow(2,AR[i%6]/12);
+    const AR=[0,7,12,7,12,19];      // a running arpeggio on every other subdivision (lighter for phones): root, octave, octave
+    mk({w:'square',v:.026,dist:1},i=>{if(i%2)return null;const r=R(i),m=/^([A-G][#b]?)(\d)$/.exec(r);if(!m)return null;const f=nf(m[1]+(+m[2]+2))*Math.pow(2,AR[i%6]/12);
       const names=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],mi=Math.round(12*Math.log2(f/440))+69;return{n:names[mi%12]+(Math.floor(mi/12)-1),len:1}});
     const KV=n==='battle'?.85:1.25;                                                     // where guitars and bass crowd it, the kultrun comes forward
-    mk({d:1,v:KV,kul:1},i=>i%6===0?{n:'K',len:1}:i%6===4?{n:'u',len:1}:null);             // kultrun: long-short
+    mk({d:1,v:KV,kul:1,lite:1},i=>i%6===0?{n:'K',len:1}:i%6===4?{n:'u',len:1}:null);             // kultrun: long-short
     if(n!=='battle')for(const c of so.ch)if(c.dist===2)c.v*=.85;
-    mk({d:1,v:.5},i=>i%6===0||i%6===3?{n:'j',len:1}:null);                            // kaskawilla
-    mk({d:1,v:.22},i=>i%6===0?null:{n:'h',len:1});                                      // shaker on the subdivisions
+    mk({d:1,v:.5,lite:1},i=>i%6===0||i%6===3?{n:'j',len:1}:null);                            // kaskawilla
+    mk({d:1,v:.26},i=>i%2?{n:'h',len:1}:null);                                      // shaker on the subdivisions
     const bars=Math.max(1,Math.round(L/24)),root=nb(roots[0]||'E2');
     mk({w:'trut',v:.075},i=>{const b=Math.floor(i/24),k=i%24;if(b===0&&k===0)return{n:root+'3',len:16};if(b===0&&k===16)return{n:FIF[root]+'3',len:8};if(b===1&&k===0)return{n:root+'4',len:20};
       if(b===Math.floor(bars/2)&&k===0)return{n:FIF[root]+'3',len:10};if(b===Math.floor(bars/2)&&k===12)return{n:root+'4',len:12};return null});
@@ -522,12 +523,12 @@ function playNote(ch,e,t,sd){
     if(e.n==='K'||e.n==='u'){   // kultrun: a deep skin struck with a stick, the bowl ringing under it
       const st=e.n==='K'?1:.5,o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.setValueAtTime(e.n==='K'?110:150,t);o.frequency.exponentialRampToValueAtTime(e.n==='K'?58:95,t+.18);
       g.gain.setValueAtTime(ch.v*1.25*st,t);g.gain.exponentialRampToValueAtTime(.001,t+(e.n==='K'?.3:.14));o.connect(g);g.connect(AU.mus);o.start(t);o.stop(t+.34);
-      const o2=c.createOscillator(),g2=c.createGain();o2.type='triangle';o2.frequency.setValueAtTime(230,t);o2.frequency.exponentialRampToValueAtTime(150,t+.12);
-      g2.gain.setValueAtTime(ch.v*.35*st,t);g2.gain.exponentialRampToValueAtTime(.001,t+.16);o2.connect(g2);g2.connect(AU.mus);o2.start(t);o2.stop(t+.2);
+      if(!ch.lite){const o2=c.createOscillator(),g2=c.createGain();o2.type='triangle';o2.frequency.setValueAtTime(230,t);o2.frequency.exponentialRampToValueAtTime(150,t+.12);
+      g2.gain.setValueAtTime(ch.v*.35*st,t);g2.gain.exponentialRampToValueAtTime(.001,t+.16);o2.connect(g2);g2.connect(AU.mus);o2.start(t);o2.stop(t+.2)}
       const s=c.createBufferSource();s.buffer=AU.noise;const f=c.createBiquadFilter();f.type='bandpass';f.frequency.value=e.n==='K'?700:1100;f.Q.value=1.4;const gn=c.createGain();
       gn.gain.setValueAtTime(ch.v*(ch.kul?.9:.55)*st,t);gn.gain.exponentialRampToValueAtTime(.001,t+.05);s.connect(f);f.connect(gn);gn.connect(AU.mus);s.start(t,Math.random()*.5);s.stop(t+.07);return}
     if(e.n==='j'){              // kaskawilla: little bronze bells shaken on the beat
-      for(let q=0;q<3;q++){const tt=t+q*.022,fq=[5400,6900,8300][q];const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fq*(1+Math.random()*.02);
+      for(let q=0;q<(ch.lite?1:3);q++){const tt=t+q*.022,fq=[5400,6900,8300][q];const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=fq*(1+Math.random()*.02);
         g.gain.setValueAtTime(ch.v*.16,tt);g.gain.exponentialRampToValueAtTime(.001,tt+.09);o.connect(g);g.connect(AU.mus);o.start(tt);o.stop(tt+.1)}
       const s=c.createBufferSource();s.buffer=AU.noise;const f=c.createBiquadFilter();f.type='highpass';f.frequency.value=6500;const gn=c.createGain();
       gn.gain.setValueAtTime(ch.v*.22,t);gn.gain.exponentialRampToValueAtTime(.001,t+.08);s.connect(f);f.connect(gn);gn.connect(AU.mus);s.start(t,Math.random()*.5);s.stop(t+.09);return}

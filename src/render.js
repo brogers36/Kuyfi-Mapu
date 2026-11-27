@@ -71,8 +71,8 @@ function renderEndCut(){
   else{paintLand(c,frame,false);
     const gr2=c.createLinearGradient(0,0,0,LH);gr2.addColorStop(0,'rgba(255,170,90,.18)');gr2.addColorStop(1,'rgba(90,40,70,.2)');c.fillStyle=gr2;c.fillRect(0,0,LW,LH);
     const rk=rukaCanvas(3,2),rox=(LW-256)>>1;ell(c,195+rox,175,40,5,'rgba(0,0,0,.3)');c.drawImage(rk.cvs,150+rox,120,rk.cvs.width*1.7,rk.cvs.height*1.7);
-    {const hs=ctCharSprite(heroLook(),'down',0);c.drawImage(hs,84,96,54,96)}
-    {const ks=ctCharSprite('kuku','down',0);c.drawImage(ks,130,100,50,90)}
+    cutPerson(c,heroLook(),'down',84,96,54,96);
+    cutPerson(c,'kuku','down',130,100,50,90);
     for(let k=0;k<9;k++){const a2=((frame+k*18)%130)/130;ell(c,40+(k*31)%180,190-a2*90,1.5,1.5,'rgba(255,230,150,'+(1-a2)*.8+')')}
     const gl=.5+.3*Math.sin(frame/18);for(const [rr,al] of [[26,.10],[18,.16],[10,.22]])ell(c,110,170,rr,rr*.4,'rgba(255,226,130,'+(al*gl)+')')}
   cutFx(c,false);
@@ -93,7 +93,7 @@ function renderCut(){
     for(let k=0;k<16;k++){const bw=13+(k*13)%15,bx=k*17-5,bh=50+((k*53)%70),by=180-bh;R(c,bx,by,bw,bh+50,k%2?'#1c1a32':'#242240');R(c,bx+bw-2,by,2,bh+50,'#16142a');if(k%3===0)R(c,bx+bw/2,by-7,1,7,'#242240');
       for(let wy=by+4;wy<175;wy+=6)for(let wx=bx+2;wx<bx+bw-3;wx+=4)if(h2(wx,wy,3)<.42)R(c,wx,wy,2,3,h2(wx,wy,4)<.5?'#f8d870':'#c8a850')}
     R(c,0,180,LW,44,'#22203a');R(c,60,160,136,3,'#4a4668');for(let k=0;k<17;k++)R(c,62+k*8,163,1,17,'#3a3656');R(c,60,180,136,2,'#4a4668');
-    {const hs=ctCharSprite(heroLook(),'up',0);c.drawImage(hs,101,66,54,96)}
+    cutPerson(c,heroLook(),'up',101,66,54,96);
     for(let k=0;k<44;k++){const rx=(k*53+frame*2.6)%(LW+30)-15,ry=(k*91+frame*5.2)%LH;R(c,rx,ry,1,7,'rgba(170,190,230,.33)');R(c,rx,ry+5,1,2,'rgba(210,225,250,.45)')}
     if(frame%300<4)c.fillStyle='rgba(205,215,255,.22)',c.fillRect(0,0,LW,LH);
     for(let k=0;k<5;k++){const a=((frame/60+k*.2)%1);OV.push(()=>txt(['ü','ñ','ng','tr','ll'][k],113+k*8+Math.sin(a*6+k)*4,86-a*45,'rgba(255,240,200,'+(1-a)*.85+')',16,'center'))}}
@@ -108,7 +108,7 @@ function renderCut(){
     for(let k=0;k<7;k++){const fx2=30+(k*37)%200+Math.sin(frame/30+k*2)*8,fy2=120+(k*23)%80+Math.sin(frame/19+k)*5;if((frame+k*25)%80<55){R(c,fx2,fy2,1,1,'#ffe9a0');ell(c,fx2,fy2,2.5,2.5,'rgba(255,230,140,.18)')}}
     const rk=rukaCanvas(3,2),rox=(LW-256)>>1;ell(c,195+rox,175,40,5,'rgba(0,0,0,.3)');c.drawImage(rk.cvs,150+rox,120,rk.cvs.width*1.7,rk.cvs.height*1.7);
     for(let k=0;k<6;k++){const a=((frame+k*22)%140)/140;ell(c,150+(rk.smoke[0]+rk.ox)*1.7+Math.sin(a*6+k)*3,120+(rk.smoke[1]+rk.oy)*1.7-a*45,2+a*6,2+a*5,'rgba(210,210,220,'+(.5-a*.45)+')')}
-    ell(c,96,186,12,3,'rgba(0,0,0,.3)');{const ks=ctCharSprite('kuku','down',0);c.drawImage(ks,69,90,54,96)}}
+    ell(c,96,186,12,3,'rgba(0,0,0,.3)');cutPerson(c,'kuku','down',69,90,54,96);}
   cutFx(c,i===2||i===3);
 }
 /* ---------- map ---------- */
@@ -141,6 +141,7 @@ function renderMap(){
     if(X>-T&&X<LW&&Y>VY-T&&Y<VY+VH)c.drawImage(sbtCanvas(Math.floor(frame/14)%2),X,Y)}
   if(M.marks)for(const k of M.marks){const [tx,ty]=k.split(',');const X=tx*T-cx,Y=ty*T-cy+VY;
     if(X>-T&&X<LW&&Y>VY-T&&Y<VY+VH)c.drawImage(sbtCanvas(Math.floor(frame/14)%2),X,Y)}
+  if(M.arena){R(c,T-cx,VY+T-cy,(M.w-2)*T,(M.h-2)*T,'rgba(46,0,8,.3)');if(arenaOpen())drawArenaRing(c,M.arena.x*T-cx+8*(M.arena.w||1),M.arena.y*T-cy+VY+9)}
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){const ch=grid[y][x];if(!DYN.has(ch))continue;
     const X=x*T-cx,Y=y*T-cy+VY,anim=ch==='F'||ch==='X'||ch==='v'||ch==='A';
     if((ch==='N'||ch==='J')&&M.pz){const kk=x+','+y,t=M.pz.tiles[kk];if(t){const lit=PZ.lit.has(kk);ell(c,X+8,Y+15,6,2,'rgba(0,0,0,.28)');
@@ -219,6 +220,14 @@ function renderMap(){
       const fly=ET[t].fly?6+Math.round(Math.sin(frame/8)*1.5):0;
       c.globalAlpha=.5;c.drawImage(cvs,Math.round(sx+8-cvs.width/2),Math.round(sy+16-cvs.height-fly+2));c.globalAlpha=1;
     }}
+  // the talking stones stand out in front of trees and boulders, glow softly and show a speech mark until their quiz is solved
+  if(M.stones)for(const k in M.stones){const [tx,ty]=k.split(',').map(Number),X=tx*T-cx,Y=ty*T-cy+VY;if(X<-24||X>LW+8||Y<VY-30||Y>VY+VH+8)continue;
+    const done=S.flags[M.pz?'pz:'+CUR+':st':'pz:'+CUR],pul=.5+.5*Math.sin(frame/18);
+    for(const [r,a] of [[16,.06],[11,.09],[7,.12]])ell(c,X+8,Y+7,r,r*.8,'rgba(150,220,255,'+(a*(done?.4:.7+.3*pul)).toFixed(3)+')');
+    c.drawImage(talkStone(Math.floor(frame/90)%9===0&&frame%90<8),X-4,Y-8);
+    if(!done&&Math.abs(tx-P.x)+Math.abs(ty-P.y)<10){const by=Y-14-Math.round(Math.sin(frame/12)*1.5);
+      OV.push(()=>{ctx.save();ctx.fillStyle='#fffaf0';ctx.strokeStyle='#2a1a3a';ctx.lineWidth=2;const bx=(X+8)*2-14,yy=by*2-12;ctx.beginPath();ctx.roundRect(bx,yy,28,18,5);ctx.fill();ctx.stroke();
+        ctx.fillStyle='#2a1a3a';for(let i=0;i<3;i++)ctx.fillRect(bx+7+i*6,yy+8,3,3);ctx.restore()})}}
   for(const [rx,ry] of RUKAS)for(let k=0;k<5;k++){const ph=((frame+k*28)%140)/140;ell(c,rx-cx+Math.sin(ph*6+k)*3*ph,ry-cy+VY-ph*28,2+ph*5,(2+ph*5)*.8,'rgba(225,225,235,'+(.4*(1-ph))+')')}
   for(let k=0;k<26;k++){const wx=Math.floor(h2(k,frame>>3,91)*LW),wy=Math.floor(h2(k,frame>>3,92)*LH),mx=Math.floor((wx+cx)/T),my=Math.floor((wy-VY+cy)/T);
     if(inB(mx,my)&&grid[my][mx]==='~'&&WD[my][mx]>1){const a=(frame%8)<4;R(c,wx,wy,1,1,M.lava?'#fff0a0':'#f4faff');if(a){R(c,wx-1,wy,1,1,'rgba(220,240,255,.7)');R(c,wx+1,wy,1,1,'rgba(220,240,255,.7)')}}}
@@ -251,6 +260,23 @@ function renderMap(){
     R(c,X-13,Y-1,26,9,'#2a1a10');R(c,X-12,Y,24,7,'#c8402a');for(let j=0;j<12;j++)R(c,X-12+j*2,Y+(j%2?1:5),1,1,'#f4e8c8');R(c,X-12,Y+3,24,1,'#2a1a10');
     R(c,X-12+Math.round(sw),Y+7,1,3,'#c8402a');R(c,X+11+Math.round(sw),Y+7,1,3,'#c8402a');
     OV.push(()=>txt('trawün',X,Y-3,'#ffe8a0',11,'center'))}
+  // the Weichawe ruka: a dark board with red letters over the door
+  if(M.doors)for(const k in M.doors){if(!/_weichawe$/.test(M.doors[k].to))continue;const [qx,qy]=k.split(',').map(Number),X=qx*T-cx+8,Y=(qy-1)*T-cy+VY-8;
+    if(X<-40||X>LW+40||Y<-20||Y>LH)continue;const gl=.55+.25*Math.sin(frame/18);
+    R(c,X-18,Y-3,36,12,'#140808');R(c,X-17,Y-2,34,10,'#3a1a12');R(c,X-17,Y-2,34,1,'#5a2a1a');R(c,X-17,Y+7,34,1,'#1e0c08');
+    R(c,X-14,Y-7,1,5,'#2a1208');R(c,X+13,Y-7,1,5,'#2a1208');
+    OV.push(()=>{txt('weichawe',X,Y+6,'rgba(255,'+Math.round(60+gl*60)+',50,'+(.75+gl*.25)+')',11,'center')})}
+  // city doors you can go into: a warm lit doorway, and a bobbing arrow while someone inside still needs you
+  if(M.urban&&M.doors)for(const k in M.doors){const D=M.doors[k],[qx,qy]=k.split(',').map(Number),X=qx*T-cx+8,Y=qy*T-cy+VY;
+    if(X<-30||X>LW+30||Y<-40||Y>LH+20)continue;
+    {const a=.75+.2*Math.sin(frame/14);c.save();c.globalCompositeOperation='lighter';   // light pouring out of the open door onto the pavement
+     let g=c.createRadialGradient(X,Y-2,1,X,Y-2,24);g.addColorStop(0,'rgba(255,200,90,'+a.toFixed(2)+')');g.addColorStop(.45,'rgba(255,170,60,'+(a*.45).toFixed(2)+')');g.addColorStop(1,'rgba(255,150,40,0)');c.fillStyle=g;c.fillRect(X-25,Y-27,50,50);
+     g=c.createLinearGradient(0,Y+4,0,Y+T+12);g.addColorStop(0,'rgba(255,190,80,'+(a*.55).toFixed(2)+')');g.addColorStop(1,'rgba(255,190,80,0)');c.fillStyle=g;
+     c.beginPath();c.moveTo(X-6,Y+4);c.lineTo(X+6,Y+4);c.lineTo(X+13,Y+T+12);c.lineTo(X-13,Y+T+12);c.closePath();c.fill();c.restore()}
+    const need={s_depto:'cena_ok',s_chuchu:'tel_ok',s_radio:'radio_ok'}[D.to];
+    if(need&&!S.flags[need]){const b=Math.round(Math.sin(frame/8)*2),ay=Y+T+4+b;   // an up-arrow on the pavement in front of the door, pointing in
+      R(c,X-1,ay,2,1,'#ffffff');R(c,X-2,ay+1,4,1,'#ffffff');R(c,X-3,ay+2,6,1,'#ffffff');R(c,X-4,ay+3,8,1,'#ffffff');R(c,X-5,ay+4,10,1,'#ffffff');R(c,X-3,ay+5,6,4,'#ffffff');
+      OV.push(()=>txt('Konpange',X,ay+19,'#ffe8a0',11,'center'))}}
   // the metro entrance: a soft red glow on the totem, and a bobbing arrow with a label until the player has gone down once
   if(M.metroGate){const g=M.metroGate,X=(g.x+g.w)*T-cx+8,Y=g.y*T-cy+VY-28;if(X>-40&&X<LW+40&&Y>-60&&Y<LH+40){
     const a=(.18+.12*Math.sin(frame/12)).toFixed(2);c.fillStyle='rgba(255,60,80,'+a+')';c.beginPath();c.ellipse(X,Y+8,12,11,0,0,6.283);c.fill();
@@ -339,7 +365,7 @@ function drawHUD(c){
   // compact overlay: newen meter and counters top-left; a thin heart strip tucked into the top-right corner.
   // Either panel fades when the player walks underneath it, so nothing on the map stays hidden.
   const mx=maxHP(),hearts=Math.min(40,Math.ceil(mx/HPQ)),hp=Math.max(0,S.hp),PER=14,rows=Math.ceil(hearts/PER),hw=Math.min(hearts,PER)*6+3;
-  const tw=5*12,pw=Math.max(hw,tw+4)+4,ph=rows*6+3+8,px=LW-pw-19,py=1,LX=19;   // clear of the ☰ and ⛶ buttons
+  const tw=5*12,pw=Math.max(hw,tw+4)+4,ph=rows*6+3+8,px=LW-pw-3,py=1,LX=3;   // the ☰ and ⛶ buttons sit at the bottom corners
   const pxs=P.fx*T-CAM.x+8,pys=P.fy*T-CAM.y+VY+8,under=(x,y,w,h)=>pxs>x-10&&pxs<x+w+10&&pys>y-6&&pys<y+h+16;
   const lw=M&&M.dungeon?118:108,lh=30,lfade=under(LX+2,1,lw,lh),rfade=under(px,py,pw,ph);
   const plate=(x,y,w,h)=>{c.fillStyle='rgba(12,10,30,.5)';c.fillRect(x+1,y,w-2,h);c.fillRect(x,y+1,w,h-2);
@@ -705,7 +731,7 @@ function renderBattle(){
     vg.fill(c,0,0,LW,LH)}
   if(B.intro>0)B.intro--;
   const al=B.en.filter(e=>!e.dead||e.fadeT>0),n=al.length,base=138;
-  al.forEach((e,i)=>{const Tt=ET[e.t],sz=Tt.bs,cvs=enemyCanvas(e.t,sz,Math.floor(frame/12)%2);
+  al.forEach((e,i)=>{const Tt=ET[e.t],sz=Tt.bs,cvs=enemyCanvas(e.t,sz,(GEM_ON&&GEMI.idl&&GEMI.idl[e.t])?10+idleFr(i):(GEM_ON&&!Tt.fly&&!Tt.boss)?0:Math.floor(frame/12)%2);   // the new art's second frame only lifts the sprite a pixel: walkers keep their feet down
     const bossI=al.findIndex(x=>ET[x.t].boss),others=al.filter(x=>!ET[x.t].boss),oi=others.indexOf(e);
     // enemies line up in a diagonal column on the left, all facing the hero
     let cx,bse;
@@ -715,17 +741,21 @@ function renderBattle(){
     if(bossI<0&&tall){cx=Math.round(8+(LW-78)*(i+1)/(n+1));bse=138}
     else if(bossI<0&&fls.length&&grd.length){ // triangle: ground stack low-left, flyers up and to the right
       if(fi>=0){cx=112+fi*Math.max(34,sz+10);bse=100}
-      else{const m=Math.max(1,grd.length-1),sp=Math.min(28,Math.round(44/m));cx=40+gi*12;bse=(grd.length===1?138:112)+gi*sp}}
+      else{const m=Math.max(1,grd.length-1),sp=Math.min(14,Math.round(14/m));cx=36+gi*22;bse=(grd.length===1?138:126)+gi*sp}}   // feet stay on the ground
     else if(bossI<0&&fls.length){cx=36+fi*Math.max(34,sz+10);bse=122+(fi%2)*22} // all airborne: a V across the sky
-    else if(bossI<0){const m=Math.max(1,n-1),sp=Math.min(30,Math.round(52/m));cx=(n===1?60:40)+i*14;bse=(n===1?138:104)+i*sp}
-    else if(ET[e.t].boss){cx=Math.max(72,Math.round(cvs.width/2)-(e.t==='llufu3'?18:/^llufu/.test(e.t)&&cvs.width>150?4:12));bse=138}   // very wide bosses step in so their far edge stays on screen
+    else if(bossI<0){const m=Math.max(1,n-1),sp=Math.min(14,Math.round(14/m));cx=(n===1?60:34)+i*Math.min(30,Math.round(96/m));bse=(n===1?138:126)+i*sp}   // a staggered line on the ground, back to front
+    else if(ET[e.t].boss){cx=Math.max(72,Math.round(cvs.width/2)-(e.t==='llufu3'?18:/^llufu/.test(e.t)&&cvs.width>150?4:cvs.width>160?-2:12));bse=138}   // very wide bosses step in so their far edge stays on screen
     else if(tall){cx=Math.round(104+(oi+1)*(LW-184)/(others.length+1));bse=138}
     else if(fi>=0){cx=150+fi*Math.max(30,sz+8);bse=98}
-    else{const gm=grd.length,m=Math.max(1,gm-1),sp=Math.min(26,Math.round(46/m));cx=152+gi*12;bse=(gm===1?136:108)+gi*sp}
-    let y=bse-cvs.height+4+Math.round(Math.sin(frame/16+i));if(y<4)y=4+Math.round(Math.sin(frame/16+i));
+    else{const gm=grd.length,m=Math.max(1,gm-1),sp=Math.min(14,Math.round(14/m));cx=148+gi*20;bse=(gm===1?136:126)+gi*sp}
+    const gnd=!Tt.fly&&(!Tt.boss||e.t==='ngoyngoyun');   // walkers (and the walking machine Ngoyngoyün) stay planted on the ground (no bob) with a contact shadow
+    let y=bse-cvs.height+4+(gnd?0:Math.round(Math.sin(frame/16+i)));if(y<4)y=4+(gnd?0:Math.round(Math.sin(frame/16+i)));
     if(Tt.fly&&e.gr<=0)y-=(Tt.boss?10:26)+Math.round(Math.sin(frame/9+i)*3);
+    if(Tt.fly&&!Tt.boss&&y<2)y=2+Math.round(Math.sin(frame/9+i)*2);   // flyers hover high but never leave the top of the screen
+    if(e.t==='ngamlef'&&!e.dead){y-=14+Math.round(Math.sin(frame/30)*2);if(!e.dying)ell(c,cx,bse+3,Math.round(cvs.width*.3),3,'rgba(0,0,0,.28)')}   // it hangs from its barbed strand, legs clear of the floor
     if(B.intro>0)y+=Math.round(B.intro*1.5);
     e.px=cx;e.py=y+cvs.height/3;
+    if(gnd&&!e.dead){const fy=y+cvs.height-3;ell(c,cx,fy,Math.round(cvs.width*.34),3,'rgba(0,0,0,.32)');ell(c,cx,fy,Math.round(cvs.width*.22),2,'rgba(0,0,0,.22)')}
     if(/^ngoyman/.test(e.t)&&!e.dead){
       ell(c,cx,bse,sz/2.1,5,'rgba(16,26,12,.5)');ell(c,cx,bse,sz/2.8,3,'rgba(32,48,20,.45)');
       for(let k=0;k<7;k++){const ph=((frame*.7+k*53)%200)/200;
@@ -736,8 +766,28 @@ function renderBattle(){
     ell(c,cx,bse+1,sz/1.95,4,'rgba(0,0,14,.22)');ell(c,cx,bse+1,sz/2.6,2.6,'rgba(0,0,14,.3)');
     if(e.dead){e.fadeT--;c.globalAlpha=Math.max(0,e.fadeT/20)}
     if(e.hit>0&&e.hit--%4<2)c.globalAlpha=.25;
-    let ly=0,ls=1;if(e.lunge>0){e.lunge--;ly=Math.round(Math.sin(e.lunge/16*Math.PI)*10);}
-    c.save();c.scale(-1,1);c.drawImage(cvs,-(cx+Math.ceil(cvs.width/2)),y+ly);c.restore();c.globalAlpha=1;
+    let ly=0,ls=1,adx=0;if(!(e.lunge>0))e.crouchK=0;
+    if(e.lunge>0){e.lunge--;const L=e.lunge;
+      if(gnd&&e.lunge0===22){   // walkers attack on foot: crouch, spring at the hero, step back
+        e.crouchK=0;
+        if(L>15)e.crouchK=(22-L)/7;
+        else if(L>8){adx=Math.round((15-L)/7*22);if(L===15)battleDust(cx-4,y+cvs.height-3,4,-1)}
+        else adx=Math.round(22*L/8)}
+      else ly=Math.round(Math.sin(Math.min(16,L)/16*Math.PI)*10)}
+    if(e.hit>0&&!e._dh){e._dh=1;if(gnd)battleDust(cx,y+cvs.height-3,4,0)}else if(!(e.hit>0))e._dh=0;
+    e._cx=cx;e._y=y;e._bse=bse;const inDef=B.defA&&B.defA.e===e;
+    if(e.t==='ngamlef'&&!e.dead&&!inDef)ngamThread(c,cx,y+ly,cvs);
+    const lfx=B.lanFx&&B.lanFx.e===e?B.lanFx:null;
+    if(lfx&&!inDef)drawLanPortal(c,lfx,cx,y,cvs);
+    const rzf=lfx&&GEM_ON&&GEMI.rz&&GEMI.rz[e.t];
+    if(lfx&&!inDef&&rzf&&rzf[2]){const r=lanRaise(lfx),im=rzf[r<.15?0:r<.6?1:2],bot=y+ly+cvs.height-3,k=Math.min(1,(bot-2)/im.height),w=Math.round(im.width*k),h=Math.round(im.height*k);c.save();c.scale(-1,1);c.imageSmoothingEnabled=false;c.drawImage(im,-(cx+Math.ceil(w/2)),bot-h,w,h);c.restore()}   /* a giant whose raised arms would leave the screen is drawn a little smaller for the moment */   // Gemini's frames: the arms really rise
+    else if(lfx&&!inDef&&e.t==='ngoyman4'){c.save();c.scale(-1,1);drawArmsUp(c,cvs,-(cx+Math.ceil(cvs.width/2)),y+ly,lanRaise(lfx));c.restore()}
+    else if(!inDef){c.save();c.scale(-1,1);
+      if(gnd&&!e.dead){   // alive but grounded: the upper body settles a pixel and rises again (breathing) in whole pixels, so the art never warps; the feet never move
+        const W=cvs.width,H=cvs.height,sR=Math.round(H*.55),x0=-(cx+adx)-Math.ceil(W/2),yt=y+ly,
+          bo=e.crouchK>0?Math.round(e.crouchK*4):(GEMI.idl&&GEMI.idl[e.t])?0:(Math.sin(frame/32+i*1.7)>.2?1:0);
+        c.drawImage(cvs,0,sR,W,H-sR,x0,yt+sR,W,H-sR);c.drawImage(cvs,0,0,W,sR,x0,yt+bo,W,sR)}
+      else c.drawImage(cvs,-(cx+Math.ceil(cvs.width/2)),y+ly);c.restore()}c.globalAlpha=1;
     if(e.sl>0){c.fillStyle='rgba(40,40,120,.25)';c.fillRect(cx-sz/2,y,sz,cvs.height)}
     if(!B.ngenA&&e.hit===13)B.heroA=16;
     if(!B.ngenA&&e.hit>6&&e.hit<=14){const sp=(14-e.hit)/8,cyS=y+cvs.height/2;
@@ -748,6 +798,7 @@ function renderBattle(){
       c.beginPath();c.moveTo(cx-sz*.5,cyS+sz*.3-sp*sz*.1);c.lineTo(cx+sz*.5-sp*sz*.2,cyS-sz*.35);c.stroke();
       for(let k2=0;k2<4;k2++)R(c,Math.round(cx+Math.cos(k2*1.7+sp*5)*sz*.4),Math.round(cyS+Math.sin(k2*2.3+sp*4)*sz*.3),2,2,'#fff8d0');
       c.restore()}
+    if(inDef)return;
     if(!e.dead&&(e.stag||(e.hp<=0&&typeof quizPend==='function'&&quizPend(e)))){
       // staggered, waiting for the ngen's question: pulse red/orange
       const ph=Math.floor(frame/7)%2,[tcv,tg]=mk(cvs.width,cvs.height);
@@ -764,8 +815,8 @@ function renderBattle(){
     const bw=Math.max(32,Math.min(76,sz*.8)),bx=Math.round(cx-bw/2),by=/^llufu/.test(e.t)?Math.max(bse+4,Math.max(4,bse-cvs.height+4)+cvs.height-1):bse+4;   // a boss taller than the stage keeps its bar below its feet
     const col=!tall&&!ET[e.t].boss&&(bossI<0?n>1:others.length>1)&&!(fi>=0&&bossI<0&&!grd.length);
     const bw2=col?28:bw,bx2=col?Math.round(cx+sz/2+6):bx,by2=col?bse-10:by;
-    if(!window.FILM){R(c,bx2-1,by2-1,bw2+2,5,'#181018');R(c,bx2,by2,bw2,3,'#4a1a1f');R(c,bx2,by2,Math.max(0,Math.round(bw2*e.hp/e.max)),3,'#f07028');R(c,bx2,by2,Math.max(0,Math.round(bw2*e.hp/e.max)),1,'#ffb070');}
-    if(!window.FILM){if(col)OV.push(()=>txt(e.label,bx2,by2-3,'#ffffff',e.label.length>11?9:12,'left'));else OV.push(()=>txt(e.label,cx,by2+13,'#ffffff',13,'center'))}
+    if(!window.FILM&&!inDef){R(c,bx2-1,by2-1,bw2+2,5,'#181018');R(c,bx2,by2,bw2,3,'#4a1a1f');R(c,bx2,by2,Math.max(0,Math.round(bw2*e.hp/e.max)),3,'#f07028');R(c,bx2,by2,Math.max(0,Math.round(bw2*e.hp/e.max)),1,'#ffb070');}
+    if(!window.FILM&&!inDef){if(col)OV.push(()=>txt(e.label,bx2,by2-3,'#ffffff',e.label.length>11?9:12,'left'));else OV.push(()=>txt(e.label,cx,by2+13,'#ffffff',13,'center'))}
     const tg=B.cursor==='all'||B.cursor===B.en.indexOf(e);
     if(tg&&frame%20<15){const ay=y-8+Math.round(Math.sin(frame/5)*2);for(let k=0;k<5;k++){R(c,cx-5+k,ay+k,11-k*2,1,'#ffe040');R(c,cx-6+k,ay+k,1,1,'#181018');R(c,cx+5-k,ay+k,1,1,'#181018')}R(c,cx-6,ay-1,13,1,'#181018')}
   });
@@ -775,11 +826,13 @@ function renderBattle(){
     if(B.heroA>0){B.heroA--;const ph=Math.sin((16-B.heroA)/16*Math.PI);hx-=Math.round(ph*16);hfr=Math.floor(frame/5)%4}
     if(B.intro>0)hx+=Math.round(B.intro*1.2);
     const hurt=B.red>0;
-    if(!(hurt&&frame%6<3)){
+    if(B.red===10){B.hurtT=26;battleDust(hx+22,138,7,1)}
+    if(B.hurtT>0){B.hurtT--;const k=(26-B.hurtT)/26;hx+=Math.round((k<.2?k/.2:1-(k-.2)/.8)*7)}   // knocked back a step, then recovers; feet stay on the ground
+    {
       const hcv=ctCharSpriteBig(heroLook(),'left',hfr);
       const hw=hcv.width*hsc/2,hh=hcv.height*hsc/2;
       ell(c,hx+hw/2,138,hw*.46,3.2,'rgba(0,0,14,.38)');ell(c,hx+hw/2,138,hw*.3,2,'rgba(0,0,14,.25)');
-      c.save();if(hurt){c.translate(hx+2,0)}
+      c.save();
       c.drawImage(hcv,0,0,hcv.width,hcv.height,hx,Math.round(138+hb-hh),hw,hh);
       c.restore();
       if(B.heroA>10){c.save();c.globalCompositeOperation='lighter';
@@ -810,7 +863,7 @@ function renderBattle(){
   const pw=100,ph=Math.max(32,hrows*8+18),px=LW-pw-4,py=4; // compact, top-right above the hero; grows with the heart rows
   R(c,px-1,py-1,pw+2,ph+2,'#000');ctWin(c,px,py,pw,ph);
   {const sp=S.sp||0;R(c,px+pw-10,py+4,6,ph-8,'#f8f8f8');R(c,px+pw-9,py+5,4,ph-10,'#000');const fh=Math.round((ph-10)*sp/SPMAX);if(fh)R(c,px+pw-9,py+ph-5-fh,4,fh,'#30c030');}
-  R(c,px+3,py+3,21,21,'#e8ecf8');{const pt=typeof portraitFor==='function'&&S.name?portraitFor({who:S.name}):null;if(pt)c.drawImage(pt,0,0,44,40,px+4,py+4,19,19);else c.drawImage(ctCharSprite(heroLook(),'down',0),0,1,18,18,px+4,py+4,19,19)}if(0){}else c.drawImage(charSprite(heroLook(),'down',0),0,0,16,14,px+3,py+3,20,17.5);
+  R(c,px+3,py+3,21,21,'#e8ecf8');{const gh=typeof gemHead==='function'&&gemHead(),pt=gh?null:typeof portraitFor==='function'&&S.name?portraitFor({who:S.name}):null;if(gh)c.drawImage(gh,px+4,py+4);else if(pt)c.drawImage(pt,0,0,44,40,px+4,py+4,19,19);else c.drawImage(ctCharSprite(heroLook(),'down',0),0,1,18,18,px+4,py+4,19,19)}if(!(typeof gemHead==='function'&&gemHead()))c.drawImage(charSprite(heroLook(),'down',0),0,0,16,14,px+3,py+3,20,17.5);
   const mx=maxHP(),hearts=Math.min(40,Math.ceil(mx/HPQ));let hp=Math.max(0,S.hp);
   for(let i=0;i<hearts;i++){const q=Math.max(0,Math.min(4,hp-i*HPQ)),col=i%8,row=Math.floor(i/8);drawHeart(c,px+26+col*8,py+13+row*8,q)}
   OV.push(()=>{txt(S.name,px+26,py+10,'#ffffff',11);txt(Math.max(0,S.hp)+'/'+mx,px+pw-13,py+10,'#c8d0ff',10,'right')});
@@ -818,7 +871,12 @@ function renderBattle(){
   }
   B.pops=B.pops.filter(p=>p.t>0);for(const p of B.pops){p.t--;const pp=p;OV.push(()=>txt(pp.txt,pp.x,pp.y-(50-pp.t)*.45,pp.col,20,'center'))}
   if(B.flash>0){c.fillStyle='rgba(255,255,255,'+(B.flash/16)+')';c.fillRect(0,0,LW,LH);B.flash--}
+  if(B.dust&&B.dust.length){for(const d of B.dust){d.t++;d.x+=d.vx;d.y-=.18;const a=Math.max(0,1-d.t/d.life);if(a<=0)continue;
+      const r=d.r+d.t*.22;ell(c,d.x,d.y,r,r*.6,'rgba(214,198,168,'+(a*.55).toFixed(2)+')');ell(c,d.x-1,d.y-1,r*.6,r*.35,'rgba(240,228,204,'+(a*.45).toFixed(2)+')')}
+    B.dust=B.dust.filter(d=>d.t<d.life)}
+  if(B.pendHurt>0&&--B.pendHurt===0){B.shake=12;B.red=10;sfx('hurt')}   // the blow lands when the lunge reaches the hero
   if(B.red>0){c.fillStyle='rgba(255,0,0,'+(B.red/30)+')';c.fillRect(0,0,LW,LH);B.red--}
+  if(B.defA&&(!B.defA.done||B.defA.D&&B.defA.D.keep))drawDefeat(c);
   if(B.ngenA&&!B.ngenA.done&&B.ngenA.kind==='final'){const A=B.ngenA;A.t++;
     const NG=[[undefined,'120,220,255'],['mawida','120,255,150'],['pewen','255,200,110'],['kuruf','225,240,255'],['lelfun','255,230,120']];
     if(S.flags.epu_won)NG.push(['epunamun','255,48,40']);   // the Epunamun joins the five ngen, with red fire
@@ -842,13 +900,13 @@ function renderBattle(){
       if(epu){const ec=enemyCanvas('epunamun',ET.epunamun.bs,Math.floor(frame/16)%2);ell(c,0,4,ec.width*.38,4,'rgba(255,60,40,.25)');c.drawImage(ec,-Math.round(ec.width/2),-ec.height+6)}
       else drawNgen(c,0,0,1,frame,vr);c.restore();c.globalAlpha=1;
       {const eh=epu?enemyCanvas('epunamun',ET.epunamun.bs,0).height:0;
-       const eyY=epu?ny+rise+(6-eh*.80)*s2:ny+rise-80*s2,mY=epu?ny+rise+(6-eh*.70)*s2:ny+rise-71*s2,ex1=nx-3*s2,ex2=nx+3*s2;
+       const NF=ngenFace(vr),eyY=epu?ny+rise+(6-eh*.80)*s2:ny+rise-NF.ey*s2,mY=epu?ny+rise+(6-eh*.70)*s2:ny+rise-NF.my*s2,ex1=epu?nx-3*s2:nx+(NF.cx-NF.ex)*s2,ex2=epu?nx+3*s2:nx+(NF.cx+NF.ex)*s2;
        if(st>=18&&st<26){const gl=(st-18)/8;  // the eyes kindle before the blast
          ell(c,ex1,eyY,1.5+gl*1.5,1.5+gl*1.5,'rgba('+col+','+(.9*gl).toFixed(2)+')');
          ell(c,ex2,eyY,1.5+gl*1.5,1.5+gl*1.5,'rgba('+col+','+(.9*gl).toFixed(2)+')')}
        if(strike){const t2=Math.min(1,(st-26)/20);
         c.save();c.globalCompositeOperation='lighter';
-        for(const [gx,gy,lw] of [[ex1,eyY,5],[ex2,eyY,5],[nx,mY,9]]){
+        for(const [gx,gy,lw] of [[ex1,eyY,5],[ex2,eyY,5],[(ex1+ex2)/2,mY,9]]){
           const grad=c.createLinearGradient(gx,gy,bx,by);
           grad.addColorStop(0,'rgba('+col+',.95)');grad.addColorStop(1,'rgba('+col+',.25)');
           const wob=1+Math.sin(frame/2+gx)*.18;c.strokeStyle=grad;c.lineWidth=Math.max(2.5,lw*(1-t2*.45))*wob;c.beginPath();c.moveTo(gx,gy);c.lineTo(bx,by);c.stroke()}
@@ -908,7 +966,7 @@ function renderBattle(){
     const e=A.e,Tt=ET[e.t],cvs=enemyCanvas(e.t,Tt.bs,Math.floor(frame/12)%2);
     const bx=e.px||72,by=e.py||100;
     // eyes kindle, then the ngen strikes with beams from eyes and mouth
-    const eyY=ny+rise-80*sc,mY=ny+rise-71*sc,ex1=nx-3*sc,ex2=nx+3*sc;
+    const NF=ngenFace(A.v),eyY=ny+rise-NF.ey*sc,mY=ny+rise-NF.my*sc,ex1=nx+(NF.cx-NF.ex)*sc,ex2=nx+(NF.cx+NF.ex)*sc;
     if(A.t===52)sfx('charge');
     if(A.t===62){B.shake=12;e.hit=26;sfx('beam')}
     if(A.t===78)B.shake=8;
@@ -917,7 +975,7 @@ function renderBattle(){
       ell(c,ex2,eyY,1.5+gl*1.5,1.5+gl*1.5,'rgba('+col+','+(.9*gl).toFixed(2)+')')}
     if(strike){const t2=Math.min(1,(A.t-62)/20);
       c.save();c.globalCompositeOperation='lighter';
-      for(const [gx,gy,lw] of [[ex1,eyY,5],[ex2,eyY,5],[nx,mY,9]]){
+      for(const [gx,gy,lw] of [[ex1,eyY,5],[ex2,eyY,5],[(ex1+ex2)/2,mY,9]]){
         const grad=c.createLinearGradient(gx,gy,bx,by);
         grad.addColorStop(0,'rgba('+col+',.95)');grad.addColorStop(1,'rgba('+col+',.25)');
         const wob=1+Math.sin(frame/2+gx)*.18;c.strokeStyle=grad;c.lineWidth=Math.max(2.5,lw*(1-t2*.45))*wob;c.beginPath();c.moveTo(gx,gy);c.lineTo(bx,by);c.stroke()}
@@ -964,6 +1022,8 @@ function loopBody(ts){
   let steps=0;
   while(_acc>=1000/60&&steps<4){_acc-=1000/60;steps++;
     frame++;
+    if(frame%6===0){const mb=$('mbtn');if(mb){const v=(mode==='map'&&!active)?'':'hidden';if(mb.style.visibility!==v)mb.style.visibility=v}
+      const fb=$('fsbtn');if(fb){const t=mode==='title',v=(t||!active)?'':'hidden';if(fb.style.visibility!==v)fb.style.visibility=v;if(fb.classList.contains('low')===t)fb.classList.toggle('low',!t)}}
     if(mode==='map'&&M)updateMap();
     else if(mode==='palin'&&PG)updatePalin();
   }
@@ -973,7 +1033,7 @@ function loopBody(ts){
   else if(mode==='battle'&&B){renderBattle();if(B.lanScene){OV=[];drawLanScene(lx,B.lanScene)}}
   else if(mode==='palin'&&PG)renderPalin(lx);
   else if(mode==='cut')renderCut();
-  else if(mode==='title'){paintLand(lx,frame,false);if(typeof titleKimche==='function')titleKimche(lx,frame)}
+  else if(mode==='title'){if(typeof titleLand==='function')titleLand(lx,frame);else paintLand(lx,frame,false);if(typeof titleKimche==='function')titleKimche(lx,frame)}
   if(mode==='map'&&M){dayTint(lx);if(M.urban&&typeof urbanNight==='function')urbanNight(lx,CAM.x,CAM.y)}
   if(mode==='map'&&M&&typeof kyEraTint==='function')kyEraTint(lx);
   if(fade>0&&mode==='map'){lx.fillStyle='rgba(0,0,0,'+(fade/16)+')';lx.fillRect(0,0,LW,LH);fade=Math.max(0,fade-steps)}
@@ -1127,3 +1187,61 @@ function animPainted(c,a){const G2=PAINTBG[a].geo||{},ox=Math.round((LW-400)/2),
   else if(a==='waria'){for(let k=0;k<26;k++){const x=((k*37+Math.floor(F*.5))%LW),y=Math.floor((k*53+F*2.6)%LH);R(c,x,y,1,2,'rgba(190,200,220,.4)')}
     const hx2=((F*2)%(LW+80))-40;R(c,Math.round(hx2),152,4,2,'#fff4c0');R(c,Math.round(hx2)+18,152,4,2,'#fff4c0');R(c,Math.round(LW-hx2*.8),158,4,2,'#ff4030')}
 }
+
+/* little puffs of dust kicked up in battle */
+function battleDust(x,y,n,dir){if(!B)return;B.dust=B.dust||[];for(let k=0;k<n;k++){const sp=(Math.random()*.6+.3)*(dir||(k%2?1:-1));B.dust.push({x:x+(Math.random()-.5)*10,y:y-Math.random()*2,vx:sp,r:1.5+Math.random()*1.5,t:0,life:22+Math.floor(Math.random()*10)})}}
+
+/* lan kewün: Fütra Ngoymatulfe raises its arms, a portal opens above it and the words of the land are cast into it */
+const LANW=['mari mari','chaltu may','kimün','newen','mapu','lof','kewün','piwke','küme','ngen','lafken','kütral','ruka','wiño'];
+function lanRaise(f){return Math.min(1,f.t/40)*(f.cast>0&&f.cast>150?Math.max(0,1-(f.cast-150)/30):1)}
+function drawLanPortal(c,f,cx,y,cvs){
+  f.t++;if(f.cast>0)f.cast++;if(f.cast>190){B.lanFx=null;return}
+  const r=lanRaise(f),px=Math.min(LW-150,cx+Math.round(cvs.width*.55)+14),py=40,pr=(10+30*Math.min(1,f.t/60))*(f.cast>150?Math.max(0,1-(f.cast-150)/40):1);
+  if(pr>1){c.save();
+    const g=c.createRadialGradient(px,py,0,px,py,pr*1.8);g.addColorStop(0,'rgba(170,60,255,.45)');g.addColorStop(1,'rgba(170,60,255,0)');c.fillStyle=g;c.fillRect(px-pr*2,py-pr*2,pr*4,pr*4);
+    c.fillStyle='rgba(12,0,24,.92)';c.beginPath();c.ellipse(px,py,pr*.55,pr*.3,0,0,6.283);c.fill();
+    for(let k=0;k<7;k++){const a0=frame*.12+k*.9,rr=pr*(1-k/11);c.strokeStyle='rgba('+(170+k*10)+',70,255,'+(.85-k*.08)+')';c.lineWidth=1.5;
+      c.beginPath();c.ellipse(px,py,rr,rr*.55,0,a0,a0+3.6);c.stroke()}
+    c.restore()}
+  const g2=c.createRadialGradient(cx,y+cvs.height*.5,0,cx,y+cvs.height*.5,cvs.width*.8);g2.addColorStop(0,'rgba(140,40,220,'+(.28*r)+')');g2.addColorStop(1,'rgba(140,40,220,0)');c.fillStyle=g2;c.fillRect(cx-cvs.width,y-10,cvs.width*2,cvs.height+20);
+  if(f.cast>0){const hands=[[cx-cvs.width*.42,y+cvs.height*.25],[cx+cvs.width*.42,y+cvs.height*.25]];
+    for(let k=0;k<LANW.length;k++){const p=(f.cast-k*8)/70;if(p<=0||p>=1)continue;const [hx,hy]=hands[k%2],e2=p*p*(3-2*p),an=p*3+k;
+      const x=hx+(px-hx)*e2+Math.cos(an)*14*(1-p),yy=hy+(py-hy)*e2+Math.sin(an)*8*(1-p),al=1-p*p*p,col='rgba('+Math.round(255-170*p)+','+Math.round(236-200*p)+','+Math.round(160-80*p)+','+al.toFixed(2)+')',sz=Math.max(8,Math.round(15-7*p));
+      OV.push(()=>txt(LANW[k],x,yy,col,sz,'center'));
+      c.fillStyle='rgba(220,140,255,'+(.5*al)+')';c.fillRect(Math.round(x),Math.round(yy)+2,1,1)}
+    if(f.cast>=64&&f.cast<=72){c.fillStyle='rgba(200,120,255,'+((1-Math.abs(f.cast-68)/4)*.35)+')';c.fillRect(0,0,LW,LH)}}
+}
+const ARMC={};
+function drawArmsUp(c,cvs,x,y,a){   // the cloak-arms swing up around the shoulders (cut from the art itself)
+  const W=cvs.width,H=cvs.height,key=W+'x'+H;let A=ARMC[key];
+  if(!A){const mk2=(pts)=>{const m=document.createElement('canvas');m.width=W;m.height=H;const g=m.getContext('2d');g.drawImage(cvs,0,0);g.globalCompositeOperation='destination-in';g.beginPath();pts.forEach(([u,v],i)=>i?g.lineTo(u*W,v*H):g.moveTo(u*W,v*H));g.closePath();g.fill();return m};
+    const Lp=[[0,.34],[.30,.34],[.33,.42],[.29,.82],[0,.82]],Rp=[[1,.34],[.70,.34],[.67,.42],[.71,.82],[1,.82]];
+    const core=document.createElement('canvas');core.width=W;core.height=H;const cg=core.getContext('2d');cg.drawImage(cvs,0,0);cg.globalCompositeOperation='destination-out';
+    for(const P of [Lp,Rp]){cg.beginPath();P.forEach(([u,v],i)=>i?cg.lineTo(u*W,v*H):cg.moveTo(u*W,v*H));cg.closePath();cg.fill()}
+    A=ARMC[key]={L:mk2(Lp),R:mk2(Rp),core}}
+  const ang=a*1.75;c.imageSmoothingEnabled=false;
+  for(const [img,px,sgn] of [[A.L,.31,-1],[A.R,.69,1]]){c.save();c.translate(x+W*px,y+H*.38);c.rotate(sgn*-ang);c.drawImage(img,-W*px,-H*.38);c.restore()}
+  c.drawImage(A.core,x,y)}
+
+/* idle loop for enemies with Gemini's idle frames: rest, breathe in, rest, the small movement (blink, tail, wings), each enemy on its own beat */
+function idleFr(i){const p=(frame+i*53)%150;return p<50?0:p<84?1:p<128?0:2}
+
+/* Ngamleftripael hangs from above on a strand of barbed web that comes out of its abdomen */
+const NGT={};
+function ngamThread(c,cx,y,cvs){let q=NGT[cvs.width+'x'+cvs.height];
+  if(!q){const g=cvs.getContext('2d'),d=g.getImageData(0,0,cvs.width,cvs.height).data;let top=-1;
+    for(let yy=0;yy<cvs.height&&top<0;yy++)for(let x=0;x<cvs.width;x++)if(d[(yy*cvs.width+x)*4+3]>80){top=yy;break}
+    let sx=0,n=0;for(let yy=top;yy<top+5;yy++)for(let x=0;x<cvs.width;x++)if(d[(yy*cvs.width+x)*4+3]>80){sx+=x;n++}
+    q=NGT[cvs.width+'x'+cvs.height]={ax:n?sx/n:cvs.width/2,ay:top+3}}
+  const sx=Math.round(cx+Math.ceil(cvs.width/2)-q.ax),sy=y+q.ay,top=-4,sw=Math.sin(frame/40)*3;   // the sprite is drawn mirrored to face the hero
+  const pt=t=>[sx+sw*t*t,sy+(top-sy)*t];
+  c.save();c.lineCap='round';
+  for(const [off,col,lw] of [[0,'rgba(20,18,22,.95)',3.2],[0,'rgba(130,126,134,.9)',1.3],[1,'rgba(80,76,84,.95)',1.2]]){c.strokeStyle=col;c.lineWidth=lw;c.beginPath();
+    for(let k=0;k<=24;k++){const t=k/24,[x,yy]=pt(t);const tw=off?Math.sin(t*40)*1.2:0;k?c.lineTo(x+tw,yy):c.moveTo(x+tw,yy)}c.stroke()}
+  // barbs every few pixels: little twisted crosses of wire
+  const n=Math.max(2,Math.floor((sy-top)/7));
+  for(let k=1;k<n;k++){const [x,yy]=pt(k/n);c.strokeStyle='rgba(28,26,30,.95)';c.lineWidth=1.8;c.beginPath();c.moveTo(x-4,yy-3);c.lineTo(x+4,yy+3);c.moveTo(x+4,yy-3);c.lineTo(x-4,yy+3);c.stroke();
+    c.strokeStyle='rgba(170,166,176,.8)';c.lineWidth=.7;c.beginPath();c.moveTo(x-2.5,yy-1.7);c.lineTo(x+.5,yy+.3);c.moveTo(x+2.5,yy-1.7);c.lineTo(x-.5,yy+.3);c.stroke()}
+  // where it leaves the body: a knot of silk
+  ell(c,sx,sy+1,3,2,'rgba(40,36,44,.9)');ell(c,sx-1,sy,1.4,1,'rgba(160,156,170,.7)');
+  c.restore()}

@@ -35,7 +35,7 @@ function playCredits(done){gcEvent('creditos','Créditos finales');
   let fin=false;const end=()=>{if(fin)return;fin=true;try{v.pause()}catch(e){}ov.remove();done()};
   const ov=document.createElement('div');ov.id='credits';ov.style.cssText='position:fixed;inset:0;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center';
   const v=document.createElement('video');v.playsInline=true;v.setAttribute('playsinline','');v.preload='auto';v.style.cssText='width:100%;height:100%;object-fit:contain;background:#000';
-  for(const u of ['ending.mp4','../www/ending.mp4']){const so=document.createElement('source');so.src=u;so.type='video/mp4';v.appendChild(so)}
+  for(const u of ['ending.mp4?v=4','../www/ending.mp4?v=4']){const so=document.createElement('source');so.src=u;so.type='video/mp4';v.appendChild(so)}
   v.lastElementChild.addEventListener('error',end);v.addEventListener('ended',end);
   const sk=document.createElement('button');sk.textContent=((S&&S.gloss==='en')||LANG==='en')?'Skip ▶':'Saltar ▶';
   sk.style.cssText='position:absolute;right:14px;bottom:14px;padding:8px 14px;font:600 14px sans-serif;color:#f3ead2;background:rgba(0,0,0,.55);border:1px solid rgba(243,234,210,.5);border-radius:6px;opacity:.75';

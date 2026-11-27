@@ -204,7 +204,7 @@ function llawKewun(e){
       if(ok){const d=Math.round(e.max*.07);e.hp=Math.max(1,e.hp-d);
         return say([Object.assign(N('La palabra te sale clara: tu sombra se encoge (−'+d+').','The word comes out clear: your shadow shrinks (−'+d+').'),{fx:()=>{sfx('ok');e.hit=12;const p=epos(e);pop(p.x,p.y-10,'-'+d,'#ffffff');spark(p.x,p.y,'#e8e0ff',12)}})],()=>ask(i+1))}
       const d=2*HPQ,hl=Math.round(e.max*.04);S.hp=Math.max(1,S.hp-d);e.hp=Math.min(e.max,e.hp+hl);
-      say([Object.assign(N('Se te escapa otra vez. La respuesta era: '+q.a+'. Tu sombra la guarda y crece (+'+hl+'); tú pierdes 2 piwke (−'+d+').','It slips away again. The answer was: '+q.a+'. Your shadow keeps it and grows (+'+hl+'); you lose 2 hearts (−'+d+').'),
+      say([Object.assign(N('Se te escapa otra vez. La respuesta era: '+q.a+'. Tu sombra la guarda y crece (+'+hl+'); tú pierdes 2 piwke (−'+d+').','It slips away again. The answer was: '+(OPT_EN[q.a]||q.a)+'. Your shadow keeps it and grows (+'+hl+'); you lose 2 hearts (−'+d+').'),
         {fx:()=>{sfx('bad');B.red=10;pop(60,30,'-'+d,'#ff6050');const p=epos(e);pop(p.x,p.y-10,'+'+hl,'#80ff90')}})],()=>ask(i+1))},false,true)}}
 function llawLast(qb){const en=S.gloss==='en';
   const q=llawPool(1)[0]||{q:{m:'«Amun.»',es:'¿Quién fue?',en:'Who went?'},o:['iñche','eymi','fey'],a:'iñche'};
@@ -214,7 +214,7 @@ function llawLast(qb){const en=S.gloss==='en';
       if(ok){sfx('lvl');B.flash=16;B.shake=10;qb.hp=0;B.qok=1;
         return say([N('Esta vez no se te olvida. Tu sombra cierra los ojos y sonríe.','This time you do not forget. Your shadow closes its eyes and smiles.')],victory)}
       sfx('bad');qb.stag=0;const rg=Math.round(qb.max*.2);qb.hp=Math.min(qb.max,qb.hp+rg);
-      say([N('Otra vez se te escapa. La respuesta era: '+q.a+'. Tu sombra se levanta, más fuerte (+'+rg+').','It slips away again. The answer was: '+q.a+'. Your shadow gets up, stronger (+'+rg+').')],battleMenu)},false,true))}
+      say([N('Otra vez se te escapa. La respuesta era: '+q.a+'. Tu sombra se levanta, más fuerte (+'+rg+').','It slips away again. The answer was: '+(OPT_EN[q.a]||q.a)+'. Your shadow gets up, stronger (+'+rg+').')],battleMenu)},false,true))}
 let LLAWFX=null;   // the shadow fading and coming back to you, after the fight: {t0, sx, sy} (frame it began, the shadow's tile)
 function llawWon(){const lw=llawName();
   S.flags.llaw_won=1;S.flags.kimche=1;persist();sfx('lvl');KIMCHE=undefined;

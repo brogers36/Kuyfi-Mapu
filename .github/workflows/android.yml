@@ -2,11 +2,12 @@
 # "android" release, so the download link never changes:
 #   https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk
 #
-# Signing: android-signing/kewun.keystore is committed to this public repo so
-# every build carries the same signature and installed copies update in place.
-# That means the key is public; it is fine for free sideloaded distribution,
-# but if this app ever goes to Google Play, generate a NEW private key there
-# (Play App Signing) rather than reusing this one.
+# Signing: a private release key kept in two repository secrets,
+#   ANDROID_KEYSTORE_B64       the keystore file, base64-encoded
+#   ANDROID_KEYSTORE_PASSWORD  its password (store and key)
+# (Settings → Secrets and variables → Actions). If a secret is missing the job stops
+# before publishing, so the APK already at the download link stays in place.
+# The old public key (android-signing/, removed on 2026-11-24) must not be used again.
 name: Android APK
 on:
   push:
@@ -14,7 +15,6 @@ on:
     paths:
       - 'www/**'
       - 'assets/**'
-      - 'android-signing/**'
       - 'capacitor.config.json'
       - 'package.json'
       - '.github/workflows/android.yml'
@@ -58,13 +58,22 @@ jobs:
           ./gradlew assembleRelease --no-daemon
 
       - name: Sign APK
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
+          if [ -z "$KS_B64" ] || [ -z "$KS_PASS" ]; then
+            echo "::error::Missing ANDROID_KEYSTORE_B64 or ANDROID_KEYSTORE_PASSWORD secret; not publishing (the current APK stays online)."
+            exit 1
+          fi
+          echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
           BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
           "$BT/zipalign" -f 4 android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
-          "$BT/apksigner" sign --ks android-signing/kewun.keystore \
-            --ks-key-alias kewun --ks-pass pass:kewun-newen --key-pass pass:kewun-newen \
+          "$BT/apksigner" sign --ks "$RUNNER_TEMP/release.jks" \
+            --ks-key-alias kewun --ks-pass env:KS_PASS --key-pass env:KS_PASS \
             --out KuyfiMapu.apk aligned.apk
           "$BT/apksigner" verify KuyfiMapu.apk
+          rm -f "$RUNNER_TEMP/release.jks"
 
       - name: Publish to the rolling release
         env:
@@ -72,7 +81,7 @@ jobs:
         run: |
           printf '%s\n\n%s\n\n%s\n' \
             "APK de Kewün Newen (compilación automática del último código)." \
-            "**Instalar en Android:** descarga \`KuyfiMapu.apk\`, ábrelo y acepta instalar desde esta fuente. Las actualizaciones se instalan encima sin perder las partidas guardadas." \
+            "**Instalar en Android:** descarga \`KuyfiMapu.apk\`, ábrelo y acepta instalar desde esta fuente. **Si lo instalaste antes del 25 de noviembre de 2026**, desinstala primero esa versión: la app ahora tiene una firma nueva y Android no la instala encima de la anterior (se pierden las partidas guardadas en la app vieja). Después de esto, las actualizaciones llegan solas." \
             "En iPhone no se puede instalar un APK: abre https://brogers36.github.io/Kuyfi-Mapu/ en Safari y usa Compartir → Añadir a pantalla de inicio." > notes.md
           if gh release view android --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release edit android --repo "$GITHUB_REPOSITORY" --title "Kewün Newen · Android" --notes-file notes.md

@@ -238,3 +238,16 @@ function drawLanScene(c,L){
   OV.push(()=>txt(ttl,LW/2,11,good?'#ffe890':'#c8ccd8',12,'center'));
   c.restore();
 }
+/* the title screen: the painted Lafkenche dusk (volcano, lake, beach) with a little life in it */
+function titleLand(c,F){
+  if(!(typeof paintedBG==='function'&&paintedBG('cut_dusk')))return paintLand(c,F,false);
+  const im=PBGI.cut_dusk,ox=Math.round(Math.max(LW-400,Math.min(0,LW/2-255)));c.drawImage(im,ox,0);   // the volcano in the middle of the screen
+  c.save();c.globalCompositeOperation='screen';c.fillStyle='rgba(70,52,70,.22)';c.fillRect(0,0,LW,LH);c.restore();   // a little more light
+  for(let k=0;k<22;k++)if((F+k*23)%70<9)R(c,(k*89+13)%LW,(k*37)%44+2,1,1,'#fff8e8');                 // stars blinking
+  for(let k=0;k<9;k++){const a=((F*.5+k*26)%230)/230,x=255+ox+a*34+Math.sin(a*5+k)*3,y=44-a*44;          // the volcano breathes a thin plume
+    ell(c,x,y,2+a*7,1.5+a*4,'rgba(150,120,150,'+(.38-a*.34)+')')}
+  for(let k=0;k<26;k++){const y=141+((k*5)%22),x=((k*67+Math.floor(F*.3))%LW);if((F+k*11)%48<10)R(c,x,y,2+(k%3),1,k%2?'#ffd0a0':'#c8b0e8')}   // light on the water
+  for(let x=0;x<LW;x+=2){const y=165+Math.round(Math.sin(x/11+F/26)*1.3);R(c,x,y,2,1,(x>>1)%3?'rgba(240,220,230,.7)':'rgba(200,180,210,.6)')}  // the lake lapping the sand
+  for(let i=0;i<2;i++){const bx=Math.round((F*.22+i*190)%(LW+30)-15),by=Math.round(70+i*13+Math.sin(F/21+i)*3),f=Math.sin(F/6+i)>0?1:0;
+    R(c,bx-1,by,3,1,'#1a1428');R(c,bx-4,by-f,3,1,'#1a1428');R(c,bx+2,by-f,3,1,'#1a1428')}
+}

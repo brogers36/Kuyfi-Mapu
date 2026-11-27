@@ -19,18 +19,19 @@ const KY_WHY={chi:['-chi es solo para ti: «déjame...». Liwen no entra.','-chi
   nge:['-nge le habla a otro, a uno solo: es una orden, no algo que hacen juntos.','-nge speaks to someone else, just one: it is an order, not something you do together.'],
   mu:['-mu les habla a otros dos («ustedes dos»), no a ustedes dos.','-mu speaks to two others ("you two"), not to the two of you.']};
 /* each enemy's habit, for the -ke- reading: a root it "usually" does */
-const KY_HABIT={kolokolo:{r:'küpa',pre:'Pun mew ',es:'De noche suele venir.',en:'It usually comes at night.'}};
+const KY_HABIT={kolokolo_b:{r:'küpa',pre:'Pun mew ',es:'De noche suele venir.',en:'It usually comes at night.'}};
 function kyHabit(t){const T=ET[t];if(KY_HABIT[t])return KY_HABIT[t];
   if(T.fly)return{r:'nagtu',pre:'',es:'Suele bajar en picada.',en:'It usually swoops down.'};
   if(T.hide)return{r:'tripa',pre:'',es:'Suele salir de pronto.',en:'It usually comes out all of a sudden.'};
   return{r:'küpa',pre:'',es:'Suele venirse encima.',en:'It usually comes right at you.'}}
 const kyShuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]]}return a};
 
-ET.kolokolo={name:'Kolokolo',hp:120,atk:9,xp:120,gold:[60,60],boss:true,bs:72,hide:1,drain:1};
-if(typeof SPR2!=='undefined'&&SPR2.dewu){SPR2.kolokolo=SPR2.dewu;if(SPR2['dewu@b'])SPR2['kolokolo@b']=SPR2['dewu@b']}
+/* Pukem's boss: the Kolokolo grown big (its own key, so Kewün's small kolokolo keeps working); it borrows the kolokolo's art */
+ET.kolokolo_b={name:'Kolokolo',hp:120,atk:9,xp:120,gold:[60,60],boss:true,bs:72,hide:1,drain:1};
+if(typeof SPR2!=='undefined'&&SPR2.kolokolo){SPR2.kolokolo_b=SPR2.kolokolo;if(SPR2['kolokolo@b'])SPR2['kolokolo_b@b']=SPR2['kolokolo@b']}
 
 function kyStart(){if(!B)return;B.back=0;B.warned=0;
-  if(S.flags&&S.flags.liwen){const mx=Math.max(8,Math.round(maxHP()*.8));B.pt={name:'Liwen',look:'lof_ulcha',max:mx,hp:mx,guard:0,hit:0}}else B.pt=null}
+  if(S.flags&&S.flags.liwen){const mx=Math.max(8,Math.round(maxHP()*.8));B.pt={name:'Liwen',look:'lof_ulcha',ow:'gatherer',max:mx,hp:mx,guard:0,hit:0}}else B.pt=null}
 function kyMenuOpts(en){const o=[];
   if(B.pt)o.push({m:'Iñchiw',g:en?'Speak together with '+B.pt.name+' (-yu)':'Hablar junto con '+B.pt.name+' (-yu)',v:'kyyu',dis:B.pt.hp<=0});
   if(S.flags&&S.flags.kimke)o.push({m:'Kimün',g:en?'Read what an enemy always does (-ke-)':'Leer lo que siempre hace un wekufü (-ke-)',v:'kyke'});
@@ -80,7 +81,7 @@ function kyPickRead(){
 function kyEnemyPre(fx,fxe,hitsFx){
   B.warnNow=B.warned;B.warned=0;
   for(const e of aliveE()){if(e.read>0)e.read--;
-    if(e.t==='kolokolo'&&e.hp>0){e.kt=(e.kt||0)+1;
+    if(e.t==='kolokolo_b'&&e.hp>0){e.kt=(e.kt||0)+1;
       if(e.hidden){e.hk=(e.hk||0)+1;if(e.hk>=2){e.hidden=0;e.hk=0;fx.push('El Kolokolo vuelve a asomarse.');fxe.push('The Kolokolo peeks out again.')}}
       else if(e.kt%3===0&&!(e.read>0)){e.hidden=1;e.hk=0;fx.push('El Kolokolo se escurre entre las sombras de la ruka.');fxe.push('The Kolokolo slips away into the shadows of the ruka.')}}}}
 /* called once at the end of every enemy phase */
@@ -98,7 +99,11 @@ function kyRedirect(e,d,fx,fxe,hitsFx){
   return{d}}
 
 function kyDrawPartner(c){const pt=B&&B.pt;if(!pt)return;
-  const cvs=ctCharSpriteBig(pt.look,'left',0),hw=cvs.width,hh=cvs.height,x=LW-88+(B.intro>0?Math.round(B.intro*1.2):0),base=130;
+  let cvs=ctCharSpriteBig(pt.look,'left',0);
+  /* with the new graphics, Liwen wears the new-art battle figure of a heroine the player did not choose, re-dyed teal, so she has the hero's polish and size */
+  if(typeof GEM_ON!=='undefined'&&GEM_ON&&GEM_READY){const base=heroLook()==='ayelen'?'millaray':'ayelen';
+    if(GEMI.pc[base]){const key='KYPT'+base;if(!CCACHE[key])CCACHE[key]=kyDye(ctCharSpriteBig(base,'left',0));cvs=CCACHE[key]}}
+  const hw=cvs.width,hh=cvs.height,x=LW-88+(B.intro>0?Math.round(B.intro*1.2):0),base=130;
   if(pt.hit>0)pt.hit--;
   ell(c,x+hw/2,base,hw*.46,3,'rgba(0,0,14,.34)');
   c.save();if(pt.hp<=0)c.globalAlpha=.35;if(pt.hit&&frame%6<3)c.globalAlpha=.5;
@@ -111,3 +116,13 @@ function kyEraTint(c){if(!M||M.era!=='past')return;
   c.save();c.globalCompositeOperation='color';c.fillStyle='rgba(168,128,82,.30)';c.fillRect(0,0,LW,LH);
   c.globalCompositeOperation='source-over';c.fillStyle='rgba(255,236,200,.05)';c.fillRect(0,0,LW,LH);
   const g=c.createRadialGradient(LW/2,LH/2,LH*.35,LW/2,LH/2,LH*.85);g.addColorStop(0,'rgba(40,22,8,0)');g.addColorStop(1,'rgba(40,22,8,.38)');c.fillStyle=g;c.fillRect(0,0,LW,LH);c.restore()}
+
+/* re-dye the reds and magentas of a figure to teal (skin, hair and dark lines keep their colour) */
+function kyDye(src){const [cv,c]=mk(src.width,src.height);c.drawImage(src,0,0);const im=c.getImageData(0,0,cv.width,cv.height),d=im.data;
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<10)continue;let r=d[i]/255,g=d[i+1]/255,b=d[i+2]/255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,dd=mx-mn;if(dd<.12)continue;
+    const sat=dd/(1-Math.abs(2*l-1));let h=mx===r?((g-b)/dd)%6:mx===g?(b-r)/dd+2:(r-g)/dd+4;h*=60;if(h<0)h+=360;
+    if(!((h>=290||h<=12)&&sat>.38))continue;h=(h+175)%360;
+    const C=(1-Math.abs(2*l-1))*sat,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2;let rr,gg,bb;
+    if(h<60)[rr,gg,bb]=[C,X,0];else if(h<120)[rr,gg,bb]=[X,C,0];else if(h<180)[rr,gg,bb]=[0,C,X];else if(h<240)[rr,gg,bb]=[0,X,C];else if(h<300)[rr,gg,bb]=[X,0,C];else [rr,gg,bb]=[C,0,X];
+    d[i]=Math.round((rr+m)*255);d[i+1]=Math.round((gg+m)*255);d[i+2]=Math.round((bb+m)*255)}
+  c.putImageData(im,0,0);return cv}

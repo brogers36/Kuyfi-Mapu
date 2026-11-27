@@ -2,7 +2,11 @@
    NPC SCRIPTS
    ============================================================ */
 const nm=()=>S.name;
-function learnRoot(r){if(!S.roots.includes(r))S.roots.push(r)}
+function learnRoot(r){if(S.roots.includes(r))return;S.roots.push(r);
+  if(r==='nagtu'&&typeof ents!=='undefined'){   // flyers held back before nagtu- come back now
+    for(const e of ents)if(e.kind==='enemy'&&e.p0){e.party=e.p0.slice();delete e.p0}
+    for(const e0 of FLYHELD){const [ex,ey]=placeNear(e0.x,e0.y,true);ents.push(Object.assign({},e0,{x:ex,y:ey,fx:ex,fy:ey,ox:ex,oy:ey,cd:30+rnd(60),dir:'down',pi:0,wait:0,bt:rnd(400)}))}
+    FLYHELD=[]}}
 function introScript(){
   say([
     L('Kuku','Mari mari, '+nm()+'!','¡Hola, '+nm()+'!','Hello, '+nm()+'!'),
@@ -70,7 +74,7 @@ function teacherTalk(){
       else{sfx('bad');say([L('Kimeltuchefe','Fey no...','No, eso no...','No, not that...'),N('Escucha otra vez y vuelve a intentarlo.','Listen again and try once more.')])}
     },false,true)});
 }
-function levelUpCheck(){const ls=[];while(S.xp>=xpNeed()){S.xp-=xpNeed();S.lvl++;S.baseMax+=HPQ;S.hp+=HPQ;S.baseAtk+=1;if(S.lvl%2===0)S.baseDef+=1;
+function levelUpCheck(){const ls=[];while(S.xp>=xpNeed()){S.xp-=xpNeed();S.lvl++;S.baseMax+=HPQ;S.hp+=HPQ;S.baseAtk+=1;if(S.lvl%2===0||S.hm)S.baseDef+=1;
   ls.push(L('','Doy kimün! Akuymi kimün nivel '+S.lvl+'. Llowfimi ka piwke ka doy newentuymi.','¡Más conocimiento! Llegas a kimün '+S.lvl+': ganas un corazón y más fuerza.','More knowledge! You reach kimün '+S.lvl+': you gain a heart and more strength.'))}
   if(ls.length){sfx('lvl');persist();say(ls)}}
 function kidTalk(i){
@@ -90,7 +94,7 @@ function konaTalk(){
   if(CUR==='lof')return choose(L('Kona','Palintuayu?','¿Jugamos un palin?','Shall we play palin?'),
     [{m:'May!',g:S.gloss==='en'?'Yes, let us play':'Sí, juguemos',v:1},
      {m:'Ka antü.',g:S.gloss==='en'?'Another day':'Otro día',v:0}],v=>{
-      if(v)return say([N('Vamos a la cancha. Muévete con las flechas y golpea la pali con A/Z; llévala hasta la raya del puel, a la derecha. De vez en cuando, grita la jugada a tu equipo en mapudungun. El primero a 3 gana.','Off to the field. Move with the arrows and strike the pali with A/Z; take it to the puel line, on the right. Every so often, shout the call to your team in Mapudungun. First to 3 wins.')],()=>palinStart());
+      if(v)return say([N('Vamos a la cancha. Muévete con las flechas y al alcanzar la pali la golpeas sola (o con Z o Espacio); llévala hasta la raya del puel, a la derecha. De vez en cuando, grita la jugada a tu equipo en mapudungun. El primero a 3 gana.','Off to the field. Move with the arrows and reach the pali to strike it (or press Z or Space); take it to the puel line, on the right. Every so often, shout the call to your team in Mapudungun. First to 3 wins.')],()=>palinStart());
       konaIdle()},true);
   konaIdle()}
 function konaIdle(){say([
@@ -145,7 +149,7 @@ function shop(where){
   function list(){
     const opts=[];
     for(const k in ITEMS)opts.push({m:ITEMS[k].m+'  ·  '+ITEMS[k].p,g:numW(ITEMS[k].p)+' ngülliw · '+G(ITEMS[k]),v:'i:'+k});
-    for(const k in GEAR){if(GEAR[k].hide)continue;opts.push({m:GEAR[k].m+'  ·  '+GEAR[k].p,g:S.gear[k]?(S.gloss==='en'?'(already yours)':'(ya lo tienes)'):numW(GEAR[k].p)+' ngülliw · '+G(GEAR[k]),v:'g:'+k,dis:!!S.gear[k]})}
+    for(const k in GEAR){if(GEAR[k].hide)continue;opts.push({m:GEAR[k].m+'  ·  '+GEAR[k].p,g:S.gear[k]&&!S.hm?(S.gloss==='en'?'(already yours)':'(ya lo tienes)'):numW(GEAR[k].p)+' ngülliw · '+G(GEAR[k])+(S.gear[k]?(S.gloss==='en'?' · you have ':' · tienes ')+numP(+S.gear[k]):''),v:'g:'+k,dis:!!S.gear[k]&&!S.hm})}   // master and weichafe mode: these can be bought again and stack
     opts.push({m:'Pewkayal',g:S.gloss==='en'?'See you later (leave)':'Hasta luego (salir)',v:'x'});
     choose({es:'Tienes '+numP(S.gold)+' ngülliw.',en:'You have '+numP(S.gold)+' ngülliw.'},opts,v=>{
       if(v===null||v==='x')return say([L('Ngillakafe','Pewkayal!','¡Hasta luego!','See you later!')]);
@@ -163,7 +167,7 @@ function shop(where){
       }
       choose(L('',it.m+' · '+numW(it.p)+' ngülliw','¿Lo compras?','Buy it?'),[{m:'Ngillayafiñ',g:en?'I will buy it':'Lo voy a comprar',v:1},{m:'Ngillalayafiñ',g:en?'I will not buy it':'No lo voy a comprar',v:0}],y=>{
         if(!y)return list();
-        S.gold-=it.p;S.gear[k]=1;if(k==='trariwe')S.hp+=HPQ;
+        S.gold-=it.p;S.gear[k]=(+S.gear[k]||0)+1;if(k==='trariwe')S.hp+=HPQ;
         persist();sfx('pick');say([L('Ngillakafe','Chaltu may!','¡Gracias!','Thank you!')],list)},true,false)
     },true,true);
   }
@@ -1606,16 +1610,16 @@ const TABLETS={
        {q:N('¿Cómo se dice «puma»?','How do you say «puma»?'),o:['pangi','luan','trewa'],a:'pangi'}]},
   rakizuam:{t:N('Cómo te sientes: -le-, -külen','How you feel: -le-, -külen'),lines:[
     N('-le- y -külen dicen cómo estás ahora mismo.','-le- and -külen say how you are right now.'),
-    L('','Kümelen. · Ayiwkülen. · Weñangkülen.','Estoy bien. · Estoy feliz. · Estoy triste.','I am well. · I am happy. · I am sad.'),
+    L('','Kümelen. · Ayiwkülen. · Weñankülen.','Estoy bien. · Estoy feliz. · Estoy triste.','I am well. · I am happy. · I am sad.'),
     N('El olvido se alimenta de la tristeza callada: decir cómo te sientes también es newen.','The forgetting feeds on silent sorrow: saying how you feel is newen too.')],
    qs:[{q:L('','Ayiwkülen.','¿Qué significa?','What does it mean?'),o:['Estoy triste.','Estoy feliz.','Estoy cansado.'],a:'Estoy feliz.'},
-       {q:N('¿Cómo se dice «estoy triste»?','How do you say «I am sad»?'),o:['Weñangkülen.','Kümelen.','Ayiwkülen.'],a:'Weñangkülen.'}]}};
+       {q:N('¿Cómo se dice «estoy triste»?','How do you say «I am sad»?'),o:['Weñankülen.','Kümelen.','Ayiwkülen.'],a:'Weñankülen.'}]}};
 const TAB_IDS=Object.keys(TABLETS);
 const tabCount=()=>TAB_IDS.filter(t=>S.flags['tab_'+t]).length;
 function tabletTalk(id){
   const T=TABLETS[id],en=S.gloss==='en';
   if(S.flags['tab_'+id])return choose(L('','Kuyfi chillka','La piedra brilla tranquila. ¿Vuelves a leerla?','The stone glows quietly. Read it again?'),
-    [{m:'May',g:en?'Read the lesson':'Leer la lección',v:1},{m:'Ka mew',g:en?'Later':'Después',v:0}],v=>{if(v)say([T.t].concat(T.lines))},true,true);
+    [{m:'May',g:en?'Read the lesson':'Leer la lección',v:1},{m:'Wüla feman',g:en?'Later':'Después',v:0}],v=>{if(v)say([T.t].concat(T.lines))},true,true);
   const first=!S.flags.tab_seen;S.flags.tab_seen=1;
   say((first?[N('Una piedra antigua, verde de musgo, tallada de arriba abajo con signos. Bajo el musgo se leen palabras en mapudungun: la dejaron los kuyfikeche, la gente de antes, para que nadie olvidara.','An ancient stone, green with moss, carved from top to bottom. Under the moss you can read words in Mapudungun: the kuyfikeche, the people of long ago, left it so that no one would forget.'),
       N('Dicen que quien despierta las seis kuyfi chillka recibe un trarilongko que protege como ningún otro.','They say whoever wakes all six kuyfi chillka receives a trarilongko that protects like no other.')]
@@ -1628,7 +1632,7 @@ function tabletTalk(id){
       return say(ls,()=>{if(S.xp>=xpNeed())levelUpCheck()})}
     const q=T.qs[i],opts=q.o.map(o=>({m:o,v:o}));for(let a=opts.length-1;a>0;a--){const b=rnd(a+1);[opts[a],opts[b]]=[opts[b],opts[a]]}
     choose(q.q,opts,v=>{if(trk('kuyfi chillka',v,q)){sfx('ok');ask(i+1)}
-      else{sfx('bad');const hd=S.hm?heroHurt():0;say([N((hd?'(−'+hd+') ':'')+'Los signos tiemblan y se apagan. La respuesta era: '+q.a+'. Lee la piedra otra vez.',(hd?'(−'+hd+') ':'')+'The signs tremble and go dark. The answer was: '+q.a+'. Read the stone again.')].concat(T.lines),()=>ask(0))}},false,true)}
+      else{sfx('bad');const hd=S.hm?heroHurt():0;say([N((hd?'(−'+hd+') ':'')+'Los signos tiemblan y se apagan. La respuesta era: '+q.a+'. Lee la piedra otra vez.',(hd?'(−'+hd+') ':'')+'The signs tremble and go dark. The answer was: '+(OPT_EN[q.a]||q.a)+'. Read the stone again.')].concat(T.lines),()=>ask(0))}},false,true)}
 }
 
 /* ---------- Nütramkan: a young visitor in every lof who wants to practise talking ---------- */
@@ -1642,7 +1646,7 @@ const NUTK={
     {q:L('Kallfü','Chew amuaymi?','¿Adónde vas?','Where are you going?'),o:['Mawida mew amuan.','Mawida mew tuwün.','Mawida pingen.'],a:'Mawida mew amuan.'},
     {q:L('Kallfü','Kimimi mapudungun?','¿Sabes mapudungun?','Do you know Mapudungun?'),o:['Kimnierpuken.','Amuyngün.','Kiñe pataka.'],a:'Kimnierpuken.'}]},
   p_lof:{who:'Rayen',set:[
-    {q:L('Rayen','Iyaymi kofke?','¿Vas a comer pan?','Will you eat bread?'),o:['May, iyan.','May, iyay.','Iyael pingen.'],a:'May, iyan.'},
+    {q:L('Rayen','Kofketuaymi?','¿Vas a comer pan?','Will you eat bread?'),o:['May, kofketuan.','May, kofketuay.','Iyael pingen.'],a:'May, kofketuan.'},
     {q:L('Rayen','Chem ayüymi?','¿Qué te gusta?','What do you like?'),o:['Ngülliw ayüfiñ.','Ngülliw pingen.','Ngülliw mew tuwün.'],a:'Ngülliw ayüfiñ.'},
     {q:L('Rayen','Wütreymi?','¿Tienes frío?','Are you cold?'),o:['May, wütren.','May, wütrey.','Wütre ruka.'],a:'May, wütren.'}]},
   w_lof:{who:'Millanao',set:[
@@ -1686,7 +1690,7 @@ function nutkTalk(lofId){
   if(D.who===S.name)D={who:'\u200b'+D.who,set:D.set};   // a namesake (a partner with the player's own name): a hidden mark so their lines keep their own portrait
   const sub=s=>s.replace('@',nm);
   say([L(D.who,'Mari mari! Nütramkayaiñ?','¡Hola! ¿Conversamos? Estoy aprendiendo y quiero practicar.','Hello! Shall we talk? I am learning and I want to practise.')],()=>{
-    choose(L('','Nütramkayaiñ?','¿Conversas con '+D.who+'?','Talk with '+D.who+'?'),[{m:'May',g:S.gloss==='en'?'Yes, let us talk':'Sí, conversemos',v:1},{m:'Ka mew',g:S.gloss==='en'?'Later':'Después',v:0}],v=>{if(v)step(0)},true,true)});
+    choose(L('','Nütramkayaiñ?','¿Conversas con '+D.who+'?','Talk with '+D.who+'?'),[{m:'May',g:S.gloss==='en'?'Yes, let us talk':'Sí, conversemos',v:1},{m:'Wüla feman',g:S.gloss==='en'?'Later':'Después',v:0}],v=>{if(v)step(0)},true,true)});
   function step(i){
     if(i>=D.set.length){const ls=[L(D.who,'Kümey! Pewkayal!','¡Muy bien! ¡Hasta luego!','Very good! See you later!')];
       if(!done){S.flags[fl]=1;S.gold+=15;S.xp+=6;sfx('lvl');ls.push(N('+15 ngülliw · +6 kimün.','+15 ngülliw · +6 kimün.'));

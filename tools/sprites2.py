@@ -2363,6 +2363,9 @@ if os.path.exists(_wp):
 _hp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'heroes.json')
 if os.path.exists(_hp):
     for _n,_h in json.load(open(_hp)).items():D['hero_'+_n]={'pal':_h['pal'],'f':_h['f'],'big':1,'aura':0,'hand':1}
+_sp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'stgopeople.json')
+if os.path.exists(_sp):
+    for _n,_h in json.load(open(_sp)).items():D['hero_stg_'+_n]={'pal':_h['pal'],'f':_h['f'],'big':1,'aura':0,'hand':1}
 _lp=os.path.join(os.path.dirname(os.path.abspath(__file__)),'lofpeople.json')
 if os.path.exists(_lp):
     for _n,_h in json.load(open(_lp)).items():D['hero_lof_'+_n]={'pal':_h['pal'],'f':_h['f'],'big':1,'aura':0,'hand':1}

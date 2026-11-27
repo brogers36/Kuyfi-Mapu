@@ -37,6 +37,11 @@ addEventListener('load',()=>{const iOS=/iPad|iPhone|iPod/.test(navigator.userAge
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-monospace,Menlo,Consolas,"DejaVu Sans Mono",monospace;overflow:hidden;touch-action:manipulation;-webkit-user-select:none;user-select:none}
 #wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:8px}
+/* while the game is still loading, show only a soft pulsing name; the menu fades in once it is laid out at its real size */
+body>*{transition:opacity .45s ease}
+body.boot>*{opacity:0!important}
+body.boot::after{content:'Kewün Newen';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#e8b860;font:bold 18px ui-monospace,Menlo,monospace;letter-spacing:3px;animation:bootp 1.1s ease-in-out infinite alternate;pointer-events:none}
+@keyframes bootp{from{opacity:.2}to{opacity:.85}}
 #screen{position:relative;--s:3;--lw:256;width:calc(var(--lw)*1px*var(--s));height:calc(224px*var(--s));box-shadow:0 0 0 3px #2b2433,0 8px 30px #000;overflow:hidden}
 #cv{width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;display:block;background:#000}
 #ui{position:absolute;inset:0;font-size:calc(6.2px*var(--s));pointer-events:none}
@@ -51,8 +56,20 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
 #menu,#dlg{z-index:20}#menu{display:none;max-height:50%;overflow:hidden;flex-direction:column}#menu::before,#menu::after{z-index:3}#menu .p{flex:0 1 auto;overflow-y:auto;min-height:1.6em}#menu .list{flex:1 1 auto;min-height:3.4em;overflow-y:auto;padding:2px 2px 4px}
 #menu .p{margin-bottom:.45em;position:relative}
 .hid{display:none!important}
+.ds{position:absolute;right:calc(10px + 1.9em);top:4px;z-index:4;width:1.9em;height:1.9em;border-radius:50%;border:2px solid #a0e0b8;background:#1a2a3a;color:#c8f0d8;font:bold 1em ui-monospace,monospace;cursor:pointer;padding:0}
+#desgp{display:none;bottom:31%;z-index:21;max-height:56%;overflow-y:auto;cursor:pointer;padding:.9em 1em .7em}#desgp .dw{margin:.15em 0 .7em}#desgp .dw b{color:#ffe48a;font-size:1.1em}#desgp .dilg{display:flex;flex-wrap:wrap;gap:.2em .1em;margin-top:.25em}#desgp .dilg span{display:flex;flex-direction:column;align-items:flex-start;padding-right:.25em}#desgp em{font-style:normal;font-weight:bold;color:#fff}#desgp i{color:#cfd8ff;font-size:.78em;max-width:9em;line-height:1.2}#desgp .dwarn{color:#ffb060}#desgp .dnote{color:#ffb060;font-size:.8em}
 .rv{position:absolute;right:6px;top:4px;z-index:4;width:1.9em;height:1.9em;border-radius:50%;border:2px solid #ffe8a0;background:#2a1a3a;color:#ffe8a0;font:bold 1em ui-monospace,monospace;cursor:pointer;padding:0}
 #menu .p .rv{top:0;right:0}
+#atlas{display:none;position:fixed;inset:0;z-index:40;background:rgba(8,6,20,.86);align-items:center;justify-content:center}
+#atlas .ab{position:relative;width:min(96vw,calc((100vh - 118px)*400/224),900px);display:flex;flex-direction:column;gap:6px}
+#atlas .aw{position:relative;width:100%}
+#atlas canvas{display:block;width:100%;image-rendering:pixelated;border-radius:4px;box-shadow:0 0 0 3px #1a1012,0 6px 24px #000a}
+#atlas .al span{position:absolute;transform:translate(-50%,0);font:bold clamp(9px,1.6vw,14px) ui-monospace,Menlo,monospace;color:#fff6dc;text-shadow:0 1px 0 #000,1px 0 0 #000,-1px 0 0 #000,0 -1px 0 #000,0 0 6px #000;white-space:nowrap;cursor:pointer;padding:0 3px;border-radius:3px}
+#atlas .al span.on{background:#3a2a50cc;color:#ffe8a0}
+#atlas .af{display:flex;gap:6px;align-items:stretch}
+#atlas .ai{flex:1;background:#f8f2e4;color:#1a1020;border:3px solid #3a2a50;border-radius:5px;padding:6px 10px;font:clamp(11px,1.7vw,14px)/1.4 ui-monospace,Menlo,monospace;min-height:3.6em}
+#atlas .ai b{display:block;color:#7a1c1c}#atlas .ai i{display:block;color:#4a3a5a}#atlas .ai div{margin-top:2px;white-space:pre-wrap}
+#atlas .ax{flex:0 0 auto;min-width:76px;border-radius:5px;border:3px solid #ffe8a0;background:#3a2a50;color:#ffe8a0;font:bold clamp(12px,1.8vw,15px) ui-monospace,Menlo,monospace;cursor:pointer;touch-action:manipulation}
 #report{display:none;position:fixed;inset:0;z-index:40;background:rgba(8,6,20,.82);align-items:center;justify-content:center}
 #report .rb{background:#f8f2e4;color:#1a1020;max-width:min(92vw,720px);max-height:88vh;display:flex;flex-direction:column;border:4px solid #3a2a50;border-radius:6px}
 #report pre{margin:0;padding:14px;overflow:auto;font:13px/1.45 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}
@@ -70,8 +87,10 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
 #banner{position:absolute;left:50%;top:22%;transform:translateX(-50%);background:linear-gradient(180deg,#25205cf2,#110e30f4);border:3px solid #e2c27a;box-shadow:inset 0 0 0 2px #3a2c18,inset 0 0 0 4px #8a6a30,0 0 0 2px #000,0 .3em 0 #000a;padding:.4em 1.2em;border-radius:3px;text-align:center;display:none;pointer-events:none}
 #banner b{display:block;font-size:1.3em;color:#ffe9b0;text-shadow:0 2px 0 #000,0 0 .5em #e2c27a66}
 #banner span{color:#d4f0e2;font-style:italic;font-size:1.1em}
-#title{position:absolute;inset:0;background:linear-gradient(#0d0b1022,#0d0b10bb 85%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55em;text-align:center;padding:1em}
-#title h1{margin:0;font-size:2.5em;color:#ffe9b0;text-shadow:0 3px 0 #7a3a1a,0 0 14px #000,0 0 3px #000;letter-spacing:.04em}
+#title{position:absolute;inset:0;background:linear-gradient(#0d0b1000,#0d0b1077 85%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.55em;text-align:center;padding:1em}
+#title h1 .logo{display:block;width:min(82%,515px,57vh);margin:0 auto;image-rendering:pixelated;image-rendering:crisp-edges}
+@media (max-width:520px){#title h1 .logo{width:64%}}
+#title h1{margin:0;width:100%;font-size:2.5em;color:#ffe9b0;text-shadow:0 3px 0 #7a3a1a,0 0 14px #000,0 0 3px #000;letter-spacing:.04em}
 #title .sub{color:#cfe6ff;font-size:1.05em;text-shadow:0 0 4px #000}
 #title .row{display:flex;gap:.6em;flex-wrap:wrap;justify-content:center;align-items:center;text-shadow:0 0 4px #000}
 #title.inst .help:not(#ioshint):not(#andhint){display:none}
@@ -84,8 +103,9 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
 #title .help{font-size:.75em;color:#d8d0e4;max-width:36em;line-height:1.4;background:#0d0b10aa;padding:.4em .6em;border-radius:4px}
 #title .copy{font-size:.7em;color:#cfc6dc;position:absolute;bottom:.5em;left:1.5em;right:1.5em;text-align:center;line-height:1.35;text-shadow:0 0 3px #000}
 #skip{position:absolute;right:.6em;top:.6em;font:inherit;font-size:.85em;padding:.25em .7em;border-radius:4px;border:2px solid #e8d49a;background:#2a2238cc;color:#fff;cursor:pointer;display:none}
-#mbtn{position:absolute;left:.6em;top:.6em;font:inherit;font-size:1em;padding:.15em .5em;border-radius:4px;border:2px solid #4a3d5c;background:#2a223880;color:#f4ecd8cc;cursor:pointer;display:none}
+#mbtn{position:absolute;left:.6em;bottom:.6em;z-index:6;font:inherit;font-size:1.9em;line-height:1;padding:.3em .55em;border-radius:4px;border:2px solid #4a3d5c;background:#2a223880;color:#f4ecd8cc;cursor:pointer;display:none}
 @media (hover:none),(pointer:coarse){#mbtn{display:block}}
+#fsbtn.low{top:auto;bottom:.6em;font-size:1.9em;line-height:1;padding:.3em .5em}
 #fsbtn{position:absolute;right:.6em;top:.6em;z-index:9;font:inherit;font-size:1em;padding:.15em .5em;border-radius:4px;border:2px solid #4a3d5c;background:#2a223880;color:#f4ecd8cc;cursor:pointer;display:none}
 #pad{display:flex;gap:28px;align-items:center;justify-content:center}
 #dpad{display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(3,48px);gap:3px}
@@ -100,7 +120,7 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
 #ui.cutm #dlg{background:transparent!important;border:0!important;box-shadow:none!important;left:6%;right:6%;bottom:1.2%;min-height:0;padding:.2em .4em}#ui.cutm #dlg::before,#ui.cutm #dlg::after{display:none}#ui.cutm #dlg .g{color:#e8e4f4;text-shadow:0 1px 0 #000}#ui.cutm #dlg .who{top:-1.4em}
 </style>
 </head>
-<body>
+<body class="boot">
 <div id="wrap">
   <div id="screen">
     <canvas id="cv" width="512" height="448"></canvas>
@@ -110,10 +130,10 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
       <div id="menu" class="box"><div class="p"></div><div class="list"></div></div>
       <button id="skip">Saltar ▶▶</button>
       <button id="mbtn">☰</button>
-      <button id="fsbtn" title="Pantalla completa / Fullscreen (F)">⛶</button>
+      <button id="fsbtn" title="Pantalla completa (F)" data-tes="Pantalla completa (F)" data-ten="Fullscreen (F)">⛶</button>
       <div id="title">
         <h1>Kuyfi Mapu</h1>
-        <div class="sub">Prototipo · Lafkenche, Nagche, Pewenche y Williche</div>
+        <div class="sub" data-es="Prototipo · Lafkenche, Nagche, Pewenche y Williche" data-en="Prototype · Lafkenche, Nagche, Pewenche and Williche">Prototipo · Lafkenche, Nagche, Pewenche y Williche</div>
         <div class="row">
           <button class="hero on" id="hM"><canvas width="32" height="48"></canvas><span>Millaray</span></button>
           <button class="hero" id="hA"><canvas width="32" height="48"></canvas><span>Ayelen</span></button>
@@ -121,14 +141,14 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
           <button class="hero" id="hK"><canvas width="32" height="48"></canvas><span>Kallfürüngi</span></button>
         </div>
         <div class="row">
-          <button id="bNew">Llitun · Nuevo juego</button>
-          <button id="bCont" style="display:none">Continuar · Continue</button>
+          <button id="bNew" data-es="Llitun · Nuevo juego" data-en="Llitun · New game">Llitun · Nuevo juego</button>
+          <button id="bCont" style="display:none" data-es="Continuar" data-en="Continue">Continuar</button>
         </div>
-        <div class="row"><button id="bLang">Glosa: Español</button><button id="bMus">♪ Música: sí</button></div>
-        <div class="row" id="instRow" style="display:none"><span style="font-size:.85em;color:#e8d49a">📲 Instalar · Install:</span><button id="bAnd">Android</button><button id="bIOS">iPhone / iPad</button></div>
-        <div class="help" id="andhint" style="display:none;border:2px solid #e8d49a"><div class="row" style="margin-bottom:.4em"><a id="bAPK" class="ib" href="https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk" download>⬇ APK</a><button id="bPWA">App web · Web app</button></div><span id="andtxt">APK: ábrelo y acepta instalar · se actualiza sola.<br>APK: open it and allow the install · it updates itself.</span></div>
-        <div class="help" id="ioshint" style="display:none;border:2px solid #e8d49a">📲 Instala el juego en tu iPhone: toca <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>. Se abre a pantalla completa y funciona sin internet.<br>Install on iPhone: tap <b>Share</b>, then <b>"Add to Home Screen"</b>. It opens fullscreen and works offline.</div>
-<div class="help"><span class="kb">Flechas / WASD: moverse · Z, Enter o Espacio: hablar / aceptar (A) · X o Esc: volver / menú (B) · M: menú · N: música.</span><span class="tc">Un toque: hablar / avanzar · mantén el dedo y arrastra: caminar (suéltalo para parar) · desliza: recorrer el menú · dos dedos: volver · mantener pulsado o ☰: menú.<br>Tap: talk / advance · hold and drag: walk (lift to stop) · swipe: scroll a menu · two fingers: back · long press or ☰: menu.</span></div>
+        <div class="row"><button id="bLang">Glosa: Español</button><button id="bMus">♪ Música: sí</button><button id="bGfx">Gráficos: nuevos</button></div>
+        <div class="row" id="instRow" style="display:none"><span style="font-size:.85em;color:#e8d49a" data-es="📲 Instalar:" data-en="📲 Install:">📲 Instalar:</span><button id="bAnd">Android</button><button id="bIOS">iPhone / iPad</button></div>
+        <div class="help" id="andhint" style="display:none;border:2px solid #e8d49a"><div class="row" style="margin-bottom:.4em"><a id="bAPK" class="ib" href="https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk" download>⬇ APK</a><button id="bPWA" data-es="App web" data-en="Web app">App web</button></div><span id="andtxt" data-es="APK: ábrelo y acepta instalar · se actualiza sola." data-en="APK: open it and allow the install · it updates itself.">APK: ábrelo y acepta instalar · se actualiza sola.</span></div>
+        <div class="help" id="ioshint" style="display:none;border:2px solid #e8d49a"><span data-es="📲 Instala el juego en tu iPhone: toca &lt;b&gt;Compartir&lt;/b&gt; y luego &lt;b&gt;«Añadir a pantalla de inicio»&lt;/b&gt;. Se abre a pantalla completa y funciona sin internet." data-en="📲 Install on iPhone: tap &lt;b&gt;Share&lt;/b&gt;, then &lt;b&gt;&quot;Add to Home Screen&quot;&lt;/b&gt;. It opens fullscreen and works offline.">📲 Instala el juego en tu iPhone: toca <b>Compartir</b> y luego <b>«Añadir a pantalla de inicio»</b>. Se abre a pantalla completa y funciona sin internet.</span></div>
+<div class="help"><span class="kb" data-es="Flechas / WASD: moverse · Z, Enter o Espacio: hablar / aceptar (A) · X o Esc: volver / menú (B) · M: menú · N: música." data-en="Arrows / WASD: move · Z, Enter or Space: talk / accept (A) · X or Esc: back / menu (B) · M: menu · N: music.">Flechas / WASD: moverse · Z, Enter o Espacio: hablar / aceptar (A) · X o Esc: volver / menú (B) · M: menú · N: música.</span><span class="tc" data-es="Un toque: hablar / avanzar · mantén el dedo y arrastra: caminar (suéltalo para parar) · desliza: recorrer el menú · dos dedos: volver · mantener pulsado o ☰: menú." data-en="Tap: talk / advance · hold and drag: walk (lift to stop) · swipe: scroll a menu · two fingers: back · long press or ☰: menu.">Un toque: hablar / avanzar · mantén el dedo y arrastra: caminar (suéltalo para parar) · desliza: recorrer el menú · dos dedos: volver · mantener pulsado o ☰: menú.</span></div>
         <div class="copy" id="copy">© 2026 Brandon M. A. Rogers · Todos los derechos reservados. Prohibido usar este sitio para entrenar inteligencia artificial.</div>
       </div>
     </div>
@@ -141,7 +161,7 @@ html,body{margin:0;height:100%;background:#0d0b10;color:#f4ecd8;font-family:ui-m
     </div>
     <div id="ab">
       <button class="sm" id="pN">♪</button>
-      <button class="sm" id="pM">MENÚ</button>
+      <button class="sm" id="pM" data-es="MENÚ" data-en="MENU">MENÚ</button>
       <button id="pB">B</button>
       <button id="pA">A</button>
     </div>

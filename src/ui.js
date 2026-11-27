@@ -43,12 +43,29 @@ function say(lines,cb){
     const full=G(l),hid=!!(S&&S.nogloss&&l.m&&full);g.textContent=hid?'':full;g.style.display=full&&!hid?'':'none';
     let rv=dlg.querySelector('.rv');if(!rv){rv=document.createElement('button');rv.className='rv';rv.textContent='?';dlg.appendChild(rv)}
     rv.style.display=hid?'':'none';rv.onclick=e=>{e.stopPropagation();g.textContent=full;g.style.display='';rv.style.display='none';S.peek=(S.peek||0)+1};
+    let ds=dlg.querySelector('.ds');if(!ds){ds=document.createElement('button');ds.className='ds';ds.textContent='÷';dlg.appendChild(ds)}
+    const dw=desgWords(l.m);ds.style.display=dw.length?'':'none';ds.title=LANG==='es'?'Desglose de palabras':'Word breakdown';ds.onclick=e=>{e.stopPropagation();desgOpen(dw)};
     dlg.style.display='block';SAYT=performance.now();if(l.fx)l.fx();};
   active={kind:'say',a(){i++;if(i>=lines.length){dlg.style.display='none';active=null;cb&&cb()}else{sfx('move');show()}},b(){this.a()}};
   show();
 }
 let SAYT=0;
+/* word breakdown: approved rows of docs/Kewun_desglose.xlsx (src/desglose.js); the master build also shows unreviewed ones with ⚠ */
+function desgWords(m){if(!m||typeof DESG==='undefined')return[];const out=[],seen=new Set();
+  for(const t of String(m).split(/\s+/)){const k=t.toLowerCase().replace(/^[^\p{L}']+|[^\p{L}']+$/gu,'');const d=DESG[k];
+    if(!d||seen.has(k)||d.p.length<2||!(d.ok||window.KEWUN_MASTER))continue;seen.add(k);out.push([t.replace(/[¡!¿?.,;:«»"“”()…]/g,''),d])}return out}
+function desgOpen(list){let pn=$('desgp');if(!pn){pn=document.createElement('div');pn.id='desgp';pn.className='box';dlg.parentNode.appendChild(pn)}
+  const en=LANG!=='es',h=[];
+  for(const [w,d] of list){const gl=[d.r[en?1:0]].concat(d.m.map(x=>x[en?1:0]));
+    h.push('<div class="dw"><b>'+esc(GR(w))+(d.ok?'':' <span class="dwarn">⚠</span>')+'</b><div class="dilg">'+d.p.map((p,i)=>'<span><em>'+(i?'-':'')+esc(GR(p))+'</em><i>'+esc(gl[i]||'')+'</i></span>').join('')+'</div></div>')}
+  if(list.some(x=>!x[1].ok))h.push('<div class="dnote">⚠ '+(en?'not yet reviewed':'sin revisar todavía')+'</div>');
+  pn.innerHTML=h.join('');pn.style.display='block';sfx('move');
+  const prev=active,close=()=>{pn.style.display='none';active=prev};
+  active={kind:'desg',a:close,b:close};pn.onclick=e=>{e.stopPropagation();close()}}
 dlg.addEventListener('click',()=>{if(active&&active.kind==='say'&&performance.now()-SAYT>180)active.a()});
+/* answer options written in Spanish (meaning quizzes): shown in English when the gloss is English; the value stays the same */
+const OPT_EN={"Estoy en la casa.": "I am at home.", "Voy a la casa.": "I am going home.", "Mi casa es grande.": "My house is big.", "el pie": "the foot", "la mano": "the hand", "la oreja": "the ear", "ayer": "yesterday", "mañana": "tomorrow", "ahora": "now", "antiguo": "long ago", "Ayer fui.": "I went yesterday.", "Mañana iré.": "I will go tomorrow.", "Ahora voy.": "I am going now.", "el puma": "the puma", "el ñandú": "the rhea", "el cóndor": "the condor", "Estoy triste.": "I am sad.", "Estoy feliz.": "I am happy.", "Estoy cansado.": "I am tired.", "Yo canto.": "I sing.", "Tú cantas.": "You sing.", "Él o ella canta.": "He or she sings.", "Mi mamá y yo trabajamos.": "My mom and I work.", "Mi mamá trabaja.": "My mom works.", "Ellas dos trabajan.": "The two of them work.", "¿Cuántos años tienes?": "How old are you?", "¿Dónde vives?": "Where do you live?", "¿Cómo te llamas?": "What is your name?", "¿Dónde?": "Where?", "¿Cuándo?": "When?", "¿Quién?": "Who?", "De noche suelo dormir.": "I usually sleep at night.", "Anoche dormí.": "I slept last night.", "Esta noche dormiré.": "I will sleep tonight.", "Solía hablar mapudungun.": "He or she used to speak Mapudungun.", "Habla mapudungun ahora.": "He or she speaks Mapudungun now.", "Hablará mapudungun.": "He or she will speak Mapudungun.", "Nuestro lof.": "Our lof.", "Tu lof.": "Your lof.", "Su lof.": "His or her lof.", "Está durmiendo.": "He or she is sleeping.", "Va a dormir.": "He or she is going to sleep.", "Duerme siempre.": "He or she always sleeps.", "Ayer vi un ñandú.": "I saw a rhea yesterday.", "Mañana veré un ñandú.": "I will see a rhea tomorrow.", "Hoy veo dos ñandúes.": "Today I see two rheas."};
+const optTxt=m=>{const en=(typeof S!=='undefined'&&S&&S.gloss)?S.gloss==='en':(typeof LANG!=='undefined'&&LANG==='en');return en&&OPT_EN[m]?OPT_EN[m]:GRm(m)};
 function choose(prompt,opts,cb,cancel,one,onSel){
   const pe=menu.querySelector('.p'),le=menu.querySelector('.list');
   pe.innerHTML='';le.innerHTML='';le.classList.toggle('one',!!one);
@@ -59,7 +76,7 @@ function choose(prompt,opts,cb,cancel,one,onSel){
   let idx=opts.findIndex(o=>!o.dis);if(idx<0)idx=0;const t0=performance.now();
   const pick=k=>{menu.style.display='none';active=null;sfx('ok');cb(opts[k].v!==undefined?opts[k].v:k)};
   const btns=opts.map((o,k)=>{const b=document.createElement('button');b.className='opt';
-    const mp=o.m&&!_isEsp(o.m);b.innerHTML='<span class="om">'+esc(GRm(o.m||''))+'</span>'+(o.g?'<span class="og'+(ng&&mp?' hid':'')+'">'+esc(o.g)+'</span>':'');
+    const mp=o.m&&!_isEsp(o.m);b.innerHTML='<span class="om">'+esc(optTxt(o.m||''))+'</span>'+(o.g?'<span class="og'+(ng&&mp?' hid':'')+'">'+esc(o.g)+'</span>':'');
     if(o.dis)b.disabled=true;b.onclick=()=>{if(!o.dis&&performance.now()-t0>250)pick(k)};
     b.onmouseenter=()=>{if(!o.dis&&idx!==k){idx=k;hl()}};le.appendChild(b);return b});
   if(ng){const hide=[...pe.querySelectorAll('.g')].filter(()=>prompt&&prompt.m);hide.forEach(d=>d.classList.add('hid'));

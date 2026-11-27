@@ -4,9 +4,9 @@
    jump to any map, heal, skip battles.
    ============================================================ */
 const MCHK=[
-  {m:'Kuyfi · Pukem · lof',es:'Llegada al lof de los antiguos (Liwen te encuentra)',en:'Arrival at the ancestors\' lof (Liwen finds you)',lvl:4,at:['k_lof',1,8],set:['intro','pentu']},
+  {m:'Kuyfi · Pukem · lof',es:'Llegada al lof del pasado (Liwen te encuentra)',en:'Arrival at the lof of the past (Liwen finds you)',lvl:4,at:['k_lof',1,8],set:['intro','pentu']},
   {m:'Kuyfi · Pukem · madriguera',es:'Entrada de la madriguera del Kolokolo, con Liwen y -ke-',en:'Entrance of the Kolokolo\'s burrow, with Liwen and -ke-',lvl:6,at:['kd1',1,6],set:['intro','pentu','liwen','kimke','kyarr']},
-  {m:'Kuyfi · Pukem · Kolokolo',es:'Prueba: Liwen, «Iñchiw» (-yu) y «Kimün» (-ke-) contra el Kolokolo',en:'Test: Liwen, «Iñchiw» (-yu) and «Kimün» (-ke-) against the Kolokolo',lvl:8,at:['kd_den',8,9],set:['intro','pentu','liwen','kimke','kyarr'],fight:['kolokolo']},
+  {m:'Kuyfi · Pukem · Kolokolo',es:'Prueba: Liwen, «Iñchiw» (-yu) y «Kimün» (-ke-) contra el Kolokolo',en:'Test: Liwen, «Iñchiw» (-yu) and «Kimün» (-ke-) against the Kolokolo',lvl:8,at:['kd_den',8,9],set:['intro','pentu','liwen','kimke','kyarr'],fight:['kolokolo_b']},
   {m:'Lafkenche · inicio',es:'Desde el principio, sin la escena inicial',en:'From the start, skipping the opening scene',lvl:1,at:['rupu',1,6],set:[]},
   {m:'Lafkenche · lof',es:'Con el pentukuwün ya hecho',en:'With the pentukuwün already done',lvl:3,at:['lof',17,9],set:['intro','pentu']},
   {m:'Lafkenche · cueva',es:'Entrada de la cueva del trelke-wekufü',en:"Entrance of the trelke-wekufü's cave",lvl:4,at:['inaltu',21,5],set:['intro','pentu']},

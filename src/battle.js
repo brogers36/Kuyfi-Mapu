@@ -24,8 +24,8 @@ function startBattle(party,o){o=o||{};const bwx=(typeof wxNow==='function'&&M)?w
   if(typeof stopAmb==='function')stopAmb();
   if(typeof playAmb==='function'&&(M.urban||M.bg==='metro')){playAmb(typeof wxAmbKey==='function'&&wxKey()?wxAmbKey():ambFor(M.bg));ambVol(.2)}   // the city keeps going, quieter, under the fight
   mode='battle';banner.style.display='none';held.up=held.down=held.left=held.right=0;
-  const vph={day:'day',dusk:'dusk',night:'night',dawn:'dusk'}[typeof dayPhase==='function'?dayPhase().name:'day'],bgv=(typeof PAINTBG!=='undefined'&&PAINTBG[M.bg+'@'+vph])?M.bg+'@'+vph:M.bg;   // the city backdrops are painted for each time of day
-  B={wx:bwx,snap,wipe:snap?22:0,en:party.map(mkEnemy),o,tele:false,teleHint:false,shake:0,area:(M.fog&&M.bg!=='fjord'?'fog:':'')+bgv,turn:0,cursor:null,pops:[],parts:[],flash:0,red:0,intro:24,blocked:null,rush:null,shownHP:S.hp};
+  const vph={day:'day',dusk:'dusk',night:'night',dawn:'dusk'}[typeof dayPhase==='function'?dayPhase().name:'day'],mbg=o.bg||M.bg,mfog=o.bg?o.fog:M.fog,bgv=(typeof PAINTBG!=='undefined'&&PAINTBG[mbg+'@'+vph])?mbg+'@'+vph:mbg;   // the city backdrops are painted for each time of day
+  B={wx:bwx,snap,wipe:snap?22:0,en:party.map(mkEnemy),o,tele:false,teleHint:false,shake:0,area:(mfog&&mbg!=='fjord'?'fog:':'')+bgv,turn:0,cursor:null,pops:[],parts:[],flash:0,red:0,intro:24,blocked:null,rush:null,shownHP:S.hp};
   if(o.tut){B.en[0].hp=B.en[0].max=20}
   if(typeof kyStart==='function')kyStart();
   relabel();sfx('enc');if(snap)sfx('swirl');playSong(o.song||(o.final?'ngoyFinal':rsong(o.boss?'boss':'battle')));
@@ -44,6 +44,7 @@ function bossBlock(e){const T=ET[e.t];if(!T.boss)return false;if(e.down||e.sl||e
 const quizPend=e=>!!B&&ET[e.t].boss&&!B.qok&&!/^ngoyman[1-4]$/.test(e.t)&&!(B.o.chain==='llufu'&&e.t!=='llufu5');
 function battleMenu(){
   if(B&&B.ngenA&&!B.ngenA.done)return;
+  if(B&&B.defA&&!B.defA.done)return;
   if(B&&B.o.tut&&tutStep())return;
   if(B&&B.lanPending){const le=B.lanPending;B.lanPending=null;if(!le.dead)return lanKewun(le)}
   if(B&&B.llawPending){const le=B.llawPending;B.llawPending=null;if(!le.dead&&le.hp>0)return llawKewun(le)}
@@ -68,6 +69,7 @@ function battleMenu(){
       return say(ls,enemyPhase)}
     else if(v==='i')choose({es:'Chemkün',en:'Items'},itemOpts().concat([{m:en?'Back':'Volver',v:'x'}]),k=>{if(!k||k==='x')return battleMenu();const l=useItem(k);say([l],enemyPhase)},true);
     else if(v==='r'&&B.o.tut){return say([L('Kuku','Petu, '+nm()+'!','¡Todavía no, '+nm()+'! Primero aprende a hablarles. (En las peleas normales, «Lef» sirve para huir; de los jefes no se puede huir.)','Not yet, '+nm()+'! First learn to speak to them. (In ordinary fights «Lef» lets you run away; you cannot run from bosses.)')],battleMenu)}
+    else if(v==='r'&&B.o.arena){return say([L('','Lef!','Sales del Weichawe.','You leave the Weichawe.')],()=>endBattle('flee'))}
     else if(v==='r'){if(B.o.boss||B.o.mini){sfx('bad');return say([N('¡No puedes huir de esta pelea!','You cannot run from this fight!')],battleMenu)}
       if(Math.random()<.65)return say([L('','Lef!','Huyes corriendo.','You run away.')],()=>endBattle('flee'));
       sfx('bad');say([N('¡No pudiste escapar!','You could not get away!')],enemyPhase)}
@@ -278,15 +280,15 @@ function enemyPhase(){
   const hitP=(e,mult,tag)=>{
     if(B.blocked&&B.blocked.has(e)){fx.push(e.label+': ¡bloqueado!');fxe.push(e.label+': blocked!');hitsFx.push(()=>{const p=epos(e);pop(p.x,p.y-10,'✋','#ffe080');sfx('block')});return}
     const T=ET[e.t],rush=B.rush&&B.rush.has(e);
-    let d=Math.max(1,Math.round((T.atk+Math.floor(progK()*(T.boss?.3:.6))+rnd(3)-1)*(mult||1)*(rush?1.5:1)*(e.fear>0?.5:1))-(S.hm?heroExp().def:def()));if(S.hm){const X=heroExp();d=Math.max(1,Math.round(Math.max(1.5,d)*heroMul()*maxHP()/X.hp))}if(B.o.tut)d=Math.min(3,Math.max(1,Math.round(d*.4)));if(typeof kyRedirect==='function'){const kr=kyRedirect(e,d,fx,fxe,hitsFx);if(kr.skip)return;d=kr.d}S.hp-=d;dmgTotal+=d;
+    let d=Math.max(1,Math.round((T.atk+Math.floor(progK()*(T.boss?.3:.6))+rnd(3)-1)*(mult||1)*(rush?1.5:1)*(e.fear>0?.5:1))-(S.hm?heroExp().def:def()));if(S.hm){const X=heroExp();if(S.hmDef0==null)S.hmDef0=def();d=Math.max(1,Math.round(Math.max(1.5,d)*heroMul()*maxHP()/X.hp*Math.min(1,Math.max(.4,1-.04*(def()-S.hmDef0)))))}/* weichafe: each defense point gained since the mode began takes 4% off (up to 60%) */if(B.o.tut)d=Math.min(3,Math.max(1,Math.round(d*.4)));if(typeof kyRedirect==='function'){const kr=kyRedirect(e,d,fx,fxe,hitsFx);if(kr.skip)return;d=kr.d}S.hp-=d;dmgTotal+=d;
     fx.push(e.label+(tag?tag.es:' te golpea')+' (−'+d+').');fxe.push(e.label+(tag?tag.en:' hits you')+' (−'+d+').');
     if(T.drain){const hl=Math.ceil(d/2);e.hp=Math.min(e.max,e.hp+hl);fx.push(e.label+' bebe tu fuerza (+'+hl+').');fxe.push(e.label+' drinks your strength (+'+hl+').');hitsFx.push(()=>{const p=epos(e);pop(p.x,p.y-10,'+'+hl,'#80ff90')})}
-    hitsFx.push(()=>{e.lunge=16;pop(60,30,'-'+d,'#ff6050')})};
+    hitsFx.push(()=>{const g=!ET[e.t].fly&&!ET[e.t].boss&&GEM_ON;e.lunge=g?22:16;e.lunge0=e.lunge;pop(60,30,'-'+d,'#ff6050')})};
   for(const e of aliveE()){const T=ET[e.t];
     if(e.hp<=0)continue; // staggered by the ngen's question: it does not act
     if(B.o.final&&/^ngoyman[1-5]$/.test(e.t)){e.ft=(e.ft||0)+1;const ln=e.lanN||0,lim=e.t==='ngoyman5'?2:1;
       if(ln<lim&&!B.lanPending&&((ln===0&&e.ft===2)||(ln===1&&e.ft>=4&&e.hp<e.max*.6))){e.lanN=ln+1;e.hidden=0;B.lanPending=e;
-        fx.push(e.label+' alza los brazos y la niebla se vuelve palabras muertas...');fxe.push(e.label+' raises its arms and the fog turns into dead words...');hitsFx.push(()=>{sfx('cast');B.flash=14;B.shake=10});continue}}
+        fx.push(e.label+' alza los brazos y la niebla se vuelve palabras muertas...');fxe.push(e.label+' raises its arms and the fog turns into dead words...');hitsFx.push(()=>{sfx('cast');B.flash=14;B.shake=10;B.lanFx={e,t:0,cast:0}});continue}}
     if(e.sl>0){e.sl--;fx.push(e.label+' duerme.');fxe.push(e.label+' is asleep.');continue}
     if(e.stun>0){e.stun--;fx.push(e.label+' todavía retrocede.');fxe.push(e.label+' is still backing away.');continue}
     if(e.t==='ngoyam'&&Math.random()<.3&&(S.sp||0)>0){S.sp--;fx.push(e.label+' te susurra el olvido: pierdes un punto de newen (✦).');fxe.push(e.label+' whispers forgetting to you: you lose one newen point (✦).');hitsFx.push(()=>{pop(60,30,'−✦','#c0b8ff');sfx('bad')});continue}
@@ -459,7 +461,7 @@ function enemyPhase(){
   if(S.gear.lafkenkura&&S.hp>0&&S.hp<maxHP()){S.hp=Math.min(maxHP(),S.hp+2)}
   B.blocked=null;B.rush=null;B.turn++;if(typeof kyEnemyPost==='function')kyEnemyPost();
   const lines=[];
-  if(fx.length){const l=N(fx.join(' '),fxe.join(' '));l.fx=()=>{hitsFx.forEach(f=>f());if(dmgTotal){B.shake=12;B.red=10;sfx('hurt')}};lines.push(l)}
+  if(fx.length){const l=N(fx.join(' '),fxe.join(' '));l.fx=()=>{hitsFx.forEach(f=>f());if(dmgTotal){B.pendHurt=aliveE().some(e=>e.lunge0===22&&e.lunge>0)?10:1}};lines.push(l)}
   const bossE=aliveE().find(x=>ET[x.t].boss),bn=bossE?ET[bossE.t].name:'';
   if(B.tele&&bossE)lines.push(L(bn,'Küpaley '+bn+'!','¡'+bn+' viene!',bn+' is coming!'));
   if(bossE&&bossE.hidden&&!B.hideHint&&B.turn>=1&&S.roots.includes('tripa')){B.hideHint=1;lines.push(N('Pista: escondido en la niebla, nada lo alcanza. Quizás si le dices que salga...','Hint: hidden in the fog, nothing reaches it. Maybe if you tell it to come out...'))}
@@ -569,26 +571,32 @@ function victory(){
     if(nx)return llufuStage(nx);}
   {const qb=B.en.find(e=>ET[e.t].boss);
    if(qb&&!B.qok){qb.dead=false;qb.fadeT=0;qb.hit=0;qb.hp=1;qb.stag=1;return qb.t==='llawfen'?llawLast(qb):ngenQuiz(qb)}}
+  {const yb=B.en.find(e=>ET[e.t].boss);   // not wekufü: Epunamun and the Millalobo yield in their painted frames instead of breaking
+   if(yb&&!B.defA&&(yb.t==='epunamun'||(yb.t==='llufu5'&&B.o.chain==='llufu'))&&typeof dseqOK==='function'&&dseqOK(yb.t)){yb.stag=1;dseqStart(yb,null,{yld:1,keep:yb.t==='epunamun'});return}}
   {const vb=B.en.find(e=>ET[e.t].boss);
-   if(vb&&!B.ngenA&&B.o.chain!=='llufu'&&vb.t!=='epunamun'){
+   if(vb&&!B.defA&&typeof DEFEAT!=='undefined'&&DEFEAT[vb.t]){defStart(vb);return}   // the Santiago wardens and the Yewen come apart on screen
+   if(vb&&!B.ngenA&&!B.defA&&B.o.chain!=='llufu'&&vb.t!=='epunamun'){
      if(vb.t==='ngoyman5'){vb.stag=1;B.ngenA={t:0,e:vb,kind:'final'};document.getElementById('dlg').style.display='none';active=null;sfx('cast');return}
      if(!/^ngoyman/.test(vb.t)){
-       const v={lafkenche:'lafken',nagche:'mawida',pewenche:'pewen',williche:'kuruf',puelmapu:'lelfun',ngoyman:'lelfun'}[M.region];
+       const v=(B.o.arena&&'av' in B.o)?B.o.av:{lafkenche:'lafken',nagche:'mawida',pewenche:'pewen',williche:'kuruf',puelmapu:'lelfun',ngoyman:'lelfun'}[M.region];
+       if(v&&typeof dseqOK==='function'&&dseqOK(vb.t)){vb.stag=1;dseqStart(vb,v);return}   // the ngen wakes (heard, not seen) and the wekufü breaks apart in its painted frames
        if(v){vb.stag=1;B.ngenA={t:0,e:vb,v};document.getElementById('dlg').style.display='none';active=null;sfx('cast');return}}}
    if(vb&&vb.hp<=0&&!vb.dead){vb.dead=true;vb.fadeT=20}}
   if(B.ngenA&&!B.ngenA.done)return;
+  if(B.defA&&!B.defA.done)return;
   const xp=B.en.reduce((a,e)=>a+ET[e.t].xp,0);let gold=B.en.reduce((a,e)=>{const g=ET[e.t].gold;return a+g[0]+rnd(g[1]-g[0]+1)},0);
   if(S.pw.gold){gold*=2;S.pw.gold=0}
   S.xp+=xp;S.gold+=gold;
   const wn=(B.o.boss||B.o.final||B.o.chain)?'win':'winS';const after=SONGS[wn];after.after=()=>mapSong();playSong(wn);
   const NGN={lafken:'Ngen-lafken',mawida:'Ngen-mawida',pewen:'Ngen-pewen',kuruf:'Ngen-kürüf',lelfun:'Ngen-lelfün'};
-  const ls=[(B.ngenA&&B.ngenA.kind==='final')?N('¡Los cinco ngen del mapu responden a la vez! Mar, monte, pewen, viento y pampa descargan su newen, uno tras otro... y Ti Fütra Ngoymatulfe se quiebra en mil pedazos que la luz deshace.','The five ngen of the land answer as one! Sea, forest, pewen, wind and plain unleash their newen, one after another... and Ti Fütra Ngoymatulfe shatters into a thousand pieces that the light unmakes.'):B.o.chain==='llufu'?N('El ül se cierra como una marea mansa: el Millalobo se aquieta y su furia se apaga en el fondo del mar.','The ül closes like a gentle tide: the Millalobo grows calm and his fury dies away at the bottom of the sea.'):(B.ngenA&&B.ngenA.v)?N('¡'+NGN[B.ngenA.v]+' despierta y descarga su newen sobre el wekufü: el maligno estalla en mil pedazos que la luz deshace! La tierra respira de nuevo.',NGN[B.ngenA.v]+' awakens and unleashes its newen upon the wekufü: the evil one shatters into a thousand pieces that the light unmakes! The land breathes again.'):(B.en.some(e=>e.t==='epunamun'))?N('El Epunamun baja sus dos lanzas y asiente con las dos caras: la prueba terminó, y la pasaste.','The Epunamun lowers his two spears and nods with both faces: the trial is over, and you have passed it.'):(B.en.some(e=>e.t==='llawfen'))?N('Tu sombra deja de pelear. No huye ni se deshace: se queda quieta, mirándote con tus propios ojos.','Your shadow stops fighting. It does not flee or break apart: it stands still, looking at you with your own eyes.'):N('¡Los wekufü se van!','The wekufü are gone!'),L('','+'+numW(gold)+' ngülliw','Ganas '+numP(gold)+' ngülliw y '+numP(xp)+' de kimün.','You gain '+numP(gold)+' ngülliw and '+numP(xp)+' kimün.')];
+  const ls=[(B.ngenA&&B.ngenA.kind==='final')?N('¡Los cinco ngen del mapu responden a la vez! Mar, monte, pewen, viento y pampa descargan su newen, uno tras otro... y Ti Fütra Ngoymatulfe se quiebra en mil pedazos que la luz deshace.','The five ngen of the land answer as one! Sea, forest, pewen, wind and plain unleash their newen, one after another... and Ti Fütra Ngoymatulfe shatters into a thousand pieces that the light unmakes.'):B.o.chain==='llufu'?N('El ül se cierra como una marea mansa: el Millalobo se aquieta y su furia se apaga en el fondo del mar.','The ül closes like a gentle tide: the Millalobo grows calm and his fury dies away at the bottom of the sea.'):(B.defA&&B.defA.D&&B.defA.D.v)?N('Bajo el newen de '+NGN[B.defA.D.v]+', el wekufü se quiebra y se deshace, y la luz se lleva lo que queda. La tierra respira de nuevo.','Under the newen of '+NGN[B.defA.D.v]+', the wekufü cracks and comes apart, and the light carries away what is left. The land breathes again.'):(B.ngenA&&B.ngenA.v)?N('¡'+NGN[B.ngenA.v]+' despierta y descarga su newen sobre el wekufü: el maligno estalla en mil pedazos que la luz deshace! La tierra respira de nuevo.',NGN[B.ngenA.v]+' awakens and unleashes its newen upon the wekufü: the evil one shatters into a thousand pieces that the light unmakes! The land breathes again.'):(B.en.some(e=>e.t==='epunamun'))?N('El Epunamun baja sus dos lanzas y asiente con las dos caras: la prueba terminó, y la pasaste.','The Epunamun lowers his two spears and nods with both faces: the trial is over, and you have passed it.'):(B.en.some(e=>e.t==='llawfen'))?N('Tu sombra deja de pelear. No huye ni se deshace: se queda quieta, mirándote con tus propios ojos.','Your shadow stops fighting. It does not flee or break apart: it stands still, looking at you with your own eyes.'):N('¡Los wekufü se van!','The wekufü are gone!'),L('','+'+numW(gold)+' ngülliw','Ganas '+numP(gold)+' ngülliw y '+numP(xp)+' de kimün.','You gain '+numP(gold)+' ngülliw and '+numP(xp)+' kimün.')];
   if(B.ngenA&&B.ngenA.kind==='final'&&S.flags.epu_won)ls.push(N('Y al final, entre los ngen, el Epunamun: sus dos caras arden en rojo y sus lanzas disparan el último fuego contra el olvido.','And last, among the ngen, the Epunamun: both his faces burn red and his spears fire the last blaze against the forgetting.'));
-  while(S.xp>=xpNeed()){S.xp-=xpNeed();S.lvl++;S.baseMax+=HPQ;S.hp+=HPQ;S.baseAtk+=1;if(S.lvl%2===0)S.baseDef+=1;
+  while(S.xp>=xpNeed()){S.xp-=xpNeed();S.lvl++;S.baseMax+=HPQ;S.hp+=HPQ;S.baseAtk+=1;if(S.lvl%2===0||S.hm)S.baseDef+=1;
     const l=L('','Doy kimün! Akuymi kimün nivel '+S.lvl+'. Llowfimi ka piwke ka doy newentuymi.','¡Más conocimiento! Llegas a kimün '+S.lvl+': ganas un corazón y más fuerza.','More knowledge! You reach kimün '+S.lvl+': you gain a heart and more strength.');l.fx=()=>sfx('lvl');ls.push(l)}
   say(ls,()=>endBattle('win'));
 }
 function defeat(){
+  if(B&&B.o&&B.o.arena)return arenaLose();
   const lost=Math.floor(S.gold/4);S.gold-=lost;playSong('intro');
   const gm=MAPS[CUR].region==='nagche'?'chuchu':MAPS[CUR].region==='pewenche'?'laku':MAPS[CUR].region==='williche'?'cheche':'kuku';
   say([N('Te quedas sin fuerzas... Tu '+gm+' te encuentra y te lleva junto al kütral.'+(lost?' Pierdes '+numP(lost)+' ngülliw.':''),'You collapse... Your '+gm+' finds you and carries you back to the fire.'+(lost?' You lose '+numP(lost)+' ngülliw.':''))],()=>{
@@ -598,6 +606,9 @@ function endBattle(how){
   const o=B.o;mode='map';grace=how==='flee'?90:30;
   if(how==='win'&&o.ent){ents=ents.filter(e=>e!==o.ent);if(o.ent.flag)S.flags[o.ent.flag]=1}
   B=null;persist();
+  if(o.arena){if(how!=='win'||!AU.song||(AU.name!=='win'&&AU.name!=='winS'))playSong(mapSong());
+    if(typeof playAmb==='function'){playAmb(typeof wxAmbKey==='function'?wxAmbKey():ambFor(M.bg));ambVol(.5)}
+    return arenaEnd(how)}
   const entPost=how==='win'&&o.ent&&o.ent.post;
   if(how!=='win'||!AU.song||(AU.name!=='win'&&AU.name!=='winS'))playSong(mapSong());
   if(typeof playAmb==='function'){playAmb(typeof wxAmbKey==='function'?wxAmbKey():ambFor(M.bg));ambVol(.5)}
@@ -734,7 +745,7 @@ function lanKewun(e){
   B.lanUsed=B.lanUsed||[];const left=LAN_LOFS.filter(l=>!B.lanUsed.includes(l[0])),lofP=(left.length?left:LAN_LOFS)[rnd((left.length?left:LAN_LOFS).length)];
   const pool=lanPool(),qs=[];for(const m of missList()){if(qs.length>=Math.ceil(n/2))break;if(m.q.m&&m.q.m[0]!=='⧉'&&m.t!=='palin'&&m.t!=='trafkintu (números)')qs.push({q:m.q,o:m.o.slice().sort(()=>Math.random()-.5),a:m.a})}
   while(qs.length<n&&pool.length){const p=pool.splice(rnd(pool.length),1)[0];if(!qs.some(x=>x.q.m===p.q.m&&x.q.es===p.q.es))qs.push(p)}
-  say([Object.assign(L(e.label,'Lan kewün!','¡Muerte de la lengua!','Death of the language!'),{fx:()=>{sfx('bad');B.flash=18;B.shake=14}}),
+  say([Object.assign(L(e.label,'Lan kewün!','¡Muerte de la lengua!','Death of the language!'),{fx:()=>{sfx('bad');B.flash=18;B.shake=14;if(!B.lanFx||B.lanFx.e!==e)B.lanFx={e,t:40,cast:0};B.lanFx.cast=1}}),
     N(e.label+' lanza el lan kewün sobre '+lanName({lof:lofP},false)+'. Si fallas una sola de sus '+n+' preguntas, ese lof olvidará todo su mapudungun: perderás 6 piwke y tu newen (la barra verde) no se cargará más contra esta forma.',
       e.label+' casts lan kewün on '+lanName({lof:lofP},true)+'. Miss even one of its '+n+' questions and that lof will forget all its Mapudungun: you will lose 6 hearts, and your newen (the green bar) will not charge again against this form.'),
     N('Responde con lo que has aprendido en tu viaje.','Answer with what you have learned on your journey.')],()=>ask(0));

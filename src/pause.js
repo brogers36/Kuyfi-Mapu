@@ -29,7 +29,7 @@ function openPause(){
       say([L('','Trariwe trokiñ · '+(S.pieces||[]).length+'/5',R5.map(([k,n])=>((S.pieces||[]).includes(k)?'■ ':'□ ')+n).join('   '),R5.map(([k,n])=>((S.pieces||[]).includes(k)?'■ ':'□ ')+n).join('   ')),
         N('Con los cinco trokiñ, el trariwe completo podrá atravesar la niebla de Ti Fütra Ngoymatulfe, al oeste del camino del mar.','With all five trokiñ, the complete trariwe will be able to pass through the fog of Ti Fütra Ngoymatulfe, west of the sea road.')])}
     else if(v==='kudaw')say(questLines());
-    else if(v==='mapa')say(mapaLines());
+    else if(v==='mapa')openAtlas(()=>openPause());
     else if(v==='kim')openKim();
     else if(v==='cfg')openCfg();
     else if(v==='book')openBook(()=>openPause());

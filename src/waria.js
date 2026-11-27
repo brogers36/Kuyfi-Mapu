@@ -266,7 +266,7 @@ function dinnerTalk(){
       {q:N('La comida está lista. Llama a los dos niños a la mesa.','Dinner is ready. Call the two children to the table.'),o:['Küpamu!','Küpange!','Küpamün!'],a:'Küpamu!',hint:['Son dos niños: -mu.','There are two children: -mu.'],
         after:[L('Pichikeche','Küpayu!','¡Vamos!','Coming!')]},
       {q:N('Que se sienten los dos.','Tell the two of them to sit down.'),o:['Anümu!','Anünge!','Anümün!'],a:'Anümu!',hint:['A dos personas: -mu.','To two people: -mu.']},
-      {q:N('Pide el pan.','Ask for the bread.'),o:['Elumuen kofke.','Kofke pingen.','Kofke iyan.'],a:'Elumuen kofke.',hint:['Pides que te den algo: elumuen, «dame».','You are asking to be given something: elumuen, "give me".']},
+      {q:N('Pide el pan.','Ask for the bread.'),o:['Elumuen kofke.','Kofke pingen.','Kofketuan.'],a:'Elumuen kofke.',hint:['Pides que te den algo: elumuen, «dame».','You are asking to be given something: elumuen, "give me".']},
       {q:N('La comida estaba rica. Da las gracias.','The food was good. Say thank you.'),o:['Chaltu may.','Pewkayal.','Mari mari.'],a:'Chaltu may.'}],()=>{
       S.flags.cena_ok=1;swCheck();persist();sfx('lvl');
       say([N('Los niños se ríen y repiten «küpamu, anümu» toda la cena, mandándose entre ellos. La mamá te guiña un ojo.','The children laugh and repeat "küpamu, anümu" all through dinner, bossing each other around. The mother winks at you.'),

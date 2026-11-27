@@ -16,8 +16,8 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>{const d=DK[e.key];if(d)held[d]=0});
 addEventListener('pointerdown',()=>auInit(),{capture:true});
-function pressA(){if(active)active.a();else if(mode==='map')interact();else if(mode==='palin'&&PG)palinSwing()}
-function pressB(){if(mode==='cut'){skipCut();return}if(active){active.b&&active.b()}else if(mode==='map')openPause();else if(mode==='palin'&&PG)palinQuit()}
+function pressA(){if(mode==='battle'&&B&&B.defA&&!B.defA.done)return defSkip();if(active)active.a();else if(mode==='map')interact();else if(mode==='palin'&&PG)palinSwing()}
+function pressB(){if(mode==='battle'&&B&&B.defA&&!B.defA.done)return defSkip();if(mode==='cut'){skipCut();return}if(active){active.b&&active.b()}else if(mode==='map')openPause();else if(mode==='palin'&&PG)palinQuit()}
 document.querySelectorAll('#dpad button').forEach(b=>{const d=b.dataset.d;
   b.addEventListener('pointerdown',e=>{e.preventDefault();held[d]=1;if(active&&active.mv)active.mv(d==='up'||d==='left'?-1:1)});
   for(const ev of ['pointerup','pointerleave','pointercancel'])b.addEventListener(ev,()=>held[d]=0)});
@@ -38,6 +38,7 @@ function tryMove(d){
   if(!inB(nx,ny))return edge(d);
   const e=entAt(nx,ny);
   if(e){if(e.kind==='enemy')engage(e);return}
+  {const bb=ents.find(b=>b.kind==='enemy'&&b.boss&&Math.abs(nx-b.x)<=(ET[b.party[0]]&&ET[b.party[0]].bs>=120?2:1)&&ny<=b.y&&ny>=b.y-2);if(bb){engage(bb);return}}   // big bosses: their whole body, not just one tile
   const c=grid[ny][nx];
   if(M.metroGate){const g=M.metroGate;if(ny===g.y&&nx>=g.x&&nx<g.x+g.w){sfx('door');loadMap(g.to,g.tx,g.ty);return}}
   if(M.doors&&M.doors[nx+','+ny]&&d==='up'){const D=M.doors[nx+','+ny];if(D.req&&!S.flags[D.req]){if(!P.bump){P.bump=1;say(D.reqMsg)}return}sfx('door');loadMap(D.to,D.x,D.y);return}
@@ -83,6 +84,7 @@ function edge(d){
 function setTileFlag(x,y){S.flags['t:'+CUR+':'+x+','+y]=1;grid[y][x]=M.floor}
 function onStep(){
   const sb=M.sbt;
+  if(typeof arenaHere==='function'&&arenaHere()&&onArena(P.x,P.y))return arenaMenu();
   if(sb&&!S.flags[sb.flag]&&!(sb.req&&!S.flags[sb.req])&&sb.t.indexOf(P.x+','+P.y)>=0)return sbossWake(sb);
   const c=grid[P.y][P.x];P.bump=0;
   if(c==='A'){if(LOFIDS.includes(CUR))lofWarpMenu();else warpMenu();return}
@@ -184,6 +186,7 @@ function updateMap(){
   }
   for(const sc of SCN)if(sc.type==='palin'){
     if(PAL&&PAL.on){palUpdate(sc);continue}
+    if(sc.am&&typeof GEM_ON!=='undefined'&&GEM_ON&&GEM_READY)continue;   // the new graphics run their own match (palAmbient)
     const X=sc.x*T,Y=sc.y*T,w=sc.w*T,h=sc.h*T;
     sc.bx=X+w/2+Math.sin(frame/70)*(w/2-14)+Math.sin(frame/23)*8;sc.by=Y+h/2+Math.sin(frame/41)*(h/2-8);
     sc.pl.forEach((p,i)=>{const tx=sc.bx+(i<2?-1:1)*(CT?16:10)+Math.sin(frame/30+i)*6,ty=sc.by+(i%2?1:-1)*(CT?11:8);const dx=tx-p.x,dy=ty-p.y;p.x+=dx*.035;p.y+=dy*.035;p.mv=Math.abs(dx)+Math.abs(dy)>3;if(Math.abs(dx)>1)p.dir=dx>0?'right':'left'});

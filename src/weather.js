@@ -22,7 +22,7 @@ function wxTick(){const key=wxKey(),w=wxNow();
     if(w&&(changed||!S.flags['wxs_'+key+w])){S.flags['wxs_'+key+w]=1;S.flags.wx_book=1;WXS.txt=WXL[w];WXS.toast=200}
     if(typeof playAmb==='function'&&mode==='map')playAmb(wxAmbKey())}
   if(WXS.toast>0)WXS.toast--}
-function wxSpawn(){const w=wxNow(),t=w&&WXE[w];if(!t||!ET[t]||!ents.some(e=>e.kind==='enemy'))return;
+function wxSpawn(){const w=wxNow(),t=w&&WXE[w];if(!t||!ET[t]||!ents.some(e=>e.kind==='enemy'))return;if(ET[t].fly&&!S.roots.includes('nagtu'))return;
   for(let k=0;k<60;k++){const x=1+rnd(M.w-2),y=1+rnd(M.h-2);if(!WALK.has(grid[y][x])||Math.abs(x-P.x)+Math.abs(y-P.y)<6||ents.some(e=>e.x===x&&e.y===y))continue;
     ents.push({kind:'enemy',x,y,fx:x,fy:y,ox:x,oy:y,party:t==='chonchon'?['chonchon','chonchon']:[t],cd:30+rnd(60),dir:'down',pi:0,wait:0,bt:rnd(400),wx:1});return}}
 function wxBubble(e,txt){const w=WXS.last;if(!w||!WXB[w]||e.kind!=='npc')return txt;return(Math.floor((frame+e.bt)/600)+e.bt)%3===0?WXB[w][e.bt%2]:txt}

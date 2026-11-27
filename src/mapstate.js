@@ -2,7 +2,7 @@
    MAP STATE + LAYER BUILDING
    ============================================================ */
 const PENSPOT=[[10,2],[12,3],[14,2],[11,3],[15,3]];
-let CUR='rupu',M=null,grid=null,ents=[],LAYERS=[],GT=null,PROPS=[],RUKAS=[],SCN=[];
+let FLYHELD=[],CUR='rupu',M=null,grid=null,ents=[],LAYERS=[],GT=null,PROPS=[],RUKAS=[],SCN=[];
 const P={x:1,y:6,fx:1,fy:6,ox:1,oy:6,t:0,moving:false,dir:'down',spd:.125};
 const WALK=new Set(['.',',','"','=','_','P','m','g','p','S','q','k','A','b','@','j']);
 function inB(x,y){return x>=0&&y>=0&&x<M.w&&y<M.h}
@@ -234,7 +234,7 @@ function mapSong(){const m=MAPS[CUR];
   if(m.region==='santiago'&&!(S&&S.flags&&S.flags.yewen_won)&&(m.song==='waria'||m.song==='cave'))return 'wariaG';   // Santiago stays tense until every silence and Yewen have fallen
   if(m.ngenmap)return rsong(awake(m.region)?'ngen':'cave');const s=m.song;if(!awake(m.region)&&(s==='coast'||s==='lof'||s==='nag'||s==='pew'||s==='wil'||s==='puel'))return rsong(s+'G');return rsong(s)}
 function loadMap(id,x,y,quiet){TALKER=null;
-  CUR=id;M=MAPS[id];if(id==='s_metro'&&S&&S.flags)S.flags.metro_seen=1;
+  CUR=id;M=MAPS[id];if(S&&M.region){S.seenR=S.seenR||{};S.seenR[M.region]=1}if(id==='s_metro'&&S&&S.flags)S.flags.metro_seen=1;
   if(S&&S.flags&&M&&M.region&&!S.flags['gc_'+M.region]){S.flags['gc_'+M.region]=1;gcEvent('region-'+M.region,'Región: '+M.region)}
   grid=M.rows.map(r=>r.split(''));
   for(let yy=0;yy<M.h;yy++)for(let xx=0;xx<M.w;xx++){const c=grid[yy][xx];
@@ -258,12 +258,14 @@ function loadMap(id,x,y,quiet){TALKER=null;
   if(S.flags.lelfun)for(let yy=0;yy<M.h;yy++)for(let xx=0;xx<M.w;xx++)if(grid[yy][xx]==='D')grid[yy][xx]=M.floor;
   if(id==='l_ruka2'&&typeof stgoOpen==='function'&&stgoOpen())grid[3][7]='@';
   buildLayers();
-  ents=[];P.x=x;P.y=y;
+  if(M.region==='santiago'&&typeof swCheck==='function')swCheck();   // older saves: rebuild the Santiago progress flags before placing the wardens
+  ents=[];FLYHELD=[];P.x=x;P.y=y;
   const [px0,py0]=placeNear(x,y);P.x=px0;P.y=py0;P.fx=P.x;P.fy=P.y;P.moving=false;
   for(const e0 of M.ents||[]){
     if(e0.flag&&S.flags[e0.flag])continue;
     if(e0.req&&!S.flags[e0.req])continue;
     const e=Object.assign({},e0);
+    if(e.kind==='enemy'&&e.party&&!S.roots.includes('nagtu')){e.party=e.party.filter(t=>!(ET[t]&&ET[t].fly));e.p0=e0.party;if(!e.party.length){FLYHELD.push(e0);continue}}   // no flyers until nagtu- is known
     const [ex,ey]=e.fixed||e.path?[e.x,e.y]:placeNear(e.x,e.y,true);e.x=ex;e.y=ey;e.fx=ex;e.fy=ey;e.cd=30+rnd(60);e.dir=e.dir||'down';e.pi=0;e.wait=e.pause||0;e.bt=rnd(400);e.ox=e.x;e.oy=e.y;
     if(e.kind==='npc'){const sd=id+':'+(e.id||e0.x+','+e0.y)+':'+(e.look||'');let h=9;for(let i=0;i<sd.length;i++)h=(h*31+sd.charCodeAt(i))>>>0;
       e.tn=h%5;e.ey2=[0,0,1,1,2,3,4,5][(h>>>3)%8];e.hr2=[0,0,0,1,1,2,3,4][(h>>>6)%8]}
@@ -274,6 +276,7 @@ function loadMap(id,x,y,quiet){TALKER=null;
   S.map=id;fade=16;grace=40;
   if(!quiet)showBanner(typeof placeName==='function'?placeName(id):M.name,G(typeof placeGloss==='function'?placeGloss(id):M.g));
   setTimeout(()=>{if(!active&&mode==='map'&&typeof lofWarpIntro==='function')lofWarpIntro()},600);
+  setTimeout(()=>{if(!active&&mode==='map'&&typeof arenaIntro==='function')arenaIntro()},1500);
   playSong(mapSong());
   if(typeof wxSpawn==='function')wxSpawn();
   if(typeof playAmb==='function')playAmb(typeof wxAmbKey==='function'?wxAmbKey():ambFor(M.bg));

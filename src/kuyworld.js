@@ -3,6 +3,7 @@
    The Game 1 maps are borrowed as placeholders (same tile grids,
    new people, snow, new exits) until Pukem's own maps are drawn.
    ============================================================ */
+if(typeof GEMD!=='undefined'&&GEMD.en&&GEMD.en.kolokolo)GEMD.en.kolokolo_b=GEMD.en.kolokolo;   // the new art for the boss Kolokolo
 WXT.pukem=[['pire',6],['tromu',3],['kuruf',1]];
 {const _wk=wxKey;wxKey=function(){if(M&&M.wxk&&!M.interior)return M.wxk;return _wk()}}
 SONGSET.pukem=SONGSET.pewenche;
@@ -67,7 +68,7 @@ kyMap('kd3',Object.assign({},KYD,{name:'Kolokolo ñi lolo · 3',g:{es:'La madrig
      pre:[N('Tres sombras cuidan la bajada a la cueva del Kolokolo.','Three shadows guard the way down to the Kolokolo\'s den.')]}]}));
 kyMap('kd_den',Object.assign({},KYD,{name:'Kolokolo ñi ruka',g:{es:'La cueva del Kolokolo',en:'The Kolokolo\'s den'},
   stairs:{to:'kd3',x:19,y:6},
-  ents:[{id:'kolo',kind:'enemy',x:8,y:4,party:['kolokolo'],fixed:1,boss:1,flag:'ky_kolo',
+  ents:[{id:'kolo',kind:'enemy',x:8,y:4,party:['kolokolo_b'],fixed:1,boss:1,flag:'ky_kolo',
     pre:[N('En el fondo de la madriguera algo chilla, bajito. Dos ojitos rojos brillan junto a un montón de lana robada.','At the bottom of the burrow something squeaks, softly. Two little red eyes glint beside a heap of stolen wool.'),
          L('Liwen','Kolokolo! Kintuyu!','¡El Kolokolo! ¡Busquémoslo, tú y yo!','The Kolokolo! Let\'s look for it, you and I!')],
     post:()=>kyKoloWon()}]}));

@@ -29,16 +29,22 @@ let PWAQ=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();PWAQ
   if(inApp)return;$('instRow').style.display='';
   const APK='https://github.com/brogers36/Kuyfi-Mapu/releases/download/android/KuyfiMapu.apk';
   $('bAnd').onclick=()=>{const h=$('andhint');h.style.display=h.style.display==='none'?'block':'none';$('ioshint').style.display='none';$('title').classList.toggle('inst',h.style.display==='block')};
-  $('bPWA').onclick=()=>{if(PWAQ){PWAQ.prompt();PWAQ=null}else $('andtxt').innerHTML='En Chrome: menú ⋮ → «Instalar app».<br>In Chrome: ⋮ menu → "Install app".'};
+  $('bPWA').onclick=()=>{if(PWAQ){PWAQ.prompt();PWAQ=null}else $('andtxt').innerHTML=LANG==='es'?'En Chrome: menú ⋮ → «Instalar app».':'In Chrome: ⋮ menu → "Install app".'};
   $('bIOS').onclick=()=>{const h=$('ioshint');h.style.display=h.style.display==='block'?'none':'block';$('andhint').style.display='none';$('title').classList.toggle('inst',h.style.display==='block')};
 })();
-function updLang(){$('copy').textContent=LANG==='es'?'© 2026 Brandon M. A. Rogers · Todos los derechos reservados. Prohibido usar este sitio para entrenar inteligencia artificial.':'© 2026 Brandon M. A. Rogers · All rights reserved. No use of this site to train artificial intelligence.';$('bLang').textContent=LANG==='es'?'Glosa: Español':'Gloss: English';$('skip').textContent=LANG==='es'?'Saltar ▶▶':'Skip ▶▶'}
+function updLang(){$('copy').textContent=LANG==='es'?'© 2026 Brandon M. A. Rogers · Todos los derechos reservados. Prohibido usar este sitio para entrenar inteligencia artificial.':'© 2026 Brandon M. A. Rogers · All rights reserved. No use of this site to train artificial intelligence.';$('bLang').textContent=LANG==='es'?'Glosa: Español':'Gloss: English';$('skip').textContent=LANG==='es'?'Saltar ▶▶':'Skip ▶▶';gfxLabel();musLabel();
+  document.querySelectorAll('[data-en]').forEach(e=>{e.innerHTML=e.getAttribute(LANG==='es'?'data-es':'data-en')});document.querySelectorAll('[data-ten]').forEach(e=>{e.title=e.getAttribute(LANG==='es'?'data-tes':'data-ten')})}
+function musLabel(){$('bMus').textContent=AU.muted?(LANG==='es'?'♪ Música: no':'♪ Music: off'):(LANG==='es'?'♪ Música: sí':'♪ Music: on');$('pN').textContent=AU.muted?'♪×':'♪'}
+function gfxLabel(){const b=$('bGfx');if(b)b.textContent=LANG==='es'?(GEM_ON?'Gráficos: nuevos':'Gráficos: clásicos (beta)'):(GEM_ON?'Graphics: new':'Graphics: classic (beta)')}
 $('bLang').onclick=()=>{LANG=LANG==='es'?'en':'es';updLang()};
 $('bMus').onclick=()=>toggleMute();
-$('bMus').textContent=AU.muted?'♪ Música: no':'♪ Música: sí';$('pN').textContent=AU.muted?'♪×':'♪';
+$('bGfx').onclick=()=>{gemSet(!GEM_ON);gfxLabel();sfx('ok')};gfxLabel();
+musLabel();
 const HEROBTN=[['hM','millaray'],['hA','ayelen'],['hL','llanka'],['hK','kallfurungi']];
 for(const [id,lk] of HEROBTN){const cvs=$(id).querySelector('canvas'),c=cvs.getContext('2d');c.imageSmoothingEnabled=false;
-  let t=0;setInterval(()=>{t++;c.clearRect(0,0,32,48);c.drawImage(charSprite(lk,'down',HERO===lk?Math.floor(t)%4:0),0,0,32,48)},180);
+  let t=0;setInterval(()=>{t++;c.clearRect(0,0,32,48);const fr=HERO===lk?Math.floor(t)%4:0;
+    if(GEM_ON&&GEM_READY&&GEMI.ttl[lk]){const s=GEMI.ttl[lk][fr];c.drawImage(s,Math.round((32-s.width)/2),48-s.height-1)}   /* drawn 1:1 at title size, so every pixel stays square */
+    else c.drawImage(charSprite(lk,'down',fr),0,0,32,48)},180);
   $(id).onclick=()=>{HERO=lk;for(const [i2,l2] of HEROBTN)$(i2).classList.toggle('on',l2===lk);sfx('ok')}}
 $('title').addEventListener('pointerdown',()=>{auInit();if(!AU.name)playSong('intro')});
 playSong('intro');
@@ -60,7 +66,7 @@ function contSlot(n){
   setSlot(n);const sv=loadSave(n);if(!sv)return;gcEvent('continuar','Continuar partida');
   S=Object.assign(newState(sv.hero||'llanka'),sv);S.items.diwen=S.items.diwen||0;S.gear=S.gear||{};S.gloss=LANG;S.pw={speed:0,pewen:0,gold:0};S.roots=S.roots.map(r=>r==='amu'?'amutu':r==='wiñotu'?'wüñotreka':r==='nag'?'nagtu':r).filter(r=>ROOTS[r]);if(S.last)S.last=null;$('title').style.display='none';mode='map';AU.name=null;loadMap(MAPS[S.map]?S.map:'rupu',S.x,S.y);
 }
-function newGo(src){slotPick(true,n=>{setSlot(n);S=src?heroState(src):newState(HERO);persist();gcEvent('nuevo-'+(S.hero||HERO),'Juego nuevo: '+((HEROES[S.hero]||{}).name||S.hero));$('title').style.display='none';startCut()})}
+function newGo(src){slotPick(true,n=>{setSlot(n);S=src?heroState(src,HERO):newState(HERO);persist();gcEvent('nuevo-'+(S.hero||HERO),'Juego nuevo: '+((HEROES[S.hero]||{}).name||S.hero));$('title').style.display='none';startCut()})}
 $('bNew').onclick=()=>{auInit();const won=[1,2,3].filter(n=>{const v=loadSave(n);return v&&v.flags&&v.flags.won});
   if(!won.length)return newGo(null);
   const en=LANG==='en';
@@ -81,3 +87,20 @@ requestAnimationFrame(loop);
 </script>
 </body>
 </html>
+
+/* the title logo: stepped letters like woven trarikan, a ñimin band of red and white diamonds and two wünelfe stars; a light sweeps across now and then */
+(function(){const h=document.querySelector('#title h1');if(!h)return;const im=new Image();im.onload=()=>{
+  const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;cv.className='logo';cv.setAttribute('role','img');cv.setAttribute('aria-label','Kewün Newen');
+  h.textContent='';h.appendChild(cv);const g=cv.getContext('2d');let t=0;
+  const draw=()=>{if($('title').style.display==='none'){requestAnimationFrame(draw);return}
+    t++;g.clearRect(0,0,cv.width,cv.height);g.drawImage(im,0,0);
+    const ph=t%300;if(ph<70){const x=-30+ph*(cv.width+60)/70;g.save();g.globalCompositeOperation='source-atop';
+      const gr=g.createLinearGradient(x-14,0,x+14,cv.height);gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.5,'rgba(255,255,240,.55)');gr.addColorStop(1,'rgba(255,255,255,0)');
+      g.fillStyle=gr;g.fillRect(0,0,cv.width,cv.height);g.restore()}
+    const tw=.5+.5*Math.sin(t/22);g.save();g.globalCompositeOperation='source-atop';g.fillStyle='rgba(255,240,200,'+(tw*.35)+')';g.fillRect(0,0,16,cv.height);g.fillRect(cv.width-16,0,16,cv.height);g.restore();
+    requestAnimationFrame(draw)};draw()};im.src='data:image/png;base64,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'})();
+
+/* reveal: wait until the screen has its real size and the title art is ready (at most 3 s), then fade the menu in */
+(function(){const t0=Date.now();const go=()=>{fit();requestAnimationFrame(()=>requestAnimationFrame(()=>document.body.classList.remove('boot')))};
+  const wait=()=>{const ok=(typeof GEM_READY==='undefined'||GEM_READY)&&(typeof paintedBG!=='function'||paintedBG('cut_dusk'));
+    if(ok||Date.now()-t0>3000)go();else setTimeout(wait,60)};wait()})();

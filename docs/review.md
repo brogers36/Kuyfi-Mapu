@@ -566,3 +566,32 @@ Trengtreng y Kaykay son sagrados y salen del juego. El jefe secreto del salón d
 
 - ⚠ La tercera forma pasa de «Millalobo ñi müpü» a **Müpükülechi Millalobo** («el Millalobo alado»), forma dictada por Brandon («mupukülechi millalobo»), escrita con ü según el grafemario del juego. Confirmar la grafía y la segmentación (müpü + -kü-le-chi).
 - La forma ahora tiene alas; el mensaje de la forma dice: «¡Al Millalobo le brotan alas! Salta del agua en un gran arco, con las alas abiertas y las aletas tendidas».
+
+## Derrota del Yewen (24 nov.)
+
+La gente de Santiago llega y le grita al Yewen; cada grito le arranca un pedazo hasta que queda una persona común. Frases dictadas por Brandon:
+- ⚠ **¡Amutunge!** («¡Vete!»)
+- ⚠ **¡Yewentuwelayaiñ!** («Ya no tendremos vergüenza»)
+- ⚠ **Mañumwiyiñ.** («Gracias», la persona que queda). Confirmar la grafía en los tres grafemarios.
+
+## «Comer pan» = kofketun (24 nov.)
+
+Brandon: comer pan es **kofketun** (kofke + -tu-). Cambios:
+- Nütram de Rayen (Pewenche): «Iyaymi kofke?» → **«Kofketuaymi?»**; respuesta correcta «May, iyan.» → **«May, kofketuan.»**; distractor «May, iyay.» → «May, kofketuay.».
+- Santiago, pedir el pan: el distractor «Kofke iyan.» → «Kofketuan.».
+- Las lecciones generales de iya- («comer», sin objeto) no cambian.
+
+## «Estoy triste» = weñankülen (24 nov.)
+
+Brandon: «estoy triste» es **weñankülen** (con n, no ng). Corregido en la lección de sentimientos (trawün): la línea de ejemplo y la respuesta de «¿Cómo se dice "estoy triste"?».
+
+## «Después» = wüla feman (24 nov.)
+
+Brandon: en el texto de Nico, la opción «Ka mew» (después) es **Wüla feman**. Cambiado en todas las opciones «después»: Nico, Seba, Nacho, Carmen (src/kompa.js), las lecciones de las piedras y la invitación al nütramkan (src/scripts.js).
+
+## Weichawe y füta palin (25 nov.)
+- ⚠ **Weichawe** («lugar de pelea», weicha- + -we). Letrero de la ruka del círculo rojo donde se vuelve a pelear con los jefes ya vencidos.
+- ⚠ **Chem wekufü?** («¿Qué wekufü?»). Título del menú del Weichawe.
+- ⚠ **Füta palin** («gran palin»), el torneo entre los lof. ¿Hay un término tradicional para un palin entre comunidades?
+- ⚠ **Füta palin müley!** («¡Hay un gran palin!»).
+- ⚠ **Newen wiño** («wiño de fuerza»), el premio del torneo.

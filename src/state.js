@@ -2,9 +2,9 @@
    STATE
    ============================================================ */
 const HPQ=4,SPMAX=3;
-function maxHP(){return S.baseMax+(S.gear.trariwe?4:0)+Math.floor(S.piwke/4)*4+(S.flags.ngen?4:0)+(S.flags.ngen2?4:0)+(S.flags.ngen3?4:0)+(S.flags.ngen4?4:0)+(S.flags.ngen5?4:0)}
-function atk(){return Math.max(1,S.baseAtk+(S.gear.futrawino?3:0)+(S.gear.waiki?2:0)-(S.curse?2:0)-(S.kutran?3:0)-(S.chill>0?2:0))}
-function def(){return Math.max(0,S.baseDef+(S.gear.makun?2:0)+(S.gear.trarilongko?3:0)-(S.kutran?2:0))}
+function maxHP(){return S.baseMax+4*(+S.gear.trariwe||0)+Math.floor(S.piwke/4)*4+(S.flags.ngen?4:0)+(S.flags.ngen2?4:0)+(S.flags.ngen3?4:0)+(S.flags.ngen4?4:0)+(S.flags.ngen5?4:0)}
+function atk(){return Math.max(1,S.baseAtk+(S.gear.newenwino?6:3*(+S.gear.futrawino||0))+(S.gear.waiki?2:0)-(S.curse?2:0)-(S.kutran?3:0)-(S.chill>0?2:0))}
+function def(){return Math.max(0,S.baseDef+2*(+S.gear.makun||0)+(S.gear.trarilongko?3:0)-(S.kutran?2:0))}
 function xpNeed(){return 10+S.lvl*10}
 /* the four heroes you can play: two women and two men, each with their own skin, clothes and battle sprite */
 const HEROES={millaray:{name:'Millaray',fem:1},ayelen:{name:'Ayelen',fem:1},llanka:{name:'Llanka',fem:0},kallfurungi:{name:'Kallfürüngi',fem:0}};
@@ -17,10 +17,10 @@ function loadSave(n){try{const t=localStorage.getItem(slotKey(n||SLOT));return t
 const heroMul=()=>Math.min(2.75,1.6+.25*((S.hm||1)-1));
 function heroExp(){const k=progK(),L=[2,7,12,17,21,25,29][Math.min(6,k)];
   return{atk:L+4+(k>=2?3:0),def:1+Math.floor(L/2)+(k>=1?2:0),hp:24+HPQ*(L-1)+4*k+(k>=1?4:0)+4*Math.floor(k*.8)}}
-function heroState(src){const s=newState(src.hero||'llanka');
+function heroState(src,hero){const s=newState(hero||src.hero||'llanka');   // weichafe mode plays as the hero chosen on the title, not the one from the finished game
   for(const k of ['lvl','xp','baseMax','baseAtk','baseDef','gold','hints'])if(src[k]!=null)s[k]=src[k];
   s.items=Object.assign(s.items,src.items||{});s.gear=Object.assign({},src.gear||{});s.hm=(src.hm||0)+1;
-  s.hp=s.baseMax+(s.gear.trariwe?4:0);return s}
+  s.hp=s.baseMax+(s.gear.trariwe?4:0);s.hmDef0=null;return s}
 function heroHurt(){const d=Math.max(1,Math.round(maxHP()*.1));S.hp=Math.max(1,S.hp-d);sfx('bad');return d}
 const heroLook=()=>HEROES[S.hero]?S.hero:'llanka';
 
@@ -144,6 +144,7 @@ const GEAR={
   makun:{m:'makuñ',es:'poncho: defensa +2',en:'poncho: defense +2',p:30},
   trariwe:{m:'trariwe',es:'faja tejida: +1 piwke máximo',en:'woven sash: +1 max heart',p:40},
   futrawino:{m:'fütra wiño',es:'wiño grande: fuerza +3',en:'big palin stick: strength +3',p:50},
+  newenwino:{m:'newen wiño',es:'el wiño de los campeones del füta palin: fuerza +6 (reemplaza al fütra wiño)',en:'the füta palin champions\' stick: strength +6 (replaces the fütra wiño)',p:0,hide:1},
   waiki:{m:'Epunamun ñi waiki',es:'la lanza del Epunamun: fuerza +2',en:"Epunamun's spear: strength +2",p:0,hide:1},
   trarilongko:{m:'trarilongko',es:'el trarilongko de las kuyfi chillka: defensa +3',en:'the trarilongko of the kuyfi chillka: defense +3',p:0,hide:1},
   lafkenkura:{m:'lafkenkura',es:'la piedra del mar de los chumpall: recuperas 2 de newen cada turno de pelea',en:'the chumpall sea stone: you recover 2 newen every battle turn',p:0,hide:1}};
