@@ -232,6 +232,9 @@ function kyLonkoTalk(){
 ET.anchi_b={name:'Fütra Anchimalleñ',hp:170,atk:13,xp:150,gold:[80,80],boss:true,bs:72,secret:1,fly:1,spres:1};
 if(typeof SPR2!=='undefined'&&SPR2.anchi){SPR2.anchi_b=SPR2.anchi;if(SPR2['anchi@b'])SPR2['anchi_b@b']=SPR2['anchi@b']}
 if(typeof GEMD!=='undefined'&&GEMD.en&&GEMD.en.anchi)GEMD.en.anchi_b=GEMD.en.anchi;
+/* the bosses borrow Game 1's new art; the art loads before these names exist, so every table reads through to the original */
+if(typeof GEMI!=='undefined')for(const [a,o] of [['kolokolo_b','kolokolo'],['anchi_b','anchi']])for(const tb of ['en','mp','mm','idl','rz']){const T=GEMI[tb];if(T&&!Object.getOwnPropertyDescriptor(T,a))Object.defineProperty(T,a,{get:()=>T[o],set:v=>{},configurable:true})}
+if(typeof GEMD!=='undefined'&&GEMD.sz){if(GEMD.sz.kolokolo)GEMD.sz.kolokolo_b=GEMD.sz.kolokolo;if(GEMD.sz.anchi)GEMD.sz.anchi_b=GEMD.sz.anchi}
 MAPS.k_winkul.sbt={t:['12,2','13,2','12,3'],boss:'anchi_b',flag:'ky_sb1',req:'ky_pukem_done'};
 {const _sbw=sbossWake;sbossWake=function(sb){if(sb.boss!=='anchi_b')return _sbw.apply(this,arguments);
   say([N('En lo alto de la loma, entre las piedras, una lucecita salta de roca en roca... y de pronto son cien. Se juntan en una sola llama que se ríe con voz de niño: ¡un Fütra Anchimalleñ!','At the top of the hill, among the stones, a little light hops from rock to rock... and suddenly there are a hundred. They gather into a single flame that laughs with a child\'s voice: a great Anchimalleñ!'),
